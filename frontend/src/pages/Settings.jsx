@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, LogOut, User, Target, RotateCcw } from 'lucide-react';
+import { Settings as SettingsIcon, LogOut, User, Target, RotateCcw, Mail, Globe, Code } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { toast } from 'react-toastify';
@@ -122,7 +122,38 @@ const Settings = () => {
       </button>
     </div>
   </div>
-
+  <div className="p-6 border-b border-border-color">
+    <h3 className="text-lg font-bold flex items-center gap-2 mb-4"><Mail className="w-5 h-5 text-indigo-500" /> Contact Us</h3>
+    <p className="text-sm text-text-secondary mb-4">For feedback, feature requests, collaboration opportunities, or technical support, feel free to get in touch.</p>
+    
+    <div className="bg-surface rounded-xl p-5 border border-border-color space-y-5">
+      <div>
+        <h4 className="text-sm font-semibold text-text-secondary mb-1">Developer</h4>
+        <p className="font-medium text-lg">Priyanshu Suyal</p>
+      </div>
+      
+      <div className="flex flex-col sm:flex-row gap-3">
+        <a href="mailto:suyalpriyanshu2@gmail.com" className="flex items-center justify-center gap-2 p-2.5 rounded-xl hover:bg-background transition-colors border border-border-color shadow-sm text-sm font-medium flex-1">
+          <Mail className="w-4 h-4 text-sky-500" />
+          Email
+        </a>
+        
+        <a href="https://www.linkedin.com/in/priyanshu-suyal-5732b224a/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 p-2.5 rounded-xl hover:bg-background transition-colors border border-border-color shadow-sm text-sm font-medium flex-1">
+          <Globe className="w-4 h-4 text-blue-600" />
+          LinkedIn
+        </a>
+        
+        <a href="https://github.com/Priyanshu12334" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 p-2.5 rounded-xl hover:bg-background transition-colors border border-border-color shadow-sm text-sm font-medium flex-1">
+          <Code className="w-4 h-4 text-gray-800 dark:text-gray-300" />
+          GitHub
+        </a>
+      </div>
+      
+      <div className="pt-4 mt-4 border-t border-border-color">
+        <p className="text-sm text-center text-text-secondary font-medium">Built by Priyanshu Suyal</p>
+      </div>
+    </div>
+  </div>
  <div className="p-6 bg-red-50 dark:bg-red-900/10">
  <h3 className="text-lg font-bold text-red-600 dark:text-red-400 mb-2">Danger Zone</h3>
  <p className="text-sm text-red-500/80 mb-4">Logging out will end your current session.</p>
