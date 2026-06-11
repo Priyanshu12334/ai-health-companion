@@ -24,7 +24,7 @@ const Landing = () => {
  transition={{ duration: 0.6 }}
  >
  <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
- Understand yourself <br/>
+ Understand Yourself <br/>
  <span className="text-transparent bg-clip-text from-sky-500 to-sky-600">better every day.</span>
  </h1>
  <p className="text-lg md:text-xl text-text-secondary mb-10 max-w-2xl mx-auto">
