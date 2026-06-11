@@ -18,13 +18,14 @@ const app = express();
 // Connect to database
 connectDB();
 
-const corsOptions = {
-  origin: ['http://localhost:5173', 'https://ai-health-companion-phi.vercel.app'],
-  optionsSuccessStatus: 200
-};
-
 // Middleware
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow all origins
+    return callback(null, true);
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // API Routes
