@@ -4,6 +4,7 @@ import { Activity, ShieldCheck, HeartPulse } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Landing = () => {
+  
  return (
  <div className="min-h-screen bg-background text-text-sky flex flex-col">
  <header className="p-6 flex justify-between items-center max-w-6xl mx-auto w-full">
