@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  
+  --color-background: var(--bg-background);
+  --color-card: var(--bg-card);
+  --color-surface: var(--bg-surface);
+  --color-border-color: var(--border-base);
+  --color-text-sky: var(--text-sky);
+  --color-text-secondary: var(--text-secondary);
+
+  --color-sky-50: #f0f9ff;
+  --color-sky-100: #e0f2fe;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-600: #0284c7;
+  --color-sky-700: #0369a1;
+  --color-sky-800: #075985;
+  --color-sky-900: #0c4a6e;
+}
+
+@layer base {
+  :root {
+    --bg-background: #F5F7FA;
+    --bg-card: #FFFFFF;
+    --bg-surface: #F3F4F6;
+    --border-base: #E5E7EB;
+    --text-sky: #111827;
+    --text-secondary: #6B7280;
+  }
+
+  body {
+    @apply bg-background text-text-sky transition-colors duration-300;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/70 backdrop-blur-md border border-border-color shadow-xl rounded-2xl;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl bg-surface border border-transparent focus:border-sky-500 focus:bg-card outline-none transition-all duration-200 text-text-sky;
+  }
+  
+  .btn-sky {
+    @apply w-full py-3 px-4 bg-sky-600 hover:bg-sky-500 text-white font-medium rounded-xl shadow-lg shadow-sky-500/30 transition-all duration-200 transform hover:-translate-y-1 active:translate-y-0;
+  }
+
+  .nav-item {
+    @apply flex flex-col items-center justify-center p-2 text-text-secondary hover:text-sky-600 dark:hover:text-sky-400 transition-colors;
+  }
+  
+  .nav-item.active {
+    @apply text-sky-600 dark:text-sky-400;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-base);
+  border-radius: 10px;
+}
