@@ -45,7 +45,7 @@ const Dashboard = () => {
  }
 
  const achievements = [];
- if (data.hydration.total > 0 && data.hydration.total >= data.hydration.goal) achievements.push({ id: 1, title: 'Hydration Goal', icon: '💧' });
+ if (data.hydration.total > 0 && data.hydration.total >= data.hydration.goal) achievements.push({ id: 1, title: 'Hydration Goal Completed', icon: '💧' });
  if (data.sleep.log && data.sleep.log.duration >= data.sleep.goal) achievements.push({ id: 2, title: 'Sleep Goal', icon: '😴' });
  if (data.mood.log) achievements.push({ id: 3, title: 'Mood Logged', icon: '😊' });
 
