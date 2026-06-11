@@ -150,7 +150,7 @@ const Settings = () => {
       </div>
       
       <div className="pt-4 mt-4 border-t border-border-color">
-        <p className="text-sm text-center text-text-secondary font-medium">Built by Priyanshu Suyal</p>
+        <p className="text-sm text-center text-text-secondary font-medium">&copy; 2026 AI Health Companion. All Rights Reserved.</p>
       </div>
     </div>
   </div>
