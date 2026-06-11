@@ -15,10 +15,8 @@ const Layout = () => {
       <div className="flex h-screen bg-background overflow-hidden">
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex flex-col w-64 glass-card m-4 rounded-4xl p-6 h-[calc(100vh-2rem)] shrink-0 z-10">
-          <div className="flex items-center gap-3 mb-8 text-sky-600 dark:text-sky-600">
-            <div className="p-2 bg-sky-100 dark:bg-sky-900/30 rounded-4xl">
-              <HeartPulse className="w-6 h-6" />
-            </div>
+          <div className="flex items-center gap-2 mb-8 text-sky-600 dark:text-sky-400">
+            <HeartPulse className="w-8 h-8" />
             <h1 className="text-2xl font-bold tracking-tight">Aurora</h1>
           </div>
           

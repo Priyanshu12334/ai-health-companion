@@ -36,7 +36,7 @@ const Signup = () => {
  transition={{ duration: 0.4 }}
  >
  <div className="text-center mb-8">
- <div className="inline-flex items-center justify-center p-3 bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-4xl mb-4">
+ <div className="flex items-center justify-center gap-2 text-sky-600 dark:text-sky-400 mb-4">
  <HeartPulse className="w-8 h-8" />
  </div>
  <h2 className="text-3xl font-bold mb-2">Create Account</h2>
