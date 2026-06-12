@@ -1,5 +1,7 @@
 import OpenAI from 'openai';
-import pdfParse from 'pdf-parse';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
 import MedicalReport from '../models/MedicalReport.js';
 
 export const uploadReport = async (req, res) => {
