@@ -93,3 +93,29 @@ export const SkeletonAnalysisPanel = () => (
     </div>
   </div>
 );
+
+export const SkeletonGoalBanner = () => (
+  <div className="animate-pulse glass-card p-8 flex flex-col items-center justify-center min-h-[220px] w-full text-center">
+    <div className="w-32 h-4 bg-slate-200 dark:bg-slate-800 rounded-md mb-4"></div>
+    <div className="w-48 h-12 bg-slate-200 dark:bg-slate-800 rounded-md mb-6"></div>
+    <div className="w-full bg-slate-200 dark:bg-slate-800 h-4 rounded-full"></div>
+    <div className="w-24 h-4 bg-slate-200 dark:bg-slate-800 rounded-md mt-4"></div>
+  </div>
+);
+
+export const SkeletonLogList = () => (
+  <div className="animate-pulse space-y-3 w-full">
+    {[1, 2, 3].map(n => (
+      <div key={n} className="flex justify-between items-center p-4 bg-card rounded-xl border border-border-color h-16">
+        <div className="flex items-center gap-3 w-full">
+          <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-lg shrink-0"></div>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="w-24 h-4 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+            <div className="w-16 h-3 bg-slate-200 dark:bg-slate-800 rounded-md"></div>
+          </div>
+        </div>
+        <div className="w-12 h-4 bg-slate-200 dark:bg-slate-800 rounded-md shrink-0"></div>
+      </div>
+    ))}
+  </div>
+);
