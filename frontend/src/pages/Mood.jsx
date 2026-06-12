@@ -4,7 +4,6 @@ import api from '../utils/api';
 import { toast } from 'react-toastify';
 
 import { MOODS } from '../utils/moodConfig';
-import LoadingScreen from '../components/common/LoadingScreen';
 
 const Mood = () => {
  const [data, setData] = useState({ log: null });
@@ -66,7 +65,7 @@ const Mood = () => {
     }
   };
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <div className="animate-pulse flex-1 bg-surface rounded-2xl h-64"></div>;
 
  return (
  <div className="space-y-6 max-w-2xl mx-auto w-full">

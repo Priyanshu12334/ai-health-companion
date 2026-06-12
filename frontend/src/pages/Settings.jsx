@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-import LoadingScreen from '../components/common/LoadingScreen';
 
 const Settings = () => {
  const { user, logout, updateUser } = useAuth();
@@ -67,7 +66,7 @@ const Settings = () => {
     }
   };
 
-  if (isFetching) return <LoadingScreen />;
+  if (isFetching) return <div className="animate-pulse flex-1 bg-surface rounded-2xl h-64"></div>;
 
  return (
  <div className="space-y-6 max-w-2xl mx-auto w-full pb-8">

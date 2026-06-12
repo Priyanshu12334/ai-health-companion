@@ -3,7 +3,6 @@ import { BarChart3, Activity } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from 'recharts';
 import api from '../utils/api';
 import { toast } from 'react-toastify';
-import LoadingScreen from '../components/common/LoadingScreen';
 
 const Analytics = () => {
  const [hydrationData, setHydrationData] = useState([]);
@@ -41,7 +40,7 @@ const Analytics = () => {
  fetchAnalytics();
  }, []);
 
- if (loading) return <LoadingScreen />;
+ if (loading) return <div className="animate-pulse flex-1 bg-surface rounded-2xl h-64"></div>;
 
  return (
  <div className="space-y-6 max-w-4xl mx-auto w-full">

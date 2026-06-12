@@ -17,15 +17,10 @@ const AIChat = React.lazy(() => import('./pages/AIChat'));
 const Analytics = React.lazy(() => import('./pages/Analytics'));
 const Settings = React.lazy(() => import('./pages/Settings'));
 
-import { Loader2 } from 'lucide-react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const LoadingFallback = () => (
- <div className="min-h-screen flex items-center justify-center bg-background">
- <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
- </div>
-);
+import LoadingScreen from './components/common/LoadingScreen';
 
 function App() {
  const { user } = useAuth();
@@ -33,7 +28,7 @@ function App() {
  return (
  <>
  <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
- <React.Suspense fallback={<LoadingFallback />}>
+ <React.Suspense fallback={<LoadingScreen />}>
  <Routes>
  <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
  <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />

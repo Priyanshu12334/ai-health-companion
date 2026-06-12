@@ -5,7 +5,6 @@ import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { moodMap } from '../utils/moodConfig';
-import LoadingScreen from '../components/common/LoadingScreen';
 const Dashboard = () => {
  const { user } = useAuth();
  const [data, setData] = useState({
@@ -41,7 +40,7 @@ const Dashboard = () => {
  const hydrationPercent = Math.min((data.hydration.total / data.hydration.goal) * 100, 100);
 
  if (loading) {
- return <LoadingScreen />;
+ return <div className="h-full flex items-center justify-center"><div className="animate-pulse w-10 h-10 bg-sky-200 rounded-full"></div></div>;
  }
 
  const achievements = [];
