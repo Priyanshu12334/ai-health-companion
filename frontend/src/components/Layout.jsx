@@ -14,8 +14,8 @@ const Layout = () => {
     <>
       <div className="flex h-screen bg-background overflow-hidden">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex flex-col w-64 glass-card m-4 rounded-4xl p-6 h-[calc(100vh-2rem)] shrink-0 z-10">
-          <div className="flex items-center gap-2 mb-8 text-sky-600 dark:text-sky-400">
+        <aside className="hidden md:flex flex-col w-64 bg-sky-600 shadow-xl m-4 rounded-4xl p-6 h-[calc(100vh-2rem)] shrink-0 z-10 border-0">
+          <div className="flex items-center gap-2 mb-8 text-white">
             <HeartPulse className="w-8 h-8" />
             <h1 className="text-2xl font-bold tracking-tight">Aurora</h1>
           </div>
@@ -98,10 +98,10 @@ const NavItem = ({ to, icon, label }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+      `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
         isActive 
-          ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20' 
-          : 'text-text-secondary hover:bg-surface '
+          ? 'bg-sky-700 text-white shadow-md shadow-sky-900/20' 
+          : 'text-white hover:bg-white/10'
       }`
     }
   >
