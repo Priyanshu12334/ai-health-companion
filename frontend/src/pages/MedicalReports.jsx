@@ -74,8 +74,12 @@ const MedicalReports = () => {
 
   const processFile = async (file) => {
     // Validate file type
-    if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
-      toast.error('Only PDF files are supported.');
+    const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg'];
+    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+    
+    if (!allowedMimeTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+      toast.error('Only PDF or image files (PNG, JPG, JPEG) are supported.');
       return;
     }
 
@@ -398,19 +402,19 @@ const MedicalReports = () => {
                   <input 
                     type="file" 
                     id="report-file-input"
-                    accept=".pdf"
+                    accept=".pdf,image/png,image/jpeg,image/jpg"
                     className="hidden"
                     onChange={handleFileChange}
                   />
                   <div className="p-4 bg-sky-50 dark:bg-sky-900/20 rounded-full mb-4 text-sky-600 dark:text-sky-400">
                     <UploadCloud className="w-10 h-10 md:w-12 md:h-12" />
                   </div>
-                  <h3 className="text-lg md:text-xl font-bold text-text-sky mb-2">Upload Your Medical Report</h3>
+                  <h3 className="text-lg md:text-xl font-bold text-text-sky mb-2">Upload PDF or Image</h3>
                   <p className="text-sm text-text-secondary max-w-sm mx-auto leading-relaxed">
-                    Drag and drop your PDF report here, or click to browse files from your computer.
+                    Drag and drop your PDF or image here, or click to browse files from your computer.
                   </p>
                   <div className="mt-6 flex flex-wrap justify-center gap-4 text-xs text-text-secondary font-medium">
-                    <span className="px-3 py-1 bg-surface rounded-full">PDF format only</span>
+                    <span className="px-3 py-1 bg-surface rounded-full">PDF or image format</span>
                     <span className="px-3 py-1 bg-surface rounded-full">Max size 10 MB</span>
                   </div>
                 </div>

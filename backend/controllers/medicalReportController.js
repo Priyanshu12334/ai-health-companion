@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const pdfParse = require('pdf-parse');
+import Tesseract from 'tesseract.js';
 import MedicalReport from '../models/MedicalReport.js';
 
 export const uploadReport = async (req, res) => {
@@ -19,9 +20,10 @@ export const uploadReport = async (req, res) => {
     });
 
     // Validate file type
-    if (req.file.mimetype !== 'application/pdf') {
+    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedMimeTypes.includes(req.file.mimetype)) {
       console.error('Validation Error: Invalid file type:', req.file.mimetype);
-      return res.status(400).json({ message: 'Invalid file format. Only PDF files are supported.' });
+      return res.status(400).json({ message: 'Invalid file format. Only PDF and image files (PNG, JPG, JPEG) are supported.' });
     }
 
     // Validate size (10MB limit)
@@ -32,22 +34,36 @@ export const uploadReport = async (req, res) => {
     }
 
     let extractedText = '';
-    try {
-      console.log('Parsing PDF...');
-      const pdfData = await pdfParse(req.file.buffer);
-      extractedText = pdfData.text || '';
-      console.log(`PDF parse succeeded. Extracted ${extractedText.length} characters.`);
-    } catch (parseError) {
-      console.error('PDF text extraction error:', parseError);
-      return res.status(400).json({ 
-        message: `OCR / Text extraction failed: ${parseError.message || 'The PDF might be corrupted or in an unsupported format.'}` 
-      });
+    if (req.file.mimetype === 'application/pdf') {
+      try {
+        console.log('Parsing PDF...');
+        const pdfData = await pdfParse(req.file.buffer);
+        extractedText = pdfData.text || '';
+        console.log(`PDF parse succeeded. Extracted ${extractedText.length} characters.`);
+      } catch (parseError) {
+        console.error('PDF text extraction error:', parseError);
+        return res.status(400).json({ 
+          message: `OCR / Text extraction failed: ${parseError.message || 'The PDF might be corrupted or in an unsupported format.'}` 
+        });
+      }
+    } else {
+      try {
+        console.log('Running OCR on image...');
+        const ocrResult = await Tesseract.recognize(req.file.buffer, 'eng');
+        extractedText = ocrResult.data.text || '';
+        console.log(`OCR succeeded. Extracted ${extractedText.length} characters.`);
+      } catch (ocrError) {
+        console.error('Image OCR error:', ocrError);
+        return res.status(400).json({
+          message: `OCR / Text extraction failed: ${ocrError.message || 'Failed to extract text from the image.'}`
+        });
+      }
     }
 
     if (!extractedText.trim()) {
       console.error('Validation Error: Extracted text is empty');
       return res.status(400).json({ 
-        message: 'Could not extract any readable text from this PDF. Please make sure the PDF has selectable text and is not an image-only scan.' 
+        message: 'Could not extract any readable text from this report. Please make sure the report has clear readable text.' 
       });
     }
 
