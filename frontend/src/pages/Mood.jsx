@@ -36,16 +36,7 @@ const Mood = () => {
     setSaving(true);
     try {
       await api.post('/mood', { mood: moodName });
-      const freshData = await getMoodData(true);
-      if (cache.dashboard) {
-        setCache(prev => ({
-          ...prev,
-          dashboard: {
-            ...prev.dashboard,
-            mood: { log: freshData.log }
-          }
-        }));
-      }
+      await getMoodData(true);
       toast.success('Mood saved successfully');
     } catch (error) {
       toast.error('Failed to save mood');
@@ -58,16 +49,7 @@ const Mood = () => {
     if (!window.confirm("Delete this mood entry?")) return;
     try {
       await api.delete(`/mood/${id}`);
-      const freshData = await getMoodData(true);
-      if (cache.dashboard) {
-        setCache(prev => ({
-          ...prev,
-          dashboard: {
-            ...prev.dashboard,
-            mood: { log: freshData.log }
-          }
-        }));
-      }
+      await getMoodData(true);
       toast.success('Mood entry deleted');
     } catch (error) {
       toast.error('Failed to delete mood');
@@ -78,16 +60,7 @@ const Mood = () => {
     if (!window.confirm("Clear all mood history? This cannot be undone.")) return;
     try {
       await api.delete('/mood/clear');
-      const freshData = await getMoodData(true);
-      if (cache.dashboard) {
-        setCache(prev => ({
-          ...prev,
-          dashboard: {
-            ...prev.dashboard,
-            mood: { log: freshData.log }
-          }
-        }));
-      }
+      await getMoodData(true);
       toast.success('History cleared successfully');
     } catch (error) {
       toast.error('Failed to clear history');

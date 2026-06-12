@@ -128,7 +128,7 @@ const MedicalReports = () => {
 
   const handleDelete = async (e, id) => {
     e.stopPropagation();
-    if (!window.confirm('Are you sure you want to delete this report analysis?')) return;
+    if (!window.confirm('Are you sure you want to delete this report?')) return;
 
     try {
       await api.delete(`/medical-reports/${id}`);
@@ -223,7 +223,7 @@ const MedicalReports = () => {
                     </div>
                     <button 
                       onClick={(e) => handleDelete(e, report._id)}
-                      className="text-text-secondary hover:text-red-500 p-1 rounded-lg opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
+                      className="text-text-secondary hover:text-red-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 p-1.5 rounded-lg transition-all shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

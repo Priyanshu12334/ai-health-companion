@@ -52,7 +52,12 @@ const Dashboard = () => {
     achievements.push({ id: 2, title: 'Sleep Goal Completed', icon: '🌙' });
   }
   if (data.mood && data.mood.log) {
-    achievements.push({ id: 3, title: 'Mood Logged', icon: '😊' });
+    const currentMoodObj = moodMap[data.mood.log.mood];
+    achievements.push({ 
+      id: 3, 
+      title: `Current Mood: ${data.mood.log.mood}`, 
+      icon: currentMoodObj ? currentMoodObj.emoji : '😊' 
+    });
   }
 
   const displayName =
@@ -146,7 +151,19 @@ const Dashboard = () => {
             <div>
               <h3 className="text-lg font-bold mb-1">AI Insight</h3>
               <p className="text-white/90 text-sm md:text-base leading-relaxed">
-                {data.hydration && data.hydration.total < data.hydration.goal * 0.5 
+                {data.mood?.log?.mood
+                  ? `You logged your mood as "${data.mood.log.mood}" today. ${
+                      data.mood.log.mood === 'Stressed'
+                        ? 'Try taking a few deep breaths, stretching, or going for a short walk to relieve tension.'
+                        : data.mood.log.mood === 'Tired'
+                        ? 'Ensure you get enough rest tonight. Winding down without screens earlier might help.'
+                        : data.mood.log.mood === 'Sad'
+                        ? 'Be gentle with yourself today. Connect with a loved one or take time for a relaxing activity.'
+                        : data.mood.log.mood === 'Neutral'
+                        ? 'A steady day so far. Keep monitoring how you feel and remember to hydrate.'
+                        : 'It is wonderful that you are feeling happy! Keep sharing that positive energy.'
+                    }`
+                  : data.hydration && data.hydration.total < data.hydration.goal * 0.5 
                   ? "You are behind your hydration goal today. Drinking more water now will improve your energy levels later." 
                   : "You are doing great today! Keep up the consistency."}
               </p>

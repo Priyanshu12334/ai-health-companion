@@ -78,7 +78,16 @@ export const DataProvider = ({ children }) => {
       log: todayRes.data.log,
       history: historyRes.data
     };
-    setCache((prev) => ({ ...prev, mood: newData }));
+    setCache((prev) => {
+      const nextCache = { ...prev, mood: newData };
+      if (prev.dashboard) {
+        nextCache.dashboard = {
+          ...prev.dashboard,
+          mood: todayRes.data
+        };
+      }
+      return nextCache;
+    });
     return newData;
   }, [cache.mood]);
 

@@ -14,13 +14,13 @@ const Layout = () => {
     <>
       <div className="flex h-screen bg-background overflow-hidden">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex flex-col w-64 bg-sky-600 shadow-xl m-4 rounded-4xl p-6 h-[calc(100vh-2rem)] shrink-0 z-10 border-0">
-          <div className="flex items-center gap-2 mb-8 text-white">
-            <HeartPulse className="w-8 h-8" />
-            <h1 className="text-2xl font-bold tracking-tight">Aurora</h1>
+        <aside className="hidden md:flex flex-col w-64 bg-sky-600 shadow-lg m-4 rounded-2xl p-6 h-[calc(100vh-2rem)] shrink-0 z-10 border-0">
+          <div className="flex items-center gap-3 mb-10 text-white px-2">
+            <HeartPulse className="w-6 h-6 shrink-0" />
+            <h1 className="text-xl font-bold tracking-tight">Aurora</h1>
           </div>
           
-          <nav className="flex-1 space-y-2">
+          <nav className="flex-1 space-y-3">
             <NavItem to="/dashboard" icon={<Home />} label="Dashboard" />
             <NavItem to="/hydration" icon={<Droplets />} label="Hydration" />
             <NavItem to="/sleep" icon={<Moon />} label="Sleep" />
@@ -106,15 +106,15 @@ const NavItem = ({ to, icon, label }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+      `flex items-center gap-2.5 px-3 py-2 rounded-lg ${
         isActive 
-          ? 'bg-sky-700 text-white shadow-md shadow-sky-900/20' 
-          : 'text-white hover:bg-white/10'
+          ? 'bg-sky-800 text-white' 
+          : 'text-white/90 hover:bg-white/10'
       }`
     }
   >
-    {icon && React.isValidElement(icon) ? React.cloneElement(icon, { className: 'w-5 h-5' }) : null}
-    <span className="font-medium">{label || ''}</span>
+    {icon && React.isValidElement(icon) ? React.cloneElement(icon, { className: 'w-[18px] h-[18px]' }) : null}
+    <span className="text-sm font-medium">{label || ''}</span>
   </NavLink>
 );
 
