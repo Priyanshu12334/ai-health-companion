@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import LoadingScreen from '../components/common/LoadingScreen';
 
 const Settings = () => {
  const { user, logout, updateUser } = useAuth();
@@ -14,6 +15,7 @@ const Settings = () => {
  dailySleepGoal: 8,
  });
  const [loading, setLoading] = useState(false);
+ const [isFetching, setIsFetching] = useState(true);
 
  useEffect(() => {
  // Fetch current profile to get goals
@@ -28,6 +30,8 @@ const Settings = () => {
  });
  } catch (error) {
  console.error("Failed to load profile", error);
+ } finally {
+ setIsFetching(false);
  }
  };
  fetchProfile();
@@ -62,6 +66,8 @@ const Settings = () => {
       toast.error(`Failed to reset ${type} analytics`);
     }
   };
+
+  if (isFetching) return <LoadingScreen />;
 
  return (
  <div className="space-y-6 max-w-2xl mx-auto w-full pb-8">
