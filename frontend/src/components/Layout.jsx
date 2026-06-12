@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
-import { Home, Droplets, Moon, Smile, MessageCircle, BarChart3, Settings, HeartPulse, Menu } from 'lucide-react';
+import { Home, Droplets, Moon, Smile, MessageCircle, BarChart3, Settings, HeartPulse, Menu, FileText } from 'lucide-react';
 
 const Layout = () => {
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const location = useLocation();
   const currentPath = location?.pathname || '';
-  const isMoreActive = ['/mood', '/analytics', '/settings'].includes(currentPath);
+  const isMoreActive = ['/mood', '/analytics', '/medical-reports', '/settings'].includes(currentPath);
 
   const closeMoreMenu = () => setIsMoreMenuOpen(false);
 
@@ -27,6 +27,7 @@ const Layout = () => {
             <NavItem to="/mood" icon={<Smile />} label="Mood" />
             <NavItem to="/ai-chat" icon={<MessageCircle />} label="AI Chat" />
             <NavItem to="/analytics" icon={<BarChart3 />} label="Analytics" />
+            <NavItem to="/medical-reports" icon={<FileText />} label="Medical Reports" />
           </nav>
           
           <div className="mt-auto">
@@ -78,6 +79,13 @@ const Layout = () => {
                 label="Analytics" 
                 onClick={closeMoreMenu} 
                 isActive={currentPath === '/analytics'} 
+              />
+              <SimpleMoreMenuItem 
+                to="/medical-reports" 
+                icon={<FileText />} 
+                label="Medical Reports" 
+                onClick={closeMoreMenu} 
+                isActive={currentPath === '/medical-reports'} 
               />
               <SimpleMoreMenuItem 
                 to="/settings" 

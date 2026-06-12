@@ -91,7 +91,7 @@ const Settings = () => {
  <input type="number" className="input-field" value={formData.dailyWaterGoal} onChange={(e) => setFormData({...formData, dailyWaterGoal: Number(e.target.value)})} required />
  </div>
  <div>
- <label className="block text-sm font-medium mb-1">Sleep Goal (hours)</label>
+ <label className="block text-sm font-medium mb-1">Sleep Goal(hours)</label>
  <input type="number" step="0.5" className="input-field" value={formData.dailySleepGoal} onChange={(e) => setFormData({...formData, dailySleepGoal: Number(e.target.value)})} required />
  </div>
  </div>
