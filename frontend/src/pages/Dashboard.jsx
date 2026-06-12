@@ -44,6 +44,105 @@ const Dashboard = () => {
     ? Math.min((data.hydration.total / data.hydration.goal) * 100, 100) 
     : 0;
 
+  // Health Score calculations
+  const sleepDuration = data.sleep?.log?.duration;
+  let sleepScore = 25; // Default if missing
+  if (sleepDuration !== undefined && sleepDuration !== null) {
+    if (sleepDuration >= 8) sleepScore = 40;
+    else if (sleepDuration >= 7) sleepScore = 35;
+    else if (sleepDuration >= 6) sleepScore = 25;
+    else if (sleepDuration >= 5) sleepScore = 15;
+    else sleepScore = 5;
+  }
+
+  const hydrationTotal = data.hydration?.total;
+  let hydrationScore = 15; // Default if missing
+  if (hydrationTotal !== undefined && hydrationTotal !== null) {
+    if (hydrationTotal >= 2500) hydrationScore = 30;
+    else if (hydrationTotal >= 2000) hydrationScore = 25;
+    else if (hydrationTotal >= 1500) hydrationScore = 15;
+    else if (hydrationTotal >= 1000) hydrationScore = 10;
+    else hydrationScore = 5;
+  }
+
+  const currentMood = data.mood?.log?.mood;
+  let moodScore = 20; // Default if missing (Neutral)
+  if (currentMood) {
+    if (currentMood === 'Happy') moodScore = 30;
+    else if (currentMood === 'Calm') moodScore = 25;
+    else if (currentMood === 'Neutral') moodScore = 20;
+    else if (currentMood === 'Tired') moodScore = 15;
+    else if (currentMood === 'Sad') moodScore = 10;
+    else if (currentMood === 'Stressed') moodScore = 5;
+  }
+
+  const healthScore = sleepScore + hydrationScore + moodScore;
+
+  const [animatedScore, setAnimatedScore] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp = null;
+    const duration = 1000;
+    const startValue = animatedScore;
+    const endValue = healthScore;
+
+    let animationFrameId;
+
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const currentValue = Math.floor(progress * (endValue - startValue) + startValue);
+      setAnimatedScore(currentValue);
+      if (progress < 1) {
+        animationFrameId = window.requestAnimationFrame(step);
+      }
+    };
+
+    animationFrameId = window.requestAnimationFrame(step);
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [healthScore]);
+
+  let statusText = 'Fair';
+  let statusEmoji = '🟡';
+  let statusColor = 'text-yellow-600 dark:text-yellow-400';
+  
+  if (healthScore >= 90) {
+    statusText = 'Excellent';
+    statusEmoji = '🟢';
+    statusColor = 'text-emerald-600 dark:text-emerald-400';
+  } else if (healthScore >= 75) {
+    statusText = 'Good';
+    statusEmoji = '🟢';
+    statusColor = 'text-emerald-600 dark:text-emerald-400';
+  } else if (healthScore >= 60) {
+    statusText = 'Fair';
+    statusEmoji = '🟡';
+    statusColor = 'text-yellow-600 dark:text-yellow-400';
+  } else if (healthScore >= 40) {
+    statusText = 'Needs Improvement';
+    statusEmoji = '🟠';
+    statusColor = 'text-orange-600 dark:text-orange-400';
+  } else {
+    statusText = 'Poor';
+    statusEmoji = '🔴';
+    statusColor = 'text-rose-600 dark:text-rose-400';
+  }
+
+  let healthInsight = "Great job maintaining healthy habits.";
+  if (healthScore < 90) {
+    const sleepRel = sleepScore / 40;
+    const hydrationRel = hydrationScore / 30;
+    const moodRel = moodScore / 30;
+    
+    if (sleepRel <= hydrationRel && sleepRel <= moodRel) {
+      healthInsight = "Sleep is currently reducing your score.";
+    } else if (hydrationRel <= sleepRel && hydrationRel <= moodRel) {
+      healthInsight = "Increase hydration to improve your score.";
+    } else {
+      healthInsight = "Improve your mood to boost score.";
+    }
+  }
+
   const achievements = [];
   if (data.hydration && data.hydration.total > 0 && data.hydration.total >= data.hydration.goal) {
     achievements.push({ id: 1, title: 'Hydration Goal Completed', icon: '💧' });
@@ -175,8 +274,96 @@ const Dashboard = () => {
         </motion.div>
       )}
 
+      {/* Health Score Card (Featured Card) */}
+      {loading && !data.hydration ? (
+        <SkeletonInsight />
+      ) : error && !data.hydration ? (
+        <div className="glass-card p-6 bg-slate-100 dark:bg-slate-900/10 flex items-center justify-center text-text-secondary min-h-[120px]">
+          Unable to calculate Health Score.
+        </div>
+      ) : (
+        <motion.div 
+          className="glass-card p-6 bg-sky-600 from-sky-500 to-sky-600 text-white relative overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
+            <Sparkles className="w-32 h-32" />
+          </div>
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+            {/* Left Column: Overall Score & Insights */}
+            <div className="space-y-3 text-center md:text-left">
+              <div>
+                <h3 className="text-white/85 uppercase tracking-wider text-xs font-semibold">Overall Health Score</h3>
+                <div className="flex items-baseline justify-center md:justify-start gap-2 mt-1">
+                  <span className="text-4xl font-extrabold text-white">{animatedScore}</span>
+                  <span className="text-white/60 text-sm">/ 100</span>
+                  <span className="text-xl leading-none ml-1">{statusEmoji}</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap justify-center md:justify-start gap-2">
+                <span className="inline-flex items-center gap-1 bg-white/20 border border-white/10 px-3 py-1 rounded-full text-xs font-semibold text-white">
+                  Status: {statusText}
+                </span>
+              </div>
+              
+              <p className="text-sm text-white/95 italic max-w-sm">
+                "{healthInsight}"
+              </p>
+            </div>
+
+            {/* Middle Column: Progress Ring */}
+            <div className="flex justify-center">
+              <div className="relative flex items-center justify-center w-24 h-24 shrink-0">
+                <svg className="w-24 h-24 transform -rotate-90">
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="38"
+                    className="stroke-white/20 fill-none"
+                    strokeWidth="6"
+                  />
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="38"
+                    className="stroke-white fill-none transition-all duration-1000 ease-out"
+                    strokeWidth="6"
+                    strokeDasharray={2 * Math.PI * 38}
+                    strokeDashoffset={2 * Math.PI * 38 - (animatedScore / 100) * (2 * Math.PI * 38)}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute flex flex-col items-center justify-center">
+                  <span className="text-xl font-bold text-white leading-none">{animatedScore}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Score Breakdown */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10 space-y-2.5 text-sm text-white/90">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-white/70 border-b border-white/10 pb-1.5">Score Breakdown</h4>
+              <div className="flex justify-between items-center">
+                <span className="flex items-center gap-1.5">🌙 Sleep Duration</span>
+                <span className="font-bold">{sleepScore} / 40</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="flex items-center gap-1.5">💧 Water Hydration</span>
+                <span className="font-bold">{hydrationScore} / 30</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="flex items-center gap-1.5">😊 Daily Mood</span>
+                <span className="font-bold">{moodScore} / 30</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Three Cards Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Hydration Card */}
         {loading && !data.hydration ? (
@@ -191,7 +378,7 @@ const Dashboard = () => {
               className="glass-card p-6 hover:-translate-y-1 transition-transform cursor-pointer h-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.4 }}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 text-sky-600 dark:text-sky-600 rounded-xl">
@@ -223,7 +410,7 @@ const Dashboard = () => {
               className="glass-card p-6 hover:-translate-y-1 transition-transform cursor-pointer h-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.5 }}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="p-3 text-sky-600 dark:text-sky-600 rounded-xl">
@@ -257,7 +444,7 @@ const Dashboard = () => {
               className="glass-card p-6 hover:-translate-y-1 transition-transform cursor-pointer h-full"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.6 }}
             >
               {(() => {
                 const currentMoodObj = data.mood?.log ? moodMap[data.mood.log.mood] : null;

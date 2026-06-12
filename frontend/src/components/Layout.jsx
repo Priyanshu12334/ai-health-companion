@@ -106,7 +106,7 @@ const NavItem = ({ to, icon, label }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `flex items-center gap-2.5 px-3 py-2 rounded-lg ${
+      `flex items-center gap-3 px-3 py-2 rounded-lg ${
         isActive 
           ? 'bg-sky-800 text-white' 
           : 'text-white/90 hover:bg-white/10'
