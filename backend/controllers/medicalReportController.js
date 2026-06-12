@@ -6,33 +6,46 @@ import MedicalReport from '../models/MedicalReport.js';
 
 export const uploadReport = async (req, res) => {
   try {
+    console.log('--- Controller: uploadReport ---');
     if (!req.file) {
+      console.error('Upload Error: No file in request');
       return res.status(400).json({ message: 'No file uploaded. Please upload a PDF report.' });
     }
 
+    console.log('Received file:', {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    });
+
     // Validate file type
     if (req.file.mimetype !== 'application/pdf') {
+      console.error('Validation Error: Invalid file type:', req.file.mimetype);
       return res.status(400).json({ message: 'Invalid file format. Only PDF files are supported.' });
     }
 
     // Validate size (10MB limit)
     const MAX_SIZE = 10 * 1024 * 1024;
     if (req.file.size > MAX_SIZE) {
+      console.error('Validation Error: File size exceeds 10MB:', req.file.size);
       return res.status(400).json({ message: 'File is too large. Maximum size allowed is 10 MB.' });
     }
 
     let extractedText = '';
     try {
+      console.log('Parsing PDF...');
       const pdfData = await pdfParse(req.file.buffer);
       extractedText = pdfData.text || '';
+      console.log(`PDF parse succeeded. Extracted ${extractedText.length} characters.`);
     } catch (parseError) {
       console.error('PDF text extraction error:', parseError);
       return res.status(400).json({ 
-        message: 'OCR / Text extraction failed. The PDF might be corrupted, password-protected, or in an unsupported format.' 
+        message: `OCR / Text extraction failed: ${parseError.message || 'The PDF might be corrupted or in an unsupported format.'}` 
       });
     }
 
     if (!extractedText.trim()) {
+      console.error('Validation Error: Extracted text is empty');
       return res.status(400).json({ 
         message: 'Could not extract any readable text from this PDF. Please make sure the PDF has selectable text and is not an image-only scan.' 
       });
@@ -72,6 +85,7 @@ Constraints:
 
     let completion;
     try {
+      console.log('Sending request to Groq API using model llama-3.3-70b-versatile...');
       completion = await openai.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         messages: [
@@ -82,10 +96,11 @@ Constraints:
         max_tokens: 1000,
         response_format: { type: "json_object" }
       });
+      console.log('Groq API response received successfully.');
     } catch (apiError) {
       console.error('Groq API Error:', apiError);
       return res.status(500).json({ 
-        message: 'Failed to communicate with Groq AI API. Please try again later.' 
+        message: `Failed to communicate with Groq AI API: ${apiError.message || 'Unknown network error.'}` 
       });
     }
 
