@@ -13,6 +13,7 @@ import {
 import api from '../utils/api';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SkeletonReportHistory, SkeletonAnalysisPanel } from '../components/common/Skeletons';
 
 const MedicalReports = () => {
   const [reports, setReports] = useState([]);
@@ -177,9 +178,7 @@ const MedicalReports = () => {
             </div>
 
             {loading ? (
-              <div className="flex-1 flex flex-col items-center justify-center">
-                <Loader2 className="w-6 h-6 animate-spin text-sky-500" />
-              </div>
+              <SkeletonReportHistory />
             ) : error ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
                 <AlertCircle className="w-8 h-8 text-red-500 mb-2" />
@@ -199,7 +198,7 @@ const MedicalReports = () => {
                     onClick={() => setSelectedReport(report)}
                     className={`p-3 rounded-xl cursor-pointer border transition-all duration-200 flex items-start justify-between gap-2 group ${
                       selectedReport?._id === report._id 
-                        ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-200 dark:border-sky-800' 
+                        ? 'bg-sky-50 dark:bg-sky-200/20 border-sky-200 dark:border-sky-800' 
                         : 'border-transparent bg-surface hover:bg-slate-200 dark:hover:bg-slate-200'
                     }`}
                   >
@@ -230,7 +229,17 @@ const MedicalReports = () => {
         {/* Action/Content Section */}
         <div className="md:col-span-2">
           <AnimatePresence mode="wait">
-            {processing ? (
+            {loading ? (
+              <motion.div
+                key="loading-panel"
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                className="w-full"
+              >
+                <SkeletonAnalysisPanel />
+              </motion.div>
+            ) : processing ? (
               // Processing Loader Card
               <motion.div 
                 key="processing"
