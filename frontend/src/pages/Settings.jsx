@@ -14,7 +14,6 @@ const Settings = () => {
  dailySleepGoal: 8,
  });
  const [loading, setLoading] = useState(false);
- const [isFetching, setIsFetching] = useState(true);
 
  useEffect(() => {
  // Fetch current profile to get goals
@@ -29,8 +28,6 @@ const Settings = () => {
  });
  } catch (error) {
  console.error("Failed to load profile", error);
- } finally {
- setIsFetching(false);
  }
  };
  fetchProfile();
@@ -65,8 +62,6 @@ const Settings = () => {
       toast.error(`Failed to reset ${type} analytics`);
     }
   };
-
-  if (isFetching) return <div className="animate-pulse flex-1 bg-surface rounded-2xl h-64"></div>;
 
  return (
  <div className="space-y-6 max-w-2xl mx-auto w-full pb-8">

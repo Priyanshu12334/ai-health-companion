@@ -40,7 +40,7 @@ const Analytics = () => {
  fetchAnalytics();
  }, []);
 
- if (loading) return <div className="animate-pulse flex-1 bg-surface rounded-2xl h-64"></div>;
+
 
  return (
  <div className="space-y-6 max-w-4xl mx-auto w-full">
