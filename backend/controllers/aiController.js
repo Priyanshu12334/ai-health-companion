@@ -42,10 +42,19 @@ export const chatWithAI = async (req, res) => {
       - Current Mood: ${moodLog ? moodLog.mood : 'No data yet'}
     `;
 
-    const systemPrompt = `You are Aurora, a friendly, empathetic AI health companion. Keep responses concise, supportive, and use the provided health context to give personalized advice.
+    const systemPrompt = `You are Aurora, a friendly AI health companion.
 
-    ${context}
-    `;
+Rules:
+- Use the user's hydration, sleep, and mood data.
+- Keep responses extremely concise.
+- Maximum 2 short sentences.
+- Maximum 30 words.
+- Give one practical suggestion only.
+- Avoid long explanations.
+- Avoid bullet points.
+- Sound supportive and natural.
+
+${context}`;
 
     const completion = await openai.chat.completions.create({
       model: "llama-3.3-70b-versatile",
