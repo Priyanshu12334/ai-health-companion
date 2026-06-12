@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse');
 import Tesseract from 'tesseract.js';
 import MedicalReport from '../models/MedicalReport.js';
 
@@ -35,9 +35,11 @@ export const uploadReport = async (req, res) => {
 
     let extractedText = '';
     if (req.file.mimetype === 'application/pdf') {
+      let parser;
       try {
         console.log('Parsing PDF...');
-        const pdfData = await pdfParse(req.file.buffer);
+        parser = new PDFParse({ data: req.file.buffer });
+        const pdfData = await parser.getText();
         extractedText = pdfData.text || '';
         console.log(`PDF parse succeeded. Extracted ${extractedText.length} characters.`);
       } catch (parseError) {
@@ -45,6 +47,14 @@ export const uploadReport = async (req, res) => {
         return res.status(400).json({ 
           message: `OCR / Text extraction failed: ${parseError.message || 'The PDF might be corrupted or in an unsupported format.'}` 
         });
+      } finally {
+        if (parser && typeof parser.destroy === 'function') {
+          try {
+            await parser.destroy();
+          } catch (destroyError) {
+            console.error('Error destroying parser:', destroyError);
+          }
+        }
       }
     } else {
       try {
