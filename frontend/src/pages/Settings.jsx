@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, LogOut, User, Target, RotateCcw, Mail, Globe, Code } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 import api from '../utils/api';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 
 const Settings = () => {
  const { user, logout, updateUser } = useAuth();
+ const { clearCache } = useData();
+ 
+ const handleLogout = () => {
+   clearCache();
+   logout();
+ };
+
  const [formData, setFormData] = useState({
  name: user?.name || '',
  email: user?.email || '',
@@ -157,7 +165,7 @@ const Settings = () => {
  <div className="p-6 bg-red-50 dark:bg-red-900/10">
  <h3 className="text-lg font-bold text-red-600 dark:text-red-400 mb-2">Danger Zone</h3>
  <p className="text-sm text-red-500/80 mb-4">Logging out will end your current session.</p>
- <button onClick={logout} className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-colors font-medium">
+ <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-colors font-medium">
  <LogOut className="w-4 h-4" /> Log Out
  </button>
  </div>

@@ -1,39 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart3, Activity } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from 'recharts';
-import api from '../utils/api';
+import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
 import { SkeletonChart } from '../components/common/Skeletons';
 
 const Analytics = () => {
-  const [hydrationData, setHydrationData] = useState([]);
-  const [sleepData, setSleepData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { cache, getAnalyticsData } = useData();
+  const [loading, setLoading] = useState(!cache.analytics);
   const [error, setError] = useState(null);
 
-  const fetchAnalytics = async () => {
-    setLoading(true);
+  const fetchAnalytics = useCallback(async (isRefresh = false) => {
+    if (!cache.analytics && !isRefresh) {
+      setLoading(true);
+    }
     setError(null);
     try {
-      const [hydroRes, sleepRes] = await Promise.all([
-        api.get('/hydration/weekly'),
-        api.get('/sleep/weekly')
-      ]);
-      
-      // Format Hydration Data
-      const hData = hydroRes.data.map(item => ({
-        date: item._id.substring(5), // MM-DD
-        amount: item.total
-      }));
-      setHydrationData(hData);
-
-      // Format Sleep Data
-      const sData = sleepRes.data.map(item => ({
-        date: new Date(item.date).toISOString().substring(5, 10),
-        duration: parseFloat(item.duration.toFixed(1))
-      }));
-      setSleepData(sData);
-      
+      await getAnalyticsData(isRefresh);
     } catch (err) {
       console.error(err);
       setError('Failed to load analytics data.');
@@ -41,11 +24,25 @@ const Analytics = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [cache.analytics, getAnalyticsData]);
 
   useEffect(() => {
     fetchAnalytics();
-  }, []);
+  }, [fetchAnalytics]);
+
+  const data = cache.analytics || { hydrationWeekly: [], sleepWeekly: [] };
+
+  // Format Hydration Data
+  const hydrationData = (data.hydrationWeekly || []).map(item => ({
+    date: item._id.substring(5), // MM-DD
+    amount: item.total
+  }));
+
+  // Format Sleep Data
+  const sleepData = (data.sleepWeekly || []).map(item => ({
+    date: new Date(item.date).toISOString().substring(5, 10),
+    duration: parseFloat(item.duration.toFixed(1))
+  }));
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto w-full">
@@ -57,7 +54,7 @@ const Analytics = () => {
         <div className="glass-card p-6 border-red-200 dark:border-red-800 bg-rose-50/10 text-center space-y-3">
           <p className="text-rose-600 dark:text-rose-400 font-medium">{error}</p>
           <button 
-            onClick={fetchAnalytics}
+            onClick={() => fetchAnalytics(true)}
             className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-medium rounded-xl text-sm transition-colors inline-block"
           >
             Retry Loading Analytics

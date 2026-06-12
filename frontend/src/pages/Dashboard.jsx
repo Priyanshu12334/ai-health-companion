@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Droplets, Moon, Smile, Sparkles, RefreshCw } from 'lucide-react';
-import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../context/DataContext';
 import { motion } from 'framer-motion';
 import { moodMap } from '../utils/moodConfig';
 import { SkeletonCard, SkeletonInsight } from '../components/common/Skeletons';
@@ -10,34 +10,20 @@ import { toast } from 'react-toastify';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [data, setData] = useState({
-    hydration: null,
-    sleep: null,
-    mood: null
-  });
-  const [loading, setLoading] = useState(true);
+  const { cache, getDashboardData } = useData();
+  const [loading, setLoading] = useState(!cache.dashboard);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchDashboardData = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
       setRefreshing(true);
-    } else {
+    } else if (!cache.dashboard) {
       setLoading(true);
     }
     setError(null);
     try {
-      const [hydroRes, sleepRes, moodRes] = await Promise.all([
-        api.get('/hydration'),
-        api.get('/sleep'),
-        api.get('/mood')
-      ]);
-      
-      setData({
-        hydration: hydroRes.data,
-        sleep: sleepRes.data,
-        mood: moodRes.data
-      });
+      await getDashboardData(isRefresh);
     } catch (err) {
       console.error("Failed to fetch dashboard data", err);
       setError("Unable to load health metrics. Please check your connection.");
@@ -46,11 +32,13 @@ const Dashboard = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [cache.dashboard, getDashboardData]);
 
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
+
+  const data = cache.dashboard || { hydration: null, sleep: null, mood: null };
 
   const hydrationPercent = data.hydration 
     ? Math.min((data.hydration.total / data.hydration.goal) * 100, 100) 

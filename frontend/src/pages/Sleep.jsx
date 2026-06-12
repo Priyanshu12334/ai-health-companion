@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Moon, Clock, RotateCcw } from 'lucide-react';
 import api from '../utils/api';
+import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
 import { SkeletonGoalBanner } from '../components/common/Skeletons';
 
 const Sleep = () => {
-  const [data, setData] = useState({ log: null, goal: 8 });
-  const [loading, setLoading] = useState(true);
+  const { cache, getSleepData, setCache } = useData();
+  const [loading, setLoading] = useState(!cache.sleep);
   
   const [formData, setFormData] = useState({
     bedtime: '',
@@ -15,20 +16,24 @@ const Sleep = () => {
   });
   const [adding, setAdding] = useState(false);
 
-  const fetchSleep = async () => {
+  const fetchSleep = useCallback(async (isRefresh = false) => {
+    if (!cache.sleep && !isRefresh) {
+      setLoading(true);
+    }
     try {
-      const res = await api.get('/sleep');
-      setData(res.data);
+      await getSleepData(isRefresh);
     } catch (error) {
       toast.error('Failed to load sleep data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [cache.sleep, getSleepData]);
 
   useEffect(() => {
     fetchSleep();
-  }, []);
+  }, [fetchSleep]);
+
+  const data = cache.sleep || { log: null, goal: 8 };
 
   const handleAddSleep = async (e) => {
     e.preventDefault();
@@ -74,7 +79,16 @@ const Sleep = () => {
         toast.success('Sleep logged successfully');
       }
       
-      fetchSleep();
+      const freshData = await getSleepData(true);
+      if (cache.dashboard) {
+        setCache(prev => ({
+          ...prev,
+          dashboard: {
+            ...prev.dashboard,
+            sleep: freshData
+          }
+        }));
+      }
       setFormData({ bedtime: '', wakeupTime: '', quality: 'Good' });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to log sleep');
@@ -89,9 +103,19 @@ const Sleep = () => {
     try {
       await api.delete('/sleep/today');
       toast.success("Today's sleep log reset successfully");
-      fetchSleep();
+      const freshData = await getSleepData(true);
+      if (cache.dashboard) {
+        setCache(prev => ({
+          ...prev,
+          dashboard: {
+            ...prev.dashboard,
+            sleep: freshData
+          }
+        }));
+      }
     } catch (error) {
       toast.error('Failed to reset sleep log');
+    } finally {
       setLoading(false);
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   FileText, 
   UploadCloud, 
@@ -11,29 +11,27 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import api from '../utils/api';
+import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SkeletonReportHistory, SkeletonAnalysisPanel } from '../components/common/Skeletons';
 
 const MedicalReports = () => {
-  const [reports, setReports] = useState([]);
+  const { cache, getMedicalReports } = useData();
   const [selectedReport, setSelectedReport] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cache.medicalReports);
   const [processing, setProcessing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const [dragActive, setDragActive] = useState(false);
 
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async (isRefresh = false) => {
+    if (!cache.medicalReports && !isRefresh) {
+      setLoading(true);
+    }
+    setError('');
     try {
-      setError('');
-      const res = await api.get('/medical-reports');
-      setReports(res.data);
-      // Keep selected report updated if it exists in the list
-      if (selectedReport) {
-        const updated = res.data.find(r => r._id === selectedReport._id);
-        if (updated) setSelectedReport(updated);
-      }
+      await getMedicalReports(isRefresh);
     } catch (err) {
       console.error(err);
       setError('Failed to fetch report history.');
@@ -41,11 +39,21 @@ const MedicalReports = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [cache.medicalReports, getMedicalReports]);
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [fetchReports]);
+
+  const reports = cache.medicalReports || [];
+
+  // Keep selected report updated if it exists in the list
+  useEffect(() => {
+    if (selectedReport && reports.length > 0) {
+      const updated = reports.find(r => r._id === selectedReport._id);
+      if (updated) setSelectedReport(updated);
+    }
+  }, [reports, selectedReport]);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -107,7 +115,7 @@ const MedicalReports = () => {
 
       toast.success('Report processed successfully');
       setSelectedReport(res.data);
-      await fetchReports();
+      await getMedicalReports(true);
     } catch (err) {
       console.error(err);
       const msg = err.response?.data?.message || 'Failed to process report.';
@@ -128,7 +136,7 @@ const MedicalReports = () => {
       if (selectedReport?._id === id) {
         setSelectedReport(null);
       }
-      fetchReports();
+      await getMedicalReports(true);
     } catch (err) {
       console.error(err);
       toast.error('Failed to delete report.');
@@ -198,8 +206,8 @@ const MedicalReports = () => {
                     onClick={() => setSelectedReport(report)}
                     className={`p-3 rounded-xl cursor-pointer border transition-all duration-200 flex items-start justify-between gap-2 group ${
                       selectedReport?._id === report._id 
-                        ? 'bg-sky-50 dark:bg-sky-200/20 border-sky-200 dark:border-sky-800' 
-                        : 'border-transparent bg-surface hover:bg-slate-200 dark:hover:bg-slate-200'
+                        ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-200 dark:border-sky-800' 
+                        : 'border-transparent bg-surface hover:bg-slate-200 dark:hover:bg-slate-800'
                     }`}
                   >
                     <div className="flex gap-2 min-w-0">

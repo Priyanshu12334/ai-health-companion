@@ -1,29 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Droplets, Plus, RotateCcw } from 'lucide-react';
 import api from '../utils/api';
+import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
-import { motion } from 'framer-motion';
 import { SkeletonGoalBanner, SkeletonLogList } from '../components/common/Skeletons';
 
 const Hydration = () => {
-  const [data, setData] = useState({ logs: [], total: 0, goal: 2000 });
-  const [loading, setLoading] = useState(true);
+  const { cache, getHydrationData, setCache } = useData();
+  const [loading, setLoading] = useState(!cache.hydration);
   const [adding, setAdding] = useState(false);
 
-  const fetchHydration = async () => {
+  const fetchHydration = useCallback(async (isRefresh = false) => {
+    if (!cache.hydration && !isRefresh) {
+      setLoading(true);
+    }
     try {
-      const res = await api.get('/hydration');
-      setData(res.data);
+      await getHydrationData(isRefresh);
     } catch (error) {
       toast.error('Failed to load hydration data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [cache.hydration, getHydrationData]);
 
   useEffect(() => {
     fetchHydration();
-  }, []);
+  }, [fetchHydration]);
+
+  const data = cache.hydration || { logs: [], total: 0, goal: 2000 };
 
   const addWater = async (amount) => {
     setAdding(true);
@@ -36,7 +40,16 @@ const Hydration = () => {
         toast.success(`Added ${amount}ml of water`);
       }
       
-      fetchHydration();
+      const freshData = await getHydrationData(true);
+      if (cache.dashboard) {
+        setCache(prev => ({
+          ...prev,
+          dashboard: {
+            ...prev.dashboard,
+            hydration: freshData
+          }
+        }));
+      }
     } catch (error) {
       toast.error('Failed to add water');
     } finally {
@@ -50,9 +63,19 @@ const Hydration = () => {
     try {
       await api.delete('/hydration/today');
       toast.success("Today's hydration reset successfully");
-      fetchHydration();
+      const freshData = await getHydrationData(true);
+      if (cache.dashboard) {
+        setCache(prev => ({
+          ...prev,
+          dashboard: {
+            ...prev.dashboard,
+            hydration: freshData
+          }
+        }));
+      }
     } catch (error) {
       toast.error('Failed to reset hydration');
+    } finally {
       setLoading(false);
     }
   };

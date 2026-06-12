@@ -1,41 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Smile, Trash2, RotateCcw } from 'lucide-react';
 import api from '../utils/api';
+import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
 import { SkeletonLogList } from '../components/common/Skeletons';
 
 import { MOODS } from '../utils/moodConfig';
 
 const Mood = () => {
-  const [data, setData] = useState({ log: null });
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { cache, getMoodData, setCache } = useData();
+  const [loading, setLoading] = useState(!cache.mood);
   const [saving, setSaving] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async (isRefresh = false) => {
+    if (!cache.mood && !isRefresh) {
+      setLoading(true);
+    }
     try {
-      const [todayRes, historyRes] = await Promise.all([
-        api.get('/mood'),
-        api.get('/mood/history')
-      ]);
-      setData(todayRes.data);
-      setHistory(historyRes.data);
+      await getMoodData(isRefresh);
     } catch (error) {
       toast.error('Failed to load mood data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [cache.mood, getMoodData]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const data = cache.mood || { log: null, history: [] };
+  const history = data.history || [];
 
   const saveMood = async (moodName) => {
     setSaving(true);
     try {
       await api.post('/mood', { mood: moodName });
-      fetchData();
+      const freshData = await getMoodData(true);
+      if (cache.dashboard) {
+        setCache(prev => ({
+          ...prev,
+          dashboard: {
+            ...prev.dashboard,
+            mood: { log: freshData.log }
+          }
+        }));
+      }
       toast.success('Mood saved successfully');
     } catch (error) {
       toast.error('Failed to save mood');
@@ -48,7 +58,16 @@ const Mood = () => {
     if (!window.confirm("Delete this mood entry?")) return;
     try {
       await api.delete(`/mood/${id}`);
-      fetchData();
+      const freshData = await getMoodData(true);
+      if (cache.dashboard) {
+        setCache(prev => ({
+          ...prev,
+          dashboard: {
+            ...prev.dashboard,
+            mood: { log: freshData.log }
+          }
+        }));
+      }
       toast.success('Mood entry deleted');
     } catch (error) {
       toast.error('Failed to delete mood');
@@ -59,7 +78,16 @@ const Mood = () => {
     if (!window.confirm("Clear all mood history? This cannot be undone.")) return;
     try {
       await api.delete('/mood/clear');
-      fetchData();
+      const freshData = await getMoodData(true);
+      if (cache.dashboard) {
+        setCache(prev => ({
+          ...prev,
+          dashboard: {
+            ...prev.dashboard,
+            mood: { log: freshData.log }
+          }
+        }));
+      }
       toast.success('History cleared successfully');
     } catch (error) {
       toast.error('Failed to clear history');
@@ -91,10 +119,10 @@ const Mood = () => {
                 <button
                   key={mood.name}
                   onClick={() => saveMood(mood.name)}
-                  disabled={saving}
+                  disabled={saving || loading}
                   className={`flex flex-col items-center justify-center w-24 h-24 rounded-2xl transition-all duration-300 ${
                     isCurrent ? mood.activeClass : `${mood.bgColor} ${mood.textColor} hover:-translate-y-1`
-                  } ${saving ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  } ${saving || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <span className="text-4xl leading-none">{mood.emoji}</span>
                   <span className="mt-2 text-sm font-medium">{mood.name}</span>
