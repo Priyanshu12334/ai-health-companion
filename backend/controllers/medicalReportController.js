@@ -70,11 +70,37 @@ export const uploadReport = async (req, res) => {
       }
     }
 
-    if (!extractedText.trim()) {
-      console.error('Validation Error: Extracted text is empty');
-      return res.status(400).json({ 
-        message: 'Could not extract any readable text from this report. Please make sure the report has clear readable text.' 
-      });
+    const trimmedText = extractedText.trim();
+    
+    // Check 1: Length too small
+    if (trimmedText.length < 30) {
+      console.error('Validation Error: Extracted text length is too small:', trimmedText.length);
+      return res.status(400).json({ message: 'Report content is incomplete or unreadable.' });
+    }
+
+    // Check 2: Poor OCR extraction quality (too few letters or words)
+    const letterCount = (trimmedText.match(/[a-zA-Z]/g) || []).length;
+    const wordCount = trimmedText.split(/\s+/).length;
+    if (letterCount < 20 || wordCount < 8) {
+      console.error('Validation Error: Poor OCR quality (letters:', letterCount, 'words:', wordCount, ')');
+      return res.status(400).json({ message: 'Unable to extract sufficient information. Please upload a clearer image or PDF.' });
+    }
+
+    // Check 3: Medical indicators validation
+    const medicalKeywords = [
+      'hemoglobin', 'wbc', 'rbc', 'platelet', 'glucose', 'cholesterol', 'blood pressure',
+      'cbc', 'lab report', 'diagnostic', 'medical report', 'blood', 'urine', 'patient',
+      'doctor', 'test', 'level', 'mg/dL', 'result', 'analysis', 'clinical', 'hospital',
+      'serum', 'specimen', 'reference', 'range', 'creatinine', 'urea', 'bilirubin', 'lipid',
+      'hemogram', 'neutrophils', 'lymphocytes', 'monocytes', 'eosinophils', 'basophils'
+    ];
+    
+    const lowerText = trimmedText.toLowerCase();
+    const hasMedicalIndicators = medicalKeywords.some(keyword => lowerText.includes(keyword));
+    
+    if (!hasMedicalIndicators) {
+      console.error('Validation Error: No medical indicators found in text');
+      return res.status(400).json({ message: 'This does not appear to be a medical report. Please upload a valid medical document.' });
     }
 
     const openai = new OpenAI({

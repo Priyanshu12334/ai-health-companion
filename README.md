@@ -4,7 +4,7 @@ AI-powered health tracking and medical report simplification web application bui
 
 ## Project Overview
 
-Aurora AI Health Companion is a comprehensive personal wellness dashboard that helps users track their key health indicators like hydration levels, sleep patterns, and daily mood states. In addition to proactive tracking, Aurora features an AI Health Assistant for instant conversations and a **Medical Report Simplifier** which allows users to upload clinical PDFs, extracts the text on-the-fly, and generates simple patient-friendly summaries using advanced LLMs via the Groq API.
+Aurora AI Health Companion is a comprehensive personal wellness dashboard that helps users track their key health indicators like hydration levels, sleep patterns, and daily mood states. In addition to proactive tracking, Aurora features an AI Health Assistant for instant conversations and a **Medical Report Simplifier** which allows users to upload clinical PDF or Image, extracts the text on-the-fly, and generates simple patient-friendly summaries using advanced LLMs via the Groq API.
 
 ## Features
 

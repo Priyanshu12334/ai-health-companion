@@ -200,7 +200,7 @@ const MedicalReports = () => {
                     className={`p-3 rounded-xl cursor-pointer border transition-all duration-200 flex items-start justify-between gap-2 group ${
                       selectedReport?._id === report._id 
                         ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-200 dark:border-sky-800' 
-                        : 'border-transparent bg-surface hover:bg-slate-200 dark:hover:bg-slate-800'
+                        : 'border-transparent bg-surface hover:bg-slate-200 dark:hover:bg-slate-200'
                     }`}
                   >
                     <div className="flex gap-2 min-w-0">
@@ -300,7 +300,7 @@ const MedicalReports = () => {
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-sm text-text-secondary italic">No critical findings summarized.</p>
+                      <p className="text-sm text-text-secondary italic">No key findings identified.</p>
                     )}
                   </div>
 
@@ -344,7 +344,7 @@ const MedicalReports = () => {
                     ) : (
                       <div className="p-4 bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-950/20 rounded-xl text-center">
                         <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
-                          ✨ No significant abnormal parameters identified in this report.
+                          No significant abnormalities detected.
                         </p>
                       </div>
                     )}
