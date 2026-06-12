@@ -13,11 +13,11 @@ const upload = multer({
     fileSize: 10 * 1024 * 1024 // 10 MB limit
   },
   fileFilter: (req, file, cb) => {
-    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Only PDF or image reports (PNG, JPG, JPEG) are allowed!'), false);
+      cb(new Error('Only PDF or image reports (PNG, JPG, JPEG, WEBP) are allowed!'), false);
     }
   }
 });

@@ -83,12 +83,12 @@ const MedicalReports = () => {
 
   const processFile = async (file) => {
     // Validate file type
-    const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg'];
-    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    const allowedExtensions = ['.pdf', '.png', '.jpg', '.jpeg', '.webp'];
+    const allowedMimeTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
     const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
     
     if (!allowedMimeTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
-      toast.error('Only PDF or image files (PNG, JPG, JPEG) are supported.');
+      toast.error('Only PDF or image files (PNG, JPG, JPEG, WEBP) are supported.');
       return;
     }
 
@@ -206,8 +206,8 @@ const MedicalReports = () => {
                     onClick={() => setSelectedReport(report)}
                     className={`p-3 rounded-xl cursor-pointer border transition-all duration-200 flex items-start justify-between gap-2 group ${
                       selectedReport?._id === report._id 
-                        ? 'bg-sky-50 dark:bg-sky-900/20 border-sky-200 dark:border-sky-800' 
-                        : 'border-transparent bg-surface hover:bg-slate-200 dark:hover:bg-slate-800'
+                        ? 'bg-sky-50 dark:bg-sky-700/20 border-sky-200 dark:border-sky-800' 
+                        : 'border-transparent bg-surface hover:bg-slate-200 dark:hover:bg-slate-200'
                     }`}
                   >
                     <div className="flex gap-2 min-w-0">
@@ -290,7 +290,7 @@ const MedicalReports = () => {
               >
                 <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-border-color">
                   <div>
-                    <h2 className="text-2xl font-bold text-text-sky">Health Summary</h2>
+                    <h2 className="text-2xl font-bold text-text-sky">Health Analysis</h2>
                     <p className="text-xs text-text-secondary mt-1">
                       File: {selectedReport.fileName} ({formatBytes(selectedReport.fileSize)})
                     </p>
@@ -300,93 +300,150 @@ const MedicalReports = () => {
                   </div>
                 </div>
 
-                <div className="space-y-6 flex-1">
-                  {/* Key Findings */}
-                  <div>
-                    <h3 className="font-bold text-lg text-text-sky mb-3 flex items-center gap-2">
-                      <span className="w-1.5 h-6 bg-sky-500 rounded-full inline-block"></span>
-                      Key Findings
-                    </h3>
-                    {selectedReport.analysis?.keyFindings?.length > 0 ? (
-                      <ul className="space-y-2">
-                        {selectedReport.analysis.keyFindings.map((finding, idx) => (
-                          <li key={idx} className="flex items-start gap-2.5 text-sm leading-relaxed text-text-secondary">
-                            <span className="text-sky-500 text-lg leading-none mt-0.5">•</span>
-                            <span>{finding}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-sm text-text-secondary italic">No key findings identified.</p>
-                    )}
+                {selectedReport.analysis?.isMedicalReport === false ? (
+                  // Non-Medical Report Warning
+                  <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-4">
+                    <div className="p-6 bg-amber-50 dark:bg-amber-950/10 border border-amber-200 dark:border-amber-900/40 rounded-2xl max-w-md w-full">
+                      <p className="text-amber-600 dark:text-amber-400 font-bold text-base flex items-center justify-center gap-2">
+                        ⚠️ This document does not appear to be a medical report.
+                      </p>
+                      <div className="mt-4 text-sm text-left space-y-3">
+                        <div>
+                          <p className="font-semibold text-text-sky">Detected document type:</p>
+                          <ul className="list-disc list-inside pl-2 text-text-secondary mt-1">
+                            <li>{selectedReport.analysis.documentType || 'General Document'}</li>
+                          </ul>
+                        </div>
+                        <p className="text-rose-500 font-semibold mt-2">No medical parameters were found.</p>
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Abnormal Values Table */}
-                  <div>
-                    <h3 className="font-bold text-lg text-text-sky mb-3 flex items-center gap-2">
-                      <span className="w-1.5 h-6 bg-sky-500 rounded-full inline-block"></span>
-                      Abnormal Values
-                    </h3>
-                    {selectedReport.analysis?.abnormalValues?.length > 0 ? (
-                      <div className="overflow-x-auto border border-border-color rounded-xl">
-                        <table className="w-full text-left border-collapse text-sm">
-                          <thead>
-                            <tr className="bg-surface border-b border-border-color text-text-sky font-semibold">
-                              <th className="p-3">Parameter</th>
-                              <th className="p-3">Value</th>
-                              <th className="p-3">Status</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {selectedReport.analysis.abnormalValues.map((row, idx) => (
-                              <tr key={idx} className="border-b border-border-color last:border-0 hover:bg-surface/50 transition-colors">
-                                <td className="p-3 font-medium text-text-sky">{row.parameter}</td>
-                                <td className="p-3 text-text-secondary">{row.value}</td>
-                                <td className="p-3">
-                                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold inline-block capitalize ${
-                                    row.status?.toLowerCase() === 'high' 
-                                      ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400'
-                                      : row.status?.toLowerCase() === 'low'
-                                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400'
-                                      : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-400'
-                                  }`}>
-                                    {row.status}
-                                  </span>
-                                </td>
-                              </tr>
+                ) : (
+                  // Normal Medical Report Output
+                  <div className="space-y-6 flex-1">
+                    {/* Health Summary */}
+                    <div>
+                      <h3 className="font-bold text-lg text-text-sky mb-3 flex items-center gap-2">
+                        <span className="w-1.5 h-6 bg-sky-500 rounded-full inline-block"></span>
+                        Health Summary
+                      </h3>
+                      {selectedReport.analysis?.healthSummary ? (
+                        <div className="p-4 bg-slate-50 dark:bg-slate-900/20 border border-border-color rounded-xl space-y-3">
+                          {selectedReport.analysis.healthSummary.detected?.length > 0 && (
+                            <div>
+                              <span className="font-semibold text-text-sky text-sm">Detected:</span>
+                              <ul className="list-disc list-inside pl-2 text-text-secondary mt-1 text-sm space-y-0.5">
+                                {selectedReport.analysis.healthSummary.detected.map((d, idx) => (
+                                  <li key={idx}>{d}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {selectedReport.analysis.healthSummary.overallRisk && (
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="font-semibold text-text-sky">Overall Risk:</span>
+                              <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold inline-block capitalize ${
+                                selectedReport.analysis.healthSummary.overallRisk.toLowerCase() === 'high'
+                                  ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400'
+                                  : selectedReport.analysis.healthSummary.overallRisk.toLowerCase() === 'moderate'
+                                  ? 'bg-orange-100 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400'
+                                  : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400'
+                              }`}>
+                                {selectedReport.analysis.healthSummary.overallRisk}
+                              </span>
+                            </div>
+                          )}
+                          {selectedReport.analysis.healthSummary.recommendedAction && (
+                            <div className="text-sm">
+                              <span className="font-semibold text-text-sky">Recommended Action:</span>{' '}
+                              <span className="text-text-secondary">{selectedReport.analysis.healthSummary.recommendedAction}</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        // Fallback to keyFindings
+                        selectedReport.analysis?.keyFindings?.length > 0 && (
+                          <ul className="space-y-2">
+                            {selectedReport.analysis.keyFindings.map((finding, idx) => (
+                              <li key={idx} className="flex items-start gap-2.5 text-sm leading-relaxed text-text-secondary">
+                                <span className="text-sky-500 text-lg leading-none mt-0.5">•</span>
+                                <span>{finding}</span>
+                              </li>
                             ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="p-4 bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-950/20 rounded-xl text-center">
-                        <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
-                          No significant abnormalities detected.
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                          </ul>
+                        )
+                      )}
+                    </div>
 
-                  {/* Suggestions */}
-                  <div>
-                    <h3 className="font-bold text-lg text-text-sky mb-3 flex items-center gap-2">
-                      <span className="w-1.5 h-6 bg-sky-500 rounded-full inline-block"></span>
-                      Suggestions
-                    </h3>
-                    {selectedReport.analysis?.suggestions?.length > 0 ? (
-                      <ul className="space-y-2">
-                        {selectedReport.analysis.suggestions.map((sug, idx) => (
-                          <li key={idx} className="flex items-start gap-2.5 text-sm leading-relaxed text-text-secondary">
-                            <span className="text-sky-500 text-lg leading-none mt-0.5">•</span>
-                            <span>{sug}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-sm text-text-secondary italic">No specific suggestions generated.</p>
-                    )}
+                    {/* Parameters Table */}
+                    <div>
+                      <h3 className="font-bold text-lg text-text-sky mb-3 flex items-center gap-2">
+                        <span className="w-1.5 h-6 bg-sky-500 rounded-full inline-block"></span>
+                        Extracted Parameters
+                      </h3>
+                      {selectedReport.analysis?.abnormalValues?.length > 0 ? (
+                        <div className="overflow-x-auto border border-border-color rounded-xl">
+                          <table className="w-full text-left border-collapse text-sm">
+                            <thead>
+                              <tr className="bg-surface border-b border-border-color text-text-sky font-semibold">
+                                <th className="p-3">Parameter</th>
+                                <th className="p-3">Value</th>
+                                <th className="p-3">Status</th>
+                                <th className="p-3">AI Explanation</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {selectedReport.analysis.abnormalValues.map((row, idx) => (
+                                <tr key={idx} className="border-b border-border-color last:border-0 hover:bg-surface/50 transition-colors">
+                                  <td className="p-3 font-medium text-text-sky">{row.parameter}</td>
+                                  <td className="p-3 text-text-secondary font-mono">{row.value}</td>
+                                  <td className="p-3">
+                                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold inline-block capitalize ${
+                                      row.status?.toLowerCase() === 'high' 
+                                        ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400'
+                                        : row.status?.toLowerCase() === 'low'
+                                        ? 'bg-orange-100 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400'
+                                        : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400'
+                                    }`}>
+                                      {row.status}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 text-text-secondary">{row.explanation || 'Within reference range'}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-950/20 rounded-xl text-center">
+                          <p className="text-sm text-emerald-700 dark:text-emerald-400 font-medium">
+                            No significant abnormalities detected.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Suggestions */}
+                    <div>
+                      <h3 className="font-bold text-lg text-text-sky mb-3 flex items-center gap-2">
+                        <span className="w-1.5 h-6 bg-sky-500 rounded-full inline-block"></span>
+                        Suggestions
+                      </h3>
+                      {selectedReport.analysis?.suggestions?.length > 0 ? (
+                        <ul className="space-y-2">
+                          {selectedReport.analysis.suggestions.map((sug, idx) => (
+                            <li key={idx} className="flex items-start gap-2.5 text-sm leading-relaxed text-text-secondary">
+                              <span className="text-sky-500 text-lg leading-none mt-0.5">•</span>
+                              <span>{sug}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-text-secondary italic">No specific suggestions generated.</p>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Disclaimer */}
                 <div className="mt-8 pt-4 border-t border-border-color text-center">
@@ -419,7 +476,7 @@ const MedicalReports = () => {
                   <input 
                     type="file" 
                     id="report-file-input"
-                    accept=".pdf,image/png,image/jpeg,image/jpg"
+                    accept=".pdf,image/png,image/jpeg,image/jpg,image/webp"
                     className="hidden"
                     onChange={handleFileChange}
                   />

@@ -22,6 +22,7 @@
     "multer": "^2.1.1",
     "openai": "^6.42.0",
     "pdf-parse": "^1.1.1",
+    "pdf-to-png-converter": "^4.1.0",
     "tesseract.js": "^7.0.0"
   },
   "devDependencies": {

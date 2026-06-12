@@ -9,7 +9,14 @@ Aurora AI Health Companion is a comprehensive personal wellness dashboard that h
 ## Features
 
 * **User Authentication**: Secure JWT-based signup, login, and protected route access.
-* **Medical Report Simplifier**: Upload PDF medical reports (up to 10 MB) to get key findings, an abnormal values table, and practical wellness suggestions.
+* **Medical Report Simplifier**:
+  * **PDF Support**: Direct text extraction from selectable PDFs.
+  * **Image & Scanned PDF OCR Support**: OCR text extraction from scanned PDFs, JPG, JPEG, PNG, and WEBP formats using Tesseract.js.
+  * **AI Health Analysis**: Clinical term translation into easy-to-understand summaries.
+  * **Disease Detection**: Intelligent summaries of detected conditions (e.g. Fever, Diabetes, Anaemia).
+  * **Parameter Extraction**: Identification of 26+ parameters (Haemoglobin, WBC, RBC, Glucose, Cholesterol, Creatinine, etc.) with status indicators (Low, High, Normal).
+  * **Smart Suggestions**: Short, actionable lifestyle and diet suggestions based on report findings.
+  * **Document Classification**: Automatic detection of non-medical documents (e.g., Resumes, Invoices) to prevent invalid analyses.
 * **AI Health Assistant**: Chat with Aurora, an AI health companion trained to offer concise, context-aware suggestions based on your logged metrics.
 * **Hydration Tracking**: Log daily water intake against customized goals.
 * **Sleep Tracking**: Record bedtime, wakeup time, and sleep quality badges.
@@ -77,9 +84,34 @@ JWT_SECRET=your_jwt_secret
 GROQ_API_KEY=your_groq_api_key
 ```
 
+## Medical Report Simplifier Workflow
+
+```
+File Upload (PDF, PNG, JPG, JPEG, WEBP)
+  │
+  ├──► Direct PDF Text Extraction (for selectable PDFs)
+  │
+  └──► Automatic OCR Fallback (for scanned PDFs & medical images using Tesseract.js)
+        │
+        ▼
+Extracted Text Validation (Checks text length & quality)
+  │
+  ▼
+AI-Powered Document Classification (Verifies if it's a valid medical report)
+  │
+  ├──► [Invalid] ⚠️ Non-medical report warning & Type detection (Resume, Invoice, etc.)
+  │
+  └──► [Valid] Extract Parameters, Diagnose Conditions, & Generate Explanations
+        │
+        ▼
+Structured JSON Result
+  │
+  ▼
+Interactive Patient Dashboard (Health Summary, Color-coded Table, Smart Suggestions)
+```
+
 ## Future Enhancements
 
-* **Image Uploads & OCR**: Add support for scanning paper reports via device camera/image files using native OCR models.
 * **Trend Analysis**: Monitor metrics across multiple consecutive reports to draw health trend charts.
 * **Multi-language Support**: Translate simplified medical summaries into regional languages.
 
