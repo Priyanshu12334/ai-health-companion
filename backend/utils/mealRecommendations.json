@@ -1,0 +1,93 @@
+{
+  "vegetarian": {
+    "highScore": {
+      "breakfast": [
+        "Oats + Fruits",
+        "Poha + Curd",
+        "Sprouts + Buttermilk"
+      ],
+      "lunch": [
+        "Roti + Dal + Salad",
+        "Rajma Rice",
+        "Chole Rice"
+      ],
+      "dinner": [
+        "Paneer Bhurji + Roti",
+        "Mixed Veg + Roti",
+        "Khichdi + Curd"
+      ]
+    },
+    "midScore": {
+      "breakfast": [
+        "Upma + Fruits",
+        "Milk + Banana"
+      ],
+      "lunch": [
+        "Dal Rice",
+        "Veg Curry + Roti"
+      ],
+      "dinner": [
+        "Paneer + Salad",
+        "Vegetable Pulao"
+      ]
+    },
+    "lowScore": {
+      "breakfast": [
+        "Sprouts + Banana"
+      ],
+      "lunch": [
+        "Rajma Rice",
+        "Dal + Rice + Salad"
+      ],
+      "dinner": [
+        "Paneer Bhurji + Roti",
+        "Moong Dal Khichdi"
+      ]
+    }
+  },
+  "non-vegetarian": {
+    "highScore": {
+      "breakfast": [
+        "Boiled Eggs + Milk",
+        "Omelette + Toast",
+        "Oats + Fruits"
+      ],
+      "lunch": [
+        "Egg Curry + Roti",
+        "Roti + Dal + Salad"
+      ],
+      "dinner": [
+        "Fish Curry + Rice",
+        "Paneer Bhurji + Roti"
+      ]
+    },
+    "midScore": {
+      "breakfast": [
+        "Omelette + Toast",
+        "Milk + Banana"
+      ],
+      "lunch": [
+        "Chicken Curry + Rice",
+        "Veg Curry + Roti"
+      ],
+      "dinner": [
+        "Grilled Chicken + Rice",
+        "Vegetable Pulao"
+      ]
+    },
+    "lowScore": {
+      "breakfast": [
+        "Eggs + Milk",
+        "Sprouts + Banana"
+      ],
+      "lunch": [
+        "Chicken Curry + Rice",
+        "Dal + Rice + Salad"
+      ],
+      "dinner": [
+        "Grilled Chicken + Rice",
+        "Moong Dal Khichdi"
+      ]
+    }
+  }
+}

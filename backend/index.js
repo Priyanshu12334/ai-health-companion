@@ -11,6 +11,7 @@ import sleepRoutes from './routes/sleepRoutes.js';
 import moodRoutes from './routes/moodRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import medicalReportRoutes from './routes/medicalReportRoutes.js';
+import nutritionRoutes from './routes/nutritionRoutes.js';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/api/sleep', sleepRoutes);
 app.use('/api/mood', moodRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/medical-reports', medicalReportRoutes);
+app.use('/api/nutrition', nutritionRoutes);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

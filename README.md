@@ -1,10 +1,6 @@
-# Aurora AI Health Companion
+# Wellora – AI Health Companion
 
-AI-powered health tracking and medical report simplification web application built using the MERN Stack and Groq AI.
-
-## Project Overview
-
-Aurora AI Health Companion is a comprehensive personal wellness dashboard that helps users track their key health indicators like hydration levels, sleep patterns, and daily mood states. It features a local **Health Score** calculator that aggregates sleep, hydration, and mood metrics into a single, intuitive dashboard score. In addition to proactive tracking, Aurora features an AI Health Assistant for instant conversations and a **Medical Report Simplifier** which allows users to upload clinical PDF or Image, extracts the text on-the-fly, and generates simple patient-friendly summaries using advanced LLMs via the Groq API.
+Wellora is a full-stack AI-powered health companion that helps users track hydration, sleep, mood, health score, nutrition insights, medical reports, and personalized wellness recommendations.
 
 ## Features
 
@@ -17,7 +13,7 @@ Aurora AI Health Companion is a comprehensive personal wellness dashboard that h
   * **Parameter Extraction**: Identification of 26+ parameters (Haemoglobin, WBC, RBC, Glucose, Cholesterol, Creatinine, etc.) with status indicators (Low, High, Normal).
   * **Smart Suggestions**: Short, actionable lifestyle and diet suggestions based on report findings.
   * **Document Classification**: Automatic detection of non-medical documents (e.g., Resumes, Invoices) to prevent invalid analyses.
-* **AI Health Assistant**: Chat with Aurora, an AI health companion trained to offer concise, context-aware suggestions based on your logged metrics.
+* **AI Health Assistant**: Chat with Wellora, an AI health companion trained to offer concise, context-aware suggestions based on your logged metrics.
 * **Hydration Tracking**: Log daily water intake against customized goals.
 * **Sleep Tracking**: Record bedtime, wakeup time, and sleep quality badges.
 * **Mood Tracking**: Log your daily emotional state and visualize mood patterns.
@@ -42,7 +38,7 @@ Aurora AI Health Companion is a comprehensive personal wellness dashboard that h
 
 ## Screenshots
 
-*(Screenshots of the Aurora AI Health Companion dashboard (featuring the Health Score card), AI Chat, and Medical Report Simplifier will be added here)*
+*(Screenshots of the Wellora AI Health Companion dashboard (featuring the Health Score card), AI Chat, and Medical Report Simplifier will be added here)*
 
 ## Installation
 

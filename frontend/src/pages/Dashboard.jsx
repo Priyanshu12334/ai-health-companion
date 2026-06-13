@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { moodMap } from '../utils/moodConfig';
 import { SkeletonCard, SkeletonInsight } from '../components/common/Skeletons';
 import { toast } from 'react-toastify';
+import api from '../utils/api';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(!cache.dashboard);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [streakData, setStreakData] = useState({ streak: 0, isTodayLogged: false, isYesterdayLogged: false });
 
   const fetchDashboardData = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -24,6 +26,13 @@ const Dashboard = () => {
     setError(null);
     try {
       await getDashboardData(isRefresh);
+      try {
+        const tzOffset = new Date().getTimezoneOffset();
+        const streakRes = await api.get(`/user/streak?timezoneOffset=${tzOffset}`);
+        setStreakData(streakRes.data);
+      } catch (streakErr) {
+        console.error("Failed to fetch streak data", streakErr);
+      }
     } catch (err) {
       console.error("Failed to fetch dashboard data", err);
       setError("Unable to load health metrics. Please check your connection.");
@@ -45,35 +54,41 @@ const Dashboard = () => {
     : 0;
 
   // Health Score calculations
-  const sleepDuration = data.sleep?.log?.duration;
-  let sleepScore = 25; // Default if missing
-  if (sleepDuration !== undefined && sleepDuration !== null) {
-    if (sleepDuration >= 8) sleepScore = 40;
-    else if (sleepDuration >= 7) sleepScore = 35;
-    else if (sleepDuration >= 6) sleepScore = 25;
-    else if (sleepDuration >= 5) sleepScore = 15;
-    else sleepScore = 5;
+  let sleepScore = 0;
+  if (data.sleep?.log) {
+    const sleepDuration = data.sleep.log.duration;
+    if (sleepDuration !== undefined && sleepDuration !== null) {
+      if (sleepDuration >= 8) sleepScore = 40;
+      else if (sleepDuration >= 7) sleepScore = 35;
+      else if (sleepDuration >= 6) sleepScore = 25;
+      else if (sleepDuration >= 5) sleepScore = 15;
+      else sleepScore = 5;
+    }
   }
 
-  const hydrationTotal = data.hydration?.total;
-  let hydrationScore = 15; // Default if missing
-  if (hydrationTotal !== undefined && hydrationTotal !== null) {
-    if (hydrationTotal >= 2500) hydrationScore = 30;
-    else if (hydrationTotal >= 2000) hydrationScore = 25;
-    else if (hydrationTotal >= 1500) hydrationScore = 15;
-    else if (hydrationTotal >= 1000) hydrationScore = 10;
-    else hydrationScore = 5;
+  let hydrationScore = 0;
+  if (data.hydration?.logs && data.hydration.logs.length > 0) {
+    const hydrationTotal = data.hydration.total;
+    if (hydrationTotal !== undefined && hydrationTotal !== null && hydrationTotal > 0) {
+      if (hydrationTotal >= 2500) hydrationScore = 30;
+      else if (hydrationTotal >= 2000) hydrationScore = 25;
+      else if (hydrationTotal >= 1500) hydrationScore = 15;
+      else if (hydrationTotal >= 1000) hydrationScore = 10;
+      else hydrationScore = 5;
+    }
   }
 
-  const currentMood = data.mood?.log?.mood;
-  let moodScore = 20; // Default if missing (Neutral)
-  if (currentMood) {
-    if (currentMood === 'Happy') moodScore = 30;
-    else if (currentMood === 'Calm') moodScore = 25;
-    else if (currentMood === 'Neutral') moodScore = 20;
-    else if (currentMood === 'Tired') moodScore = 15;
-    else if (currentMood === 'Sad') moodScore = 10;
-    else if (currentMood === 'Stressed') moodScore = 5;
+  let moodScore = 0;
+  if (data.mood?.log) {
+    const currentMood = data.mood.log.mood;
+    if (currentMood) {
+      if (currentMood === 'Happy') moodScore = 30;
+      else if (currentMood === 'Calm') moodScore = 25;
+      else if (currentMood === 'Neutral') moodScore = 20;
+      else if (currentMood === 'Tired') moodScore = 15;
+      else if (currentMood === 'Sad') moodScore = 10;
+      else if (currentMood === 'Stressed') moodScore = 5;
+    }
   }
 
   const healthScore = sleepScore + hydrationScore + moodScore;
@@ -129,7 +144,9 @@ const Dashboard = () => {
   }
 
   let healthInsight = "Great job maintaining healthy habits.";
-  if (healthScore < 90) {
+  if (healthScore === 0) {
+    healthInsight = "Start logging sleep, hydration, and mood to see your health score.";
+  } else if (healthScore < 90) {
     const sleepRel = sleepScore / 40;
     const hydrationRel = hydrationScore / 30;
     const moodRel = moodScore / 30;
@@ -161,7 +178,7 @@ const Dashboard = () => {
 
   const displayName =
      user?.name ||
-     (() => { try { return JSON.parse(localStorage.getItem('auroraUser'))?.name; } catch { return null; } })() ||
+     (() => { try { return JSON.parse(localStorage.getItem('welloraUser'))?.name; } catch { return null; } })() ||
      'User';
 
   return (
@@ -267,7 +284,7 @@ const Dashboard = () => {
                   : "You are doing great today! Keep up the consistency."}
               </p>
               <Link to="/ai-chat" className="inline-block mt-3 text-sm font-bold bg-card/20 hover:bg-card/30 px-4 py-1.5 rounded-full transition-colors">
-                Chat with Aurora &rarr;
+                Chat with Wellora &rarr;
               </Link>
             </div>
           </div>
@@ -356,6 +373,53 @@ const Dashboard = () => {
               <div className="flex justify-between items-center">
                 <span className="flex items-center gap-1.5">😊 Daily Mood</span>
                 <span className="font-bold">{moodScore} / 30</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Daily Wellness Streak Card */}
+      {loading && !data.hydration ? (
+        <div className="glass-card p-4 animate-pulse flex items-center justify-between h-20 bg-slate-100 dark:bg-slate-900/10">
+          <div className="h-6 w-32 bg-slate-200 dark:bg-slate-800 rounded"></div>
+          <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded"></div>
+        </div>
+      ) : (
+        <motion.div
+          className="glass-card p-5 bg-card border border-border-color shadow-md rounded-2xl relative overflow-hidden"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+        >
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-950/20 text-orange-500 flex items-center justify-center text-2xl shrink-0">
+                🔥
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-text-sky">Daily Streak</h3>
+                <p className="text-sm text-text-secondary mt-0.5">
+                  {streakData.streak > 0 
+                    ? "Keep logging to maintain your streak." 
+                    : "Start logging today."}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 flex-col sm:flex-row w-full sm:w-auto justify-center sm:justify-end">
+              {/* Milestone Badge */}
+              {streakData.streak >= 3 && (
+                <span className="px-3.5 py-1.5 bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900/20 rounded-full text-xs font-semibold whitespace-nowrap">
+                  {streakData.streak >= 30 ? "🏆 Wellness Champion" :
+                   streakData.streak >= 14 ? "⭐ Healthy Habit" :
+                   streakData.streak >= 7  ? "🔥 Consistent" :
+                   "🌱 Getting Started"}
+                </span>
+              )}
+              
+              <div className="text-2xl sm:text-3xl font-extrabold text-text-sky whitespace-nowrap">
+                {streakData.streak || 0} Days
               </div>
             </div>
           </div>

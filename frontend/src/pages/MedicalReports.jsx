@@ -42,6 +42,7 @@ const MedicalReports = () => {
   }, [cache.medicalReports, getMedicalReports]);
 
   useEffect(() => {
+    document.title = "Medical Report Simplifier";
     fetchReports();
   }, [fetchReports]);
 
@@ -165,7 +166,7 @@ const MedicalReports = () => {
           Medical Report Simplifier
         </h1>
         <p className="text-text-secondary mt-1">
-          Upload complex PDF medical reports to extract, analyze, and translate clinical terms into patient-friendly summaries.
+          Upload PDF or image medical reports to extract, analyze, and translate clinical terms into patient-friendly summaries.
         </p>
       </header>
 
@@ -258,7 +259,7 @@ const MedicalReports = () => {
               >
                 <div className="flex items-center gap-3 text-sky-600 dark:text-sky-400">
                   <HeartPulse className="w-12 h-12 animate-pulse" />
-                  <h1 className="text-3xl font-bold tracking-tight">Aurora</h1>
+                  <h1 className="text-3xl font-bold tracking-tight">Wellora</h1>
                 </div>
                 <div className="flex flex-col items-center gap-4 w-full max-w-sm">
                   <Loader2 className="w-10 h-10 animate-spin text-sky-500" />
@@ -273,7 +274,7 @@ const MedicalReports = () => {
                         ></div>
                       </div>
                       <p className="text-xs text-text-secondary mt-1.5 font-medium">
-                        {uploadProgress === 100 ? 'Analyzing with Groq AI...' : `Uploading: ${uploadProgress}%`}
+                        {uploadProgress === 100 ? 'Extracting & Analyzing Report...' : `Uploading: ${uploadProgress}%`}
                       </p>
                     </div>
                   )}
@@ -296,7 +297,7 @@ const MedicalReports = () => {
                     </p>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-text-secondary bg-surface px-3 py-1.5 rounded-full">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Simplified by Aurora AI
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Simplified by Wellora AI
                   </div>
                 </div>
 

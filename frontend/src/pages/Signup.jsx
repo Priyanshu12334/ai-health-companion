@@ -40,7 +40,7 @@ const Signup = () => {
  <HeartPulse className="w-8 h-8" />
  </div>
  <h2 className="text-3xl font-bold mb-2">Create Account</h2>
- <p className="text-text-secondary">Join Aurora and start tracking</p>
+ <p className="text-text-secondary">Join Wellora and start tracking</p>
  </div>
 
  <form onSubmit={handleSubmit} className="space-y-5">

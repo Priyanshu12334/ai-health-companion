@@ -24,6 +24,7 @@ const AIChat = () => {
   };
 
   useEffect(() => {
+    document.title = "AI Health Assistant";
     fetchHistory();
   }, []);
 
@@ -86,7 +87,7 @@ const AIChat = () => {
  <Sparkles className="w-6 h-6" />
  </div>
  <div className="flex-1">
- <h2 className="text-xl font-bold text-sky-600 dark:text-sky-600">Aurora AI Companion</h2>
+ <h2 className="text-xl font-bold text-sky-600 dark:text-sky-600">AI Health Assistant</h2>
  <p className="text-sm text-black-100 dark:text-black-100">Personalized health advice based on your daily data.</p>
  </div>
  {messages.length > 0 && (
@@ -149,7 +150,7 @@ const AIChat = () => {
  type="text"
  value={input}
  onChange={(e) => setInput(e.target.value)}
- placeholder="Ask Aurora something..."
+ placeholder="Ask Wellora something..."
  className="w-full pl-6 pr-14 py-4 rounded-full bg-card border border-border-color focus:border-sky-500 outline-none shadow-sm transition-all text-text-sky"
  disabled={loading}
  />

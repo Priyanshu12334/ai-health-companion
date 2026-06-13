@@ -57,7 +57,7 @@ const Onboarding = () => {
  {step === 1 && (
  <div className="space-y-6">
  <h2 className="text-2xl font-bold">Let's get to know you</h2>
- <p className="text-text-secondary">Personalize your Aurora experience.</p>
+ <p className="text-text-secondary">Personalize your Wellora experience.</p>
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-sm font-medium mb-1">Age</label>

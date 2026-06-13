@@ -16,6 +16,7 @@ import AIChat from './pages/AIChat';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import MedicalReports from './pages/MedicalReports';
+import Nutrition from './pages/Nutrition';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -45,6 +46,7 @@ function App() {
  <Route path="/ai-chat" element={<AIChat />} />
  <Route path="/analytics" element={<Analytics />} />
  <Route path="/medical-reports" element={<MedicalReports />} />
+ <Route path="/nutrition" element={<Nutrition />} />
  <Route path="/settings" element={<Settings />} />
  </Route>
  

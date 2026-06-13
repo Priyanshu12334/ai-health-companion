@@ -5,8 +5,51 @@ const DataContext = createContext();
 
 export const useData = () => useContext(DataContext);
 
+const calculateHealthScore = (dashboardData) => {
+  if (!dashboardData) return 0;
+  
+  // Sleep duration
+  const sleepDuration = dashboardData.sleep?.log?.duration;
+  let sleepScore = 0;
+  if (sleepDuration !== undefined && sleepDuration !== null) {
+    if (sleepDuration >= 8) sleepScore = 40;
+    else if (sleepDuration >= 7) sleepScore = 35;
+    else if (sleepDuration >= 6) sleepScore = 25;
+    else if (sleepDuration >= 5) sleepScore = 15;
+    else sleepScore = 5;
+  }
+
+  // Hydration
+  const hydrationLogs = dashboardData.hydration?.logs || [];
+  let hydrationScore = 0;
+  if (hydrationLogs.length > 0) {
+    const hydrationTotal = dashboardData.hydration.total;
+    if (hydrationTotal !== undefined && hydrationTotal !== null && hydrationTotal > 0) {
+      if (hydrationTotal >= 2500) hydrationScore = 30;
+      else if (hydrationTotal >= 2000) hydrationScore = 25;
+      else if (hydrationTotal >= 1500) hydrationScore = 15;
+      else if (hydrationTotal >= 1000) hydrationScore = 10;
+      else hydrationScore = 5;
+    }
+  }
+
+  // Mood
+  const currentMood = dashboardData.mood?.log?.mood;
+  let moodScore = 0;
+  if (currentMood) {
+    if (currentMood === 'Happy') moodScore = 30;
+    else if (currentMood === 'Calm') moodScore = 25;
+    else if (currentMood === 'Neutral') moodScore = 20;
+    else if (currentMood === 'Tired') moodScore = 15;
+    else if (currentMood === 'Sad') moodScore = 10;
+    else if (currentMood === 'Stressed') moodScore = 5;
+  }
+
+  return sleepScore + hydrationScore + moodScore;
+};
+
 export const DataProvider = ({ children }) => {
-  const [cache, setCache] = useState({
+  const [cache, setCacheState] = useState({
     dashboard: null,
     hydration: null,
     sleep: null,
@@ -15,12 +58,26 @@ export const DataProvider = ({ children }) => {
     medicalReports: null,
   });
 
-  const updateCache = useCallback((key, value) => {
-    setCache((prev) => ({ ...prev, [key]: value }));
+  const setCache = useCallback((updater) => {
+    setCacheState((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (next.dashboard) {
+        const score = calculateHealthScore(next.dashboard);
+        localStorage.setItem('dashboardHealthScore', score);
+      } else {
+        localStorage.setItem('dashboardHealthScore', 0);
+      }
+      return next;
+    });
   }, []);
 
+  const updateCache = useCallback((key, value) => {
+    setCache((prev) => ({ ...prev, [key]: value }));
+  }, [setCache]);
+
   const clearCache = useCallback(() => {
-    setCache({
+    localStorage.removeItem('dashboardHealthScore');
+    setCacheState({
       dashboard: null,
       hydration: null,
       sleep: null,
@@ -46,7 +103,7 @@ export const DataProvider = ({ children }) => {
     };
     setCache((prev) => ({ ...prev, dashboard: newData }));
     return newData;
-  }, [cache.dashboard]);
+  }, [cache.dashboard, setCache]);
 
   const getHydrationData = useCallback(async (isRefresh = false) => {
     if (cache.hydration && !isRefresh) {

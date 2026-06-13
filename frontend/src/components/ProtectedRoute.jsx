@@ -12,7 +12,7 @@ export const ProtectedRoute = ({ children }) => {
   <div className="min-h-screen flex flex-col items-center justify-center bg-background">
     <div className="flex items-center gap-3 text-sky-600 dark:text-sky-400 mb-6">
       <HeartPulse className="w-10 h-10" />
-      <h1 className="text-3xl font-bold tracking-tight">Aurora</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Wellora</h1>
     </div>
     <div className="flex flex-col items-center gap-3">
       <Loader2 className="w-8 h-8 animate-spin text-sky-500" />

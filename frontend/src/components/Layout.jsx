@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
-import { Home, Droplets, Moon, Smile, MessageCircle, BarChart3, Settings, HeartPulse, Menu, FileText } from 'lucide-react';
+import { Home, Droplets, Moon, Smile, MessageCircle, BarChart3, Settings, HeartPulse, Menu, FileText, Apple } from 'lucide-react';
 
 const Layout = () => {
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const location = useLocation();
   const currentPath = location?.pathname || '';
-  const isMoreActive = ['/mood', '/analytics', '/medical-reports', '/settings'].includes(currentPath);
+  const isMoreActive = ['/mood', '/analytics', '/medical-reports', '/settings', '/nutrition'].includes(currentPath);
 
   const closeMoreMenu = () => setIsMoreMenuOpen(false);
 
@@ -14,10 +14,10 @@ const Layout = () => {
     <>
       <div className="flex h-screen bg-background overflow-hidden">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex flex-col w-64 bg-sky-600 shadow-lg m-4 rounded-2xl p-6 h-[calc(100vh-2rem)] shrink-0 z-10 border-0">
-          <div className="flex items-center gap-3 mb-10 text-white px-2">
+        <aside className="hidden md:flex flex-col w-68 bg-sky-600 shadow-lg m-4 rounded-2xl p-6 h-[calc(100vh-2rem)] shrink-0 z-10 border-0">
+          <div className="flex items-center gap-2.5 mb-8 text-white px-2">
             <HeartPulse className="w-6 h-6 shrink-0" />
-            <h1 className="text-xl font-bold tracking-tight">Aurora</h1>
+            <h1 className="text-xl font-bold tracking-tight">Wellora</h1>
           </div>
           
           <nav className="flex-1 space-y-3">
@@ -25,9 +25,10 @@ const Layout = () => {
             <NavItem to="/hydration" icon={<Droplets />} label="Hydration" />
             <NavItem to="/sleep" icon={<Moon />} label="Sleep" />
             <NavItem to="/mood" icon={<Smile />} label="Mood" />
-            <NavItem to="/ai-chat" icon={<MessageCircle />} label="AI Chat" />
-            <NavItem to="/analytics" icon={<BarChart3 />} label="Analytics" />
-            <NavItem to="/medical-reports" icon={<FileText />} label="Medical Reports" />
+            <NavItem to="/nutrition" icon={<Apple />} label="Nutrition Coach" />
+            <NavItem to="/ai-chat" icon={<MessageCircle />} label="AI Health Assistant" />
+            <NavItem to="/analytics" icon={<BarChart3 />} label="Health Analytics" />
+            <NavItem to="/medical-reports" icon={<FileText />} label="Medical Report Simplifier" />
           </nav>
           
           <div className="mt-auto">
@@ -74,16 +75,23 @@ const Layout = () => {
                 isActive={currentPath === '/mood'} 
               />
               <SimpleMoreMenuItem 
+                to="/nutrition" 
+                icon={<Apple />} 
+                label="Nutrition Coach" 
+                onClick={closeMoreMenu} 
+                isActive={currentPath === '/nutrition'} 
+              />
+              <SimpleMoreMenuItem 
                 to="/analytics" 
                 icon={<BarChart3 />} 
-                label="Analytics" 
+                label="Health Analytics" 
                 onClick={closeMoreMenu} 
                 isActive={currentPath === '/analytics'} 
               />
               <SimpleMoreMenuItem 
                 to="/medical-reports" 
                 icon={<FileText />} 
-                label="Medical Reports" 
+                label="Medical Report Simplifier" 
                 onClick={closeMoreMenu} 
                 isActive={currentPath === '/medical-reports'} 
               />

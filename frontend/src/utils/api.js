@@ -13,7 +13,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem('auroraUser'));
+  const user = JSON.parse(localStorage.getItem('welloraUser'));
   if (user && user.token) {
     config.headers.Authorization = `Bearer ${user.token}`;
   }
