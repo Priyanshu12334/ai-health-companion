@@ -208,6 +208,7 @@ The app will serve:
 
 ## ✍️ Author
 * **Priyanshu Suyal** — [GitHub](https://github.com/Priyanshu12334)
+* **Priyanshu Suyal** — [Linkedin](https://www.linkedin.com/in/priyanshu-suyal-5732b224a/)
 
 ---
 
