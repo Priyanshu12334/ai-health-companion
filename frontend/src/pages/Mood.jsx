@@ -67,11 +67,43 @@ const Mood = () => {
     }
   };
 
+  const resetToday = async () => {
+    if (!window.confirm("Reset today's mood progress?")) return;
+    setLoading(true);
+    try {
+      await api.delete('/mood/today');
+      toast.success("Today's mood reset successfully");
+      const freshData = await getMoodData(true);
+      if (cache.dashboard) {
+        setCache(prev => ({
+          ...prev,
+          dashboard: {
+            ...prev.dashboard,
+            mood: freshData
+          }
+        }));
+      }
+    } catch (error) {
+      toast.error('Failed to reset mood');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-2xl mx-auto w-full">
-      <h2 className="text-2xl font-bold flex items-center gap-2">
-        <Smile className="text-orange-500"/> Mood Tracking
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          <Smile className="text-orange-500"/> Mood Tracking
+        </h2>
+        <button 
+          onClick={resetToday} 
+          disabled={loading}
+          className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50"
+        >
+          <RotateCcw className="w-4 h-4" /> Reset Today
+        </button>
+      </div>
       
       {loading ? (
         <div className="animate-pulse glass-card p-8 text-center space-y-6">

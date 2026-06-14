@@ -20,7 +20,11 @@ const userSchema = new mongoose.Schema({
   bedtime: { type: String }, // e.g. "23:00"
   onboardingCompleted: { type: Boolean, default: false },
   dailyWaterGoal: { type: Number, default: 2000 }, // in ml
-  dailySleepGoal: { type: Number, default: 8 } // in hours
+  dailySleepGoal: { type: Number, default: 8 }, // in hours
+  waterGoal: { type: Number, default: 2000 }, // in ml
+  sleepGoal: { type: Number, default: 8 }, // in hours
+  streakCount: { type: Number, default: 0 },
+  lastCompletedDate: { type: String, default: "" }
 }, { timestamps: true });
 
 // Hash password before saving

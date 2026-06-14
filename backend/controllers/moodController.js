@@ -1,4 +1,5 @@
 import MoodLog from '../models/MoodLog.js';
+import { getStartOfToday } from '../utils/timezone.js';
 
 export const addMood = async (req, res) => {
   try {
@@ -21,8 +22,25 @@ export const addMood = async (req, res) => {
 
 export const getDailyMood = async (req, res) => {
   try {
-    const log = await MoodLog.findOne({ userId: req.user._id }).sort({ date: -1 });
+    const startOfToday = getStartOfToday(req);
+    const log = await MoodLog.findOne({
+      userId: req.user._id,
+      date: { $gte: startOfToday }
+    }).sort({ date: -1 });
     res.json({ log });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const resetToday = async (req, res) => {
+  try {
+    const startOfToday = getStartOfToday(req);
+    await MoodLog.deleteMany({
+      userId: req.user._id,
+      date: { $gte: startOfToday }
+    });
+    res.json({ message: 'Today\'s mood progress reset successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

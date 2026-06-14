@@ -17,6 +17,7 @@ api.interceptors.request.use((config) => {
   if (user && user.token) {
     config.headers.Authorization = `Bearer ${user.token}`;
   }
+  config.headers['X-Timezone-Offset'] = new Date().getTimezoneOffset();
   return config;
 });
 

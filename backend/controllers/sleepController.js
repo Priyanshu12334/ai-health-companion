@@ -1,5 +1,7 @@
 import SleepLog from '../models/SleepLog.js';
 import User from '../models/User.js';
+import { getStartOfToday } from '../utils/timezone.js';
+import { updateUserStreak } from '../utils/streakHelper.js';
 
 export const addSleep = async (req, res) => {
   try {
@@ -26,6 +28,9 @@ export const addSleep = async (req, res) => {
       quality: quality || 'Good'
     });
 
+    // Recalculate streak after logging data
+    await updateUserStreak(req.user._id, req);
+
     res.status(201).json(log);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -34,12 +39,21 @@ export const addSleep = async (req, res) => {
 
 export const getDailySleep = async (req, res) => {
   try {
-    const log = await SleepLog.findOne({ userId: req.user._id }).sort({ date: -1 });
+    const startOfToday = getStartOfToday(req);
+
+    // Recalculate streak on data load
+    await updateUserStreak(req.user._id, req);
+
+    const log = await SleepLog.findOne({ 
+      userId: req.user._id,
+      date: { $gte: startOfToday }
+    }).sort({ date: -1 });
+    
     const user = await User.findById(req.user._id);
 
     res.json({
-      log,
-      goal: user.dailySleepGoal || 8
+      log: log || null,
+      goal: user.sleepGoal ?? user.dailySleepGoal ?? 8
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -64,12 +78,11 @@ export const getWeeklySleep = async (req, res) => {
 
 export const resetToday = async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const startOfToday = getStartOfToday(req);
 
     await SleepLog.deleteMany({
       userId: req.user._id,
-      date: { $gte: today }
+      date: { $gte: startOfToday }
     });
 
     res.json({ message: 'Today\'s sleep log reset successfully' });

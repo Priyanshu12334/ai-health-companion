@@ -4,6 +4,7 @@ import User from '../models/User.js';
 import HydrationLog from '../models/HydrationLog.js';
 import SleepLog from '../models/SleepLog.js';
 import MoodLog from '../models/MoodLog.js';
+import { getStartOfToday } from '../utils/timezone.js';
 
 export const chatWithAI = async (req, res) => {
   try {
@@ -21,14 +22,13 @@ export const chatWithAI = async (req, res) => {
     // Fetch user context
     const user = await User.findById(req.user._id);
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const startOfToday = getStartOfToday(req);
 
-    const hydrationLogs = await HydrationLog.find({ userId: req.user._id, date: { $gte: today } });
+    const hydrationLogs = await HydrationLog.find({ userId: req.user._id, date: { $gte: startOfToday } });
     const totalWater = hydrationLogs.reduce((acc, log) => acc + log.amount, 0);
 
-    const sleepLog = await SleepLog.findOne({ userId: req.user._id }).sort({ date: -1 });
-    const moodLog = await MoodLog.findOne({ userId: req.user._id }).sort({ date: -1 });
+    const sleepLog = await SleepLog.findOne({ userId: req.user._id, date: { $gte: startOfToday } }).sort({ date: -1 });
+    const moodLog = await MoodLog.findOne({ userId: req.user._id, date: { $gte: startOfToday } }).sort({ date: -1 });
 
     // Calculate Health Score dynamically matching frontend formulas
     let sleepScore = 25;

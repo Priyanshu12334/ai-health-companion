@@ -401,8 +401,8 @@ const Dashboard = () => {
                 <h3 className="font-bold text-lg text-text-sky">Daily Streak</h3>
                 <p className="text-sm text-text-secondary mt-0.5">
                   {streakData.streak > 0 
-                    ? "Keep logging to maintain your streak." 
-                    : "Start logging today."}
+                    ? "Keep completing your goals to maintain your streak." 
+                    : "Complete your water and sleep goals to start a streak."}
                 </p>
               </div>
             </div>

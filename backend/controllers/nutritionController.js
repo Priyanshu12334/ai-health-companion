@@ -3,6 +3,7 @@ import { nutritionDb } from '../utils/nutritionDb.js';
 import HydrationLog from '../models/HydrationLog.js';
 import SleepLog from '../models/SleepLog.js';
 import MoodLog from '../models/MoodLog.js';
+import { getStartOfToday } from '../utils/timezone.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -163,14 +164,13 @@ Rules:
 // Get Meal Suggestions based on local Health Score
 export const getMealSuggestions = async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let healthScore = req.query.healthScore !== undefined ? parseInt(req.query.healthScore) : null;
+    let healthScore = req.query.healthScore !== undefined && req.query.healthScore !== "" ? parseInt(req.query.healthScore) : null;
 
     if (healthScore === null || isNaN(healthScore)) {
+      const startOfToday = getStartOfToday(req);
+
       // 1. Calculate Sleep Score
-      const sleepLog = await SleepLog.findOne({ userId: req.user._id }).sort({ date: -1 });
+      const sleepLog = await SleepLog.findOne({ userId: req.user._id, date: { $gte: startOfToday } }).sort({ date: -1 });
       let sleepScore = 0; // Default if missing is 0
       if (sleepLog) {
         const sleepDuration = sleepLog.duration;
@@ -182,7 +182,7 @@ export const getMealSuggestions = async (req, res) => {
       }
 
       // 2. Calculate Hydration Score
-      const hydrationLogs = await HydrationLog.find({ userId: req.user._id, date: { $gte: today } });
+      const hydrationLogs = await HydrationLog.find({ userId: req.user._id, date: { $gte: startOfToday } });
       const totalWater = hydrationLogs.reduce((acc, log) => acc + log.amount, 0);
       let hydrationScore = 0; // Default if missing is 0
       if (totalWater > 0) {
@@ -194,7 +194,7 @@ export const getMealSuggestions = async (req, res) => {
       }
 
       // 3. Calculate Mood Score
-      const moodLog = await MoodLog.findOne({ userId: req.user._id }).sort({ date: -1 });
+      const moodLog = await MoodLog.findOne({ userId: req.user._id, date: { $gte: startOfToday } }).sort({ date: -1 });
       let moodScore = 0; // Default if missing is 0
       if (moodLog) {
         const currentMood = moodLog.mood;

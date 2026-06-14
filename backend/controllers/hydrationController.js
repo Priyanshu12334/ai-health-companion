@@ -1,5 +1,7 @@
 import HydrationLog from '../models/HydrationLog.js';
 import User from '../models/User.js';
+import { getStartOfToday } from '../utils/timezone.js';
+import { updateUserStreak } from '../utils/streakHelper.js';
 
 export const addHydration = async (req, res) => {
   try {
@@ -14,6 +16,9 @@ export const addHydration = async (req, res) => {
       amount
     });
 
+    // Recalculate streak after logging data
+    await updateUserStreak(req.user._id, req);
+
     res.status(201).json(log);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -22,12 +27,14 @@ export const addHydration = async (req, res) => {
 
 export const getDailyHydration = async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const startOfToday = getStartOfToday(req);
+
+    // Recalculate streak on data load
+    await updateUserStreak(req.user._id, req);
 
     const logs = await HydrationLog.find({
       userId: req.user._id,
-      date: { $gte: today }
+      date: { $gte: startOfToday }
     });
 
     const total = logs.reduce((acc, log) => acc + log.amount, 0);
@@ -36,7 +43,7 @@ export const getDailyHydration = async (req, res) => {
     res.json({
       logs,
       total,
-      goal: user.dailyWaterGoal || 2000
+      goal: user.waterGoal ?? user.dailyWaterGoal ?? 2000
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -67,12 +74,11 @@ export const getWeeklyHydration = async (req, res) => {
 
 export const resetToday = async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const startOfToday = getStartOfToday(req);
 
     await HydrationLog.deleteMany({
       userId: req.user._id,
-      date: { $gte: today }
+      date: { $gte: startOfToday }
     });
 
     res.json({ message: 'Today\'s hydration logs reset successfully' });
