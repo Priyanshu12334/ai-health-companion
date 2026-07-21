@@ -13,18 +13,34 @@ const Login = () => {
  const navigate = useNavigate();
 
  const handleSubmit = async (e) => {
- e.preventDefault();
- setLoading(true);
- try {
- await login(email, password);
- toast.success('Welcome back!');
- navigate('/dashboard');
- } catch (error) {
- toast.error(error.response?.data?.message || 'Login failed');
- } finally {
- setLoading(false);
- }
- };
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await login(email, password);
+      toast.success('Login successful.');
+      navigate('/dashboard');
+    } catch (error) {
+      const msg = error.response?.data?.message || '';
+      const lowerMsg = msg.toLowerCase();
+
+      if (
+        error.response?.status === 404 || 
+        lowerMsg.includes('not found')
+      ) {
+        toast.error('Account not found. Please register first.');
+      } else if (
+        error.response?.status === 401 || 
+        lowerMsg.includes('invalid') || 
+        lowerMsg.includes('password')
+      ) {
+        toast.error('Incorrect password. Please try again.');
+      } else {
+        toast.error(msg || 'Login failed');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
  return (
  <div className="min-h-screen flex items-center justify-center bg-background p-4">

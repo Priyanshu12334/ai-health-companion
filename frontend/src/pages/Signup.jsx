@@ -14,17 +14,26 @@ const Signup = () => {
  const navigate = useNavigate();
 
  const handleSubmit = async (e) => {
- e.preventDefault();
- setLoading(true);
- try {
- await signup(name, email, password);
- toast.success('Account created successfully!');
- navigate('/onboard');
- } catch (error) {
- toast.error(error.response?.data?.message || 'Signup failed');
- } finally {
- setLoading(false);
- }
+   e.preventDefault();
+   setLoading(true);
+   try {
+     await signup(name, email, password);
+     toast.success('Registration successful. Please login.');
+     navigate('/login');
+   } catch (error) {
+     const msg = error.response?.data?.message || '';
+     if (
+       error.response?.status === 409 || 
+       error.response?.status === 400 || 
+       msg.toLowerCase().includes('already exists')
+     ) {
+       toast.error('User already exists. Please login instead.');
+     } else {
+       toast.error(msg || 'Signup failed');
+     }
+   } finally {
+     setLoading(false);
+   }
  };
 
  return (

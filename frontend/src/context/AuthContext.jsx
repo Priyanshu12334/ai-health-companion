@@ -35,8 +35,6 @@ export const AuthProvider = ({ children }) => {
 
  const signup = async (name, email, password) => {
  const { data } = await api.post('/auth/signup', { name, email, password });
- localStorage.setItem('welloraUser', JSON.stringify(data));
- setUser(data);
  return data;
  };
 

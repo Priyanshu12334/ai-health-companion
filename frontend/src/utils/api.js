@@ -21,4 +21,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (
+      error.response && 
+      error.response.status === 401 && 
+      !error.config.url.includes('/auth/login')
+    ) {
+      // Token expired or invalid, log out user
+      localStorage.removeItem('welloraUser');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

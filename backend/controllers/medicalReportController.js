@@ -187,9 +187,9 @@ Return ONLY valid JSON. Do not include any introductory or concluding text, and 
 
     let completion;
     try {
-      console.log('Sending request to Groq API using model llama-3.3-70b-versatile...');
+      console.log('Sending request to Groq API using model openai/gpt-oss-120b...');
       completion = await openai.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage }

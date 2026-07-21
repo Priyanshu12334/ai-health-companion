@@ -65,7 +65,7 @@ export const searchFood = async (req, res) => {
 
     // 4. Fallback to Groq AI if not found locally
     if (!process.env.GROQ_API_KEY) {
-      return res.status(500).json({ message: 'AI configuration is missing and food not found locally.' });
+      return res.status(404).json({ message: `No nutrition information found for "${q}".` });
     }
 
     const openai = new OpenAI({
@@ -75,86 +75,91 @@ export const searchFood = async (req, res) => {
 
     const systemPrompt = `You are a nutrition assistant.
 Analyze the food item requested by the user.
-Provide the nutrition information in raw JSON format with the following keys:
-{
-  "name": "Food Name",
-  "calories": number,
-  "protein": "number + g",
-  "carbs": "number + g",
-  "fats": "number + g",
-  "healthRating": number (1-10),
-  "recommendation": "Simple, concise recommendation under 15 words"
-}
+Return a JSON object with top-level keys:
+- "name": Food Name (string)
+- "calories": number (e.g. 250)
+- "protein": string or number (e.g. "8g" or 8)
+- "carbs": string or number (e.g. "40g" or 40)
+- "fats": string or number (e.g. "10g" or 10)
+- "healthRating": number (1 to 10)
+- "recommendation": concise recommendation under 15 words
 
-Rules:
-- Return ONLY the raw JSON object.
-- Do NOT wrap it in markdown code blocks or write any introductions/explanations.
-- Use realistic nutritional values if the food exists, or sensible estimates if it's a specific combination.
-`;
+Return ONLY valid JSON. Do not include markdown code blocks or explanations.`;
 
-    const completion = await openai.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: `Provide nutrition info for: ${q}` }
-      ],
-      temperature: 0.3,
-      max_tokens: 150
-    });
-
-    const aiResponse = completion.choices[0].message.content;
-
-    // Parse the JSON response
     try {
+      const completion = await openai.chat.completions.create({
+        model: "openai/gpt-oss-120b",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: `Provide nutrition info for: ${q}` }
+        ],
+        temperature: 0.1,
+        max_tokens: 600,
+        response_format: { type: "json_object" }
+      });
+
+      const aiResponse = completion.choices[0]?.message?.content || "";
+
+      // Flexible JSON extraction
       let cleanText = aiResponse.trim();
       if (cleanText.startsWith("```")) {
-        cleanText = cleanText
-          .replace(/```json/g, "")
-          .replace(/```/g, "")
-          .trim();
+        cleanText = cleanText.replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+      }
+      
+      const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        cleanText = jsonMatch[0];
       }
 
       const parsedData = JSON.parse(cleanText);
 
-      // Verify required fields exist
-      if (
-        parsedData.name &&
-        parsedData.calories !== undefined &&
-        parsedData.protein &&
-        parsedData.carbs &&
-        parsedData.fats &&
-        parsedData.healthRating !== undefined
-      ) {
-        const rating = Number(parsedData.healthRating);
-        let alternatives = [];
-        if (rating < 7) {
-          alternatives = nutritionDb
-            .filter(item => item.category === "Healthy Snacks")
-            .slice(0, 3);
-        }
-        return res.json({
-          source: 'ai',
-          data: {
-            id: Date.now(),
-            name: parsedData.name,
-            category: parsedData.category || 'AI Analysis',
-            calories: Number(parsedData.calories),
-            protein: parsedData.protein,
-            carbs: parsedData.carbs,
-            fats: parsedData.fats,
-            healthRating: rating,
-            recommendation: parsedData.recommendation
-          },
-          alternatives
-        });
+      const formatMacro = (val) => {
+        if (val === undefined || val === null) return "0g";
+        const str = String(val).trim();
+        if (!str) return "0g";
+        return str.toLowerCase().endsWith('g') ? str : `${str}g`;
+      };
+
+      const name = parsedData.name || parsedData.product || parsedData.foodName || q;
+      const calories = parsedData.calories !== undefined 
+        ? Number(parsedData.calories) 
+        : (parsedData.nutritionPerServing?.calories ? Number(parsedData.nutritionPerServing.calories) : 100);
+      
+      const protein = formatMacro(parsedData.protein || parsedData.protein_g || parsedData.nutritionPerServing?.protein_g);
+      const carbs = formatMacro(parsedData.carbs || parsedData.carbohydrate_g || parsedData.carbohydrates || parsedData.nutritionPerServing?.carbohydrate_g);
+      const fats = formatMacro(parsedData.fats || parsedData.fat || parsedData.totalFat_g || parsedData.nutritionPerServing?.totalFat_g);
+      
+      const rawRating = parsedData.healthRating !== undefined ? parsedData.healthRating : 5;
+      const healthRating = Math.max(1, Math.min(10, Math.round(Number(rawRating) || 5)));
+      
+      const recommendation = parsedData.recommendation || "Consume in moderation as part of a balanced diet.";
+
+      let alternatives = [];
+      if (healthRating < 7) {
+        alternatives = nutritionDb
+          .filter(item => item.category === "Healthy Snacks")
+          .slice(0, 3);
       }
-    } catch (parseError) {
-      console.error('Failed to parse AI response', parseError, aiResponse);
+
+      return res.json({
+        source: 'ai',
+        data: {
+          id: Date.now(),
+          name,
+          category: parsedData.category || 'AI Analysis',
+          calories: isNaN(calories) ? 100 : calories,
+          protein,
+          carbs,
+          fats,
+          healthRating,
+          recommendation
+        },
+        alternatives
+      });
+    } catch (parseOrAiError) {
+      console.error('Nutrition AI Error / Parsing Error:', parseOrAiError);
+      return res.status(404).json({ message: `Unable to find nutrition information for "${q}". Please try another search term.` });
     }
-
-    // Secondary parsing fallback: if JSON parsing failed, return structured error
-    res.status(500).json({ message: 'Unable to parse nutrition information from AI response.' });
-
   } catch (error) {
     console.error('Nutrition Search Error:', error);
     res.status(500).json({ message: 'Unable to fetch nutrition information.', error: error.message });

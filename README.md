@@ -58,7 +58,7 @@ Wellora is a state-of-the-art MERN-stack health platform designed to empower use
 * **JWT & Bcrypt.js** — Secure passwords and token signatures
 
 ### AI & Integrations
-* **Groq AI Node Client** — Llama-3.3-70b-versatile model API calls
+* **Groq AI Node Client** — openai/gpt-oss-120b model API calls
 * **Tesseract.js** — Client/Server-side optical character recognition
 
 ---

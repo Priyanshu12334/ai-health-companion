@@ -14,7 +14,7 @@ export const registerUser = async (req, res) => {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(409).json({ message: 'User already exists' });
     }
 
     const user = await User.create({
@@ -45,8 +45,12 @@ export const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (user && (await user.matchPassword(password))) {
-      res.json({
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (await user.matchPassword(password)) {
+      res.status(200).json({
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -54,7 +58,7 @@ export const loginUser = async (req, res) => {
         token: generateToken(user._id),
       });
     } else {
-      res.status(401).json({ message: 'Invalid email or password' });
+      res.status(401).json({ message: 'Invalid password' });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
