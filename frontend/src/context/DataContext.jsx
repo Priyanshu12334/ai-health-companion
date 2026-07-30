@@ -24,11 +24,12 @@ const calculateHealthScore = (dashboardData) => {
   let hydrationScore = 0;
   if (hydrationLogs.length > 0) {
     const hydrationTotal = dashboardData.hydration.total;
+    const goal = dashboardData.hydration.goal || 2000;
     if (hydrationTotal !== undefined && hydrationTotal !== null && hydrationTotal > 0) {
-      if (hydrationTotal >= 2500) hydrationScore = 30;
-      else if (hydrationTotal >= 2000) hydrationScore = 25;
-      else if (hydrationTotal >= 1500) hydrationScore = 15;
-      else if (hydrationTotal >= 1000) hydrationScore = 10;
+      if (hydrationTotal >= goal) hydrationScore = 30;
+      else if (hydrationTotal >= goal * 0.75) hydrationScore = 25;
+      else if (hydrationTotal >= goal * 0.5) hydrationScore = 15;
+      else if (hydrationTotal >= goal * 0.25) hydrationScore = 10;
       else hydrationScore = 5;
     }
   }

@@ -69,11 +69,12 @@ const Dashboard = () => {
   let hydrationScore = 0;
   if (data.hydration?.logs && data.hydration.logs.length > 0) {
     const hydrationTotal = data.hydration.total;
+    const goal = data.hydration.goal || 2000;
     if (hydrationTotal !== undefined && hydrationTotal !== null && hydrationTotal > 0) {
-      if (hydrationTotal >= 2500) hydrationScore = 30;
-      else if (hydrationTotal >= 2000) hydrationScore = 25;
-      else if (hydrationTotal >= 1500) hydrationScore = 15;
-      else if (hydrationTotal >= 1000) hydrationScore = 10;
+      if (hydrationTotal >= goal) hydrationScore = 30;
+      else if (hydrationTotal >= goal * 0.75) hydrationScore = 25;
+      else if (hydrationTotal >= goal * 0.5) hydrationScore = 15;
+      else if (hydrationTotal >= goal * 0.25) hydrationScore = 10;
       else hydrationScore = 5;
     }
   }
@@ -162,17 +163,29 @@ const Dashboard = () => {
 
   const achievements = [];
   if (data.hydration && data.hydration.total > 0 && data.hydration.total >= data.hydration.goal) {
-    achievements.push({ id: 1, title: 'Hydration Goal Completed', icon: '💧' });
+    achievements.push({ 
+      id: 1, 
+      title: 'Hydration Goal Completed', 
+      icon: <Droplets className="w-[19px] h-[19px] text-[#0EA5E9] shrink-0" />
+    });
   }
   if (data.sleep && data.sleep.log && data.sleep.log.duration >= data.sleep.goal) {
-    achievements.push({ id: 2, title: 'Sleep Goal Completed', icon: '🌙' });
+    achievements.push({ 
+      id: 2, 
+      title: 'Sleep Goal Completed', 
+      icon: <Moon className="w-[19px] h-[19px] text-[#6366F1] shrink-0" />
+    });
   }
   if (data.mood && data.mood.log) {
     const currentMoodObj = moodMap[data.mood.log.mood];
     achievements.push({ 
       id: 3, 
       title: `Current Mood: ${data.mood.log.mood}`, 
-      icon: currentMoodObj ? currentMoodObj.emoji : '😊' 
+      icon: currentMoodObj?.iconUrl ? (
+        <img src={currentMoodObj.iconUrl} alt={data.mood.log.mood} className="w-[19px] h-[19px] object-contain shrink-0" />
+      ) : (
+        <Smile className="w-[19px] h-[19px] text-[#F59E0B] shrink-0" />
+      )
     });
   }
 
@@ -206,7 +219,7 @@ const Dashboard = () => {
           <button 
             onClick={() => fetchDashboardData(true)}
             disabled={refreshing}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-surface text-text-secondary rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-surface text-text-secondary border border-border-color rounded-xl text-xs font-bold transition-all duration-200 hover:scale-[1.02] shadow-2xs hover:shadow-md cursor-pointer active:scale-100"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             {refreshing ? 'Refreshing...' : 'Refresh'}
@@ -214,17 +227,18 @@ const Dashboard = () => {
         )}
       </header>
 
-      {/* Achievements bar */}
+      {/* Status Badges */}
       {achievements.length > 0 && (
-        <div className="flex gap-3 overflow-x-auto pb-2 mb-6 scrollbar-hide">
+        <div className="flex flex-wrap gap-3 mb-6">
           {achievements.map((ach) => (
             <motion.div 
               key={ach.id}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 rounded-full whitespace-nowrap text-sm font-bold shadow-sm"
+              className="flex items-center justify-center sm:justify-start gap-2.5 h-[44px] px-4 sm:px-5 bg-white border border-[#DCEAF7] rounded-full text-[#334155] text-sm sm:text-[15px] font-semibold shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)] hover:-translate-y-0.5 transition-all duration-200 ease whitespace-nowrap w-full sm:w-auto flex-1 min-w-[220px] sm:flex-none cursor-default"
             >
-              <span>{ach.icon}</span> {ach.title}
+              {ach.icon}
+              <span>{ach.title}</span>
             </motion.div>
           ))}
         </div>
@@ -236,7 +250,7 @@ const Dashboard = () => {
           <p className="text-rose-600 dark:text-rose-400 font-medium">{error}</p>
           <button 
             onClick={() => fetchDashboardData()}
-            className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-medium rounded-xl text-sm transition-colors inline-block"
+            className="px-4 py-2 bg-sky-600 hover:bg-sky-700 active:scale-95 text-white font-medium rounded-xl text-sm transition-all duration-200 inline-block shadow-sm hover:shadow"
           >
             Retry Loading Dashboard
           </button>
@@ -252,38 +266,35 @@ const Dashboard = () => {
         </div>
       ) : (
         <motion.div 
-          className="glass-card p-6 bg-sky-600 from-sky-500 to-sky-600 text-white relative overflow-hidden"
+          className="glass-card p-6 md:p-7 bg-sky-600 text-white relative overflow-hidden transition-all duration-300 hover:shadow-xl rounded-2xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="absolute top-0 right-0 p-6 opacity-20">
-            <Sparkles className="w-24 h-24" />
+          <div className="absolute top-0 right-0 p-6 opacity-20 pointer-events-none">
+            <Sparkles className="w-28 h-28" />
           </div>
-          <div className="relative z-10 flex gap-4">
-            <div className="p-3 bg-card/20 rounded-3xl shrink-0 h-fit">
-              <Sparkles className="w-6 h-6 text-yellow-300" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold mb-1">AI Insight</h3>
-              <p className="text-white/90 text-sm md:text-base leading-relaxed">
-                {data.mood?.log?.mood
-                  ? `You logged your mood as "${data.mood.log.mood}" today. ${
-                      data.mood.log.mood === 'Stressed'
-                        ? 'Try taking a few deep breaths, stretching, or going for a short walk to relieve tension.'
-                        : data.mood.log.mood === 'Tired'
-                        ? 'Ensure you get enough rest tonight. Winding down without screens earlier might help.'
-                        : data.mood.log.mood === 'Sad'
-                        ? 'Be gentle with yourself today. Connect with a loved one or take time for a relaxing activity.'
-                        : data.mood.log.mood === 'Neutral'
-                        ? 'A steady day so far. Keep monitoring how you feel and remember to hydrate.'
-                        : 'It is wonderful that you are feeling happy! Keep sharing that positive energy.'
-                    }`
-                  : data.hydration && data.hydration.total < data.hydration.goal * 0.5 
-                  ? "You are behind your hydration goal today. Drinking more water now will improve your energy levels later." 
-                  : "You are doing great today! Keep up the consistency."}
-              </p>
-              <Link to="/ai-chat" className="inline-block mt-3 text-sm font-bold bg-card/20 hover:bg-card/30 px-4 py-1.5 rounded-full transition-colors">
+          <div className="relative z-10 max-w-2xl space-y-2">
+            <h3 className="text-lg md:text-xl font-bold tracking-tight">AI Insight</h3>
+            <p className="text-white/95 text-sm md:text-base leading-relaxed">
+              {data.mood?.log?.mood
+                ? `You logged your mood as "${data.mood.log.mood}" today. ${
+                    data.mood.log.mood === 'Stressed'
+                      ? 'Try taking a few deep breaths, stretching, or going for a short walk to relieve tension.'
+                      : data.mood.log.mood === 'Tired'
+                      ? 'Ensure you get enough rest tonight. Winding down without screens earlier might help.'
+                      : data.mood.log.mood === 'Sad'
+                      ? 'Be gentle with yourself today. Connect with a loved one or take time for a relaxing activity.'
+                      : data.mood.log.mood === 'Neutral'
+                      ? 'A steady day so far. Keep monitoring how you feel and remember to hydrate.'
+                      : 'It is wonderful that you are feeling happy! Keep sharing that positive energy.'
+                  }`
+                : data.hydration && data.hydration.total < data.hydration.goal * 0.5 
+                ? "You are behind your hydration goal today. Drinking more water now will improve your energy levels later." 
+                : "You are doing great today! Keep up the consistency."}
+            </p>
+            <div className="pt-2">
+              <Link to="/ai-chat" className="inline-block text-sm font-bold bg-white/20 hover:bg-white/30 active:scale-95 px-4 py-2 rounded-full transition-all duration-200 shadow-2xs">
                 Chat with Wellora &rarr;
               </Link>
             </div>
@@ -300,7 +311,7 @@ const Dashboard = () => {
         </div>
       ) : (
         <motion.div 
-          className="glass-card p-6 bg-sky-600 from-sky-500 to-sky-600 text-white relative overflow-hidden"
+          className="glass-card p-6 bg-sky-600 from-sky-500 to-sky-600 text-white relative overflow-hidden transition-all duration-300 hover:shadow-xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
@@ -387,30 +398,25 @@ const Dashboard = () => {
         </div>
       ) : (
         <motion.div
-          className="glass-card p-5 bg-card border border-border-color shadow-md rounded-2xl relative overflow-hidden"
+          className="glass-card p-5 md:p-6 bg-card border border-border-color shadow-md rounded-2xl relative overflow-hidden transition-all duration-300 hover:shadow-lg"
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
         >
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3 text-center sm:text-left flex-col sm:flex-row w-full sm:w-auto">
-              <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-950/20 text-orange-500 flex items-center justify-center text-2xl shrink-0">
-                🔥
-              </div>
-              <div>
-                <h3 className="font-bold text-lg text-text-sky">Daily Streak</h3>
-                <p className="text-sm text-text-secondary mt-0.5">
-                  {streakData.streak > 0 
-                    ? "Keep completing your goals to maintain your streak." 
-                    : "Complete your water and sleep goals to start a streak."}
-                </p>
-              </div>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="space-y-1 text-left">
+              <h3 className="font-bold text-lg md:text-xl text-text-sky tracking-tight">Daily Streak</h3>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                {streakData.streak > 0 
+                  ? "Keep completing your goals to maintain your streak." 
+                  : "Complete your water and sleep goals to start a streak."}
+              </p>
             </div>
 
-            <div className="flex items-center gap-4 flex-col sm:flex-row w-full sm:w-auto justify-center sm:justify-end">
+            <div className="flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap shrink-0">
               {/* Milestone Badge */}
               {streakData.streak >= 3 && (
-                <span className="px-3.5 py-1.5 bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900/20 rounded-full text-xs font-semibold whitespace-nowrap">
+                <span className="px-3.5 py-1.5 bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 rounded-full text-xs font-semibold whitespace-nowrap shadow-2xs">
                   {streakData.streak >= 30 ? "🏆 Wellness Champion" :
                    streakData.streak >= 14 ? "⭐ Healthy Habit" :
                    streakData.streak >= 7  ? "🔥 Consistent" :
@@ -418,8 +424,8 @@ const Dashboard = () => {
                 </span>
               )}
               
-              <div className="text-2xl sm:text-3xl font-extrabold text-text-sky whitespace-nowrap">
-                {streakData.streak || 0} Days
+              <div className="text-2xl sm:text-3xl font-extrabold text-sky-600 dark:text-sky-400 whitespace-nowrap tracking-tight">
+                {streakData.streak || 0} <span className="text-base sm:text-lg font-bold text-text-secondary">Days</span>
               </div>
             </div>
           </div>
@@ -427,7 +433,11 @@ const Dashboard = () => {
       )}
 
       {/* Three Cards Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="space-y-2">
+        <p className="text-sm sm:text-base font-bold text-sky-600 dark:text-sky-400 flex items-center gap-2 my-3 tracking-tight">
+          <span></span> Tap any card to improve your score.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* Hydration Card */}
         {loading && !data.hydration ? (
@@ -439,13 +449,13 @@ const Dashboard = () => {
         ) : (
           <Link to="/hydration">
             <motion.div 
-              className="glass-card p-6 hover:-translate-y-1 transition-transform cursor-pointer h-full"
+              className="glass-card p-6 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 active:scale-[0.99] cursor-pointer h-full border border-border-color hover:border-sky-500/30"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 text-sky-600 dark:text-sky-600 rounded-xl">
+                <div className="p-3 text-sky-600 dark:text-sky-400 bg-sky-500/10 rounded-xl">
                   <Droplets className="w-6 h-6" />
                 </div>
                 <span className="text-sm font-medium text-text-secondary">{Math.round(hydrationPercent)}%</span>
@@ -471,13 +481,13 @@ const Dashboard = () => {
         ) : (
           <Link to="/sleep">
             <motion.div 
-              className="glass-card p-6 hover:-translate-y-1 transition-transform cursor-pointer h-full"
+              className="glass-card p-6 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 active:scale-[0.99] cursor-pointer h-full border border-border-color hover:border-sky-500/30"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 text-sky-600 dark:text-sky-600 rounded-xl">
+                <div className="p-3 text-sky-600 dark:text-sky-400 bg-sky-500/10 rounded-xl">
                   <Moon className="w-6 h-6" />
                 </div>
                 <span className="text-sm font-medium text-text-secondary">
@@ -505,7 +515,7 @@ const Dashboard = () => {
         ) : (
           <Link to="/mood">
             <motion.div 
-              className="glass-card p-6 hover:-translate-y-1 transition-transform cursor-pointer h-full"
+              className="glass-card p-6 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 active:scale-[0.99] cursor-pointer h-full border border-border-color hover:border-sky-500/30"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
@@ -515,8 +525,12 @@ const Dashboard = () => {
                 return (
                   <>
                     <div className="flex items-center justify-between mb-4">
-                      <div className={`p-3 rounded-xl flex items-center justify-center w-12 h-12 ${currentMoodObj ? currentMoodObj.textColor + ' bg-surface' : 'bg-surface text-text-secondary'}`}>
-                        {currentMoodObj ? <span className="text-2xl leading-none">{currentMoodObj.emoji}</span> : <Smile className="w-6 h-6" />}
+                      <div className={`p-3 rounded-xl flex items-center justify-center w-12 h-12 ${currentMoodObj ? currentMoodObj.textColor + ' bg-surface' : 'bg-sky-500/10 text-sky-600 dark:text-sky-400'}`}>
+                        {currentMoodObj?.iconUrl ? (
+                          <img src={currentMoodObj.iconUrl} alt={currentMoodObj.name} className="w-8 h-8 object-contain" />
+                        ) : (
+                          <Smile className="w-6 h-6" />
+                        )}
                       </div>
                     </div>
                     <h3 className="font-bold text-lg">Current Mood</h3>
@@ -533,6 +547,7 @@ const Dashboard = () => {
           </Link>
         )}
 
+        </div>
       </div>
     </div>
   );

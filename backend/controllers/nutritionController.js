@@ -187,14 +187,16 @@ export const getMealSuggestions = async (req, res) => {
       }
 
       // 2. Calculate Hydration Score
+      const user = await User.findById(req.user._id);
+      const hydrationGoal = user?.dailyWaterGoal || 2000;
       const hydrationLogs = await HydrationLog.find({ userId: req.user._id, date: { $gte: startOfToday } });
       const totalWater = hydrationLogs.reduce((acc, log) => acc + log.amount, 0);
       let hydrationScore = 0; // Default if missing is 0
       if (totalWater > 0) {
-        if (totalWater >= 2500) hydrationScore = 30;
-        else if (totalWater >= 2000) hydrationScore = 25;
-        else if (totalWater >= 1500) hydrationScore = 15;
-        else if (totalWater >= 1000) hydrationScore = 10;
+        if (totalWater >= hydrationGoal) hydrationScore = 30;
+        else if (totalWater >= hydrationGoal * 0.75) hydrationScore = 25;
+        else if (totalWater >= hydrationGoal * 0.5) hydrationScore = 15;
+        else if (totalWater >= hydrationGoal * 0.25) hydrationScore = 10;
         else hydrationScore = 5;
       }
 

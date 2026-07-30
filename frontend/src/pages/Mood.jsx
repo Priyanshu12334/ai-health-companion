@@ -5,7 +5,7 @@ import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
 import { SkeletonLogList } from '../components/common/Skeletons';
 
-import { MOODS } from '../utils/moodConfig';
+import { MOODS, moodMap } from '../utils/moodConfig';
 
 const Mood = () => {
   const { cache, getMoodData, setCache } = useData();
@@ -31,6 +31,17 @@ const Mood = () => {
 
   const data = cache.mood || { log: null, history: [] };
   const history = data.history || [];
+
+  let moodScore = 0;
+  if (data.log && data.log.mood) {
+    const currentMood = data.log.mood;
+    if (currentMood === 'Happy') moodScore = 30;
+    else if (currentMood === 'Calm') moodScore = 25;
+    else if (currentMood === 'Neutral') moodScore = 20;
+    else if (currentMood === 'Tired') moodScore = 15;
+    else if (currentMood === 'Sad') moodScore = 10;
+    else if (currentMood === 'Stressed') moodScore = 5;
+  }
 
   const saveMood = async (moodName) => {
     setSaving(true);
@@ -116,7 +127,7 @@ const Mood = () => {
         </div>
       ) : (
         <div className="glass-card p-8 text-center">
-          <h3 className="text-lg font-medium text-text-secondary mb-6">How are you feeling right now?</h3>
+          <h3 className="text-lg font-medium text-text-secondary mb-6">How was your overall mood today?</h3>
           <div className="flex flex-wrap justify-center gap-4">
             {MOODS.map((mood) => {
               const isCurrent = data.log?.mood === mood.name;
@@ -125,12 +136,14 @@ const Mood = () => {
                   key={mood.name}
                   onClick={() => saveMood(mood.name)}
                   disabled={saving || loading}
-                  className={`flex flex-col items-center justify-center w-24 h-24 rounded-2xl transition-all duration-300 ${
-                    isCurrent ? mood.activeClass : `${mood.bgColor} ${mood.textColor} hover:-translate-y-1`
-                  } ${saving || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`flex flex-col items-center justify-center w-24 h-24 rounded-2xl transition-all duration-200 cursor-pointer transform hover:scale-[1.03] ${
+                    isCurrent 
+                      ? 'scale-[1.03] border-2 border-sky-500 shadow-md ring-2 ring-sky-500/20 ' + mood.activeClass
+                      : `${mood.bgColor} ${mood.textColor} hover:-translate-y-1 hover:shadow-md border border-transparent`
+                  } ${saving || loading ? 'opacity-50 cursor-not-allowed transform-none' : ''}`}
                 >
-                  <span className="text-4xl leading-none">{mood.emoji}</span>
-                  <span className="mt-2 text-sm font-medium">{mood.name}</span>
+                  <img src={mood.iconUrl} alt={mood.name} className="w-10 h-10 object-contain drop-shadow-xs transition-transform duration-200" />
+                  <span className="mt-2 text-xs sm:text-sm font-semibold text-center">{mood.name}</span>
                 </button>
               );
             })}
@@ -140,6 +153,13 @@ const Mood = () => {
               Last logged today at {new Date(data.log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </p>
           )}
+
+          <div className="mt-8 pt-6 border-t border-border-color flex justify-center items-center gap-2 text-sm text-text-secondary">
+            <span className="font-medium">Health Score Contribution</span>
+            <span className="font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-3 py-1 rounded-full border border-orange-200 dark:border-orange-900/30">
+              {moodScore} / 30
+            </span>
+          </div>
         </div>
       )}
 
@@ -161,14 +181,14 @@ const Mood = () => {
               <p className="text-text-secondary text-center py-4 bg-background /50 rounded-xl">No mood history found.</p>
             ) : (
               history.slice().reverse().map((log) => {
-                const moodConfig = MOODS.find(m => m.name === log.mood) || MOODS[1];
+                const moodConfig = moodMap[log.mood] || moodMap.Neutral;
                 return (
-                  <div key={log._id} className="flex justify-between items-center p-4 bg-card rounded-xl shadow-sm border border-border-color">
+                  <div key={log._id} className="flex justify-between items-center p-4 bg-card rounded-xl shadow-sm border border-border-color transition-all duration-200 hover:shadow-md">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg flex items-center justify-center w-10 h-10 ${moodConfig.bgColor} ${moodConfig.textColor}`}>
-                        <span className="text-2xl leading-none">{moodConfig.emoji}</span>
+                      <div className={`p-2 rounded-xl flex items-center justify-center w-10 h-10 shrink-0 ${moodConfig.bgColor} ${moodConfig.textColor}`}>
+                        <img src={moodConfig.iconUrl} alt={log.mood} className="w-6 h-6 object-contain" />
                       </div>
-                      <span className="font-medium">{log.mood}</span>
+                      <span className="font-semibold text-text-sky">{log.mood}</span>
                     </div>
                     <div className="text-right flex items-center gap-4">
                       <div>

@@ -114,10 +114,10 @@ const NavItem = ({ to, icon, label }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `flex items-center gap-3 px-3 py-2 rounded-lg ${
+      `flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98] ${
         isActive 
-          ? 'bg-sky-800 text-white' 
-          : 'text-white/90 hover:bg-white/10'
+          ? 'bg-sky-700/90 text-white font-bold shadow-md border border-white/20' 
+          : 'text-white/90 hover:bg-sky-700/70 hover:text-white hover:shadow-sm'
       }`
     }
   >
@@ -131,12 +131,12 @@ const MobileNavItem = ({ to, icon, label, isCenter, onClick }) => (
     to={to}
     onClick={onClick}
     className={({ isActive }) =>
-      `flex flex-col items-center justify-center p-2 transition-all duration-300 ${
-        isActive ? 'text-sky-600 dark:text-sky-600 transform -translate-y-1' : 'text-text-secondary'
+      `flex flex-col items-center justify-center p-2 transition-all duration-200 active:scale-95 ${
+        isActive ? 'text-sky-600 dark:text-sky-400 font-semibold transform -translate-y-0.5' : 'text-text-secondary hover:text-sky-600'
       } ${isCenter ? '-mt-6' : ''}`
     }
   >
-    <div className={`${isCenter ? 'p-4 bg-sky-500 text-white rounded-full shadow-lg shadow-sky-500/40 border-4 border-background ' : ''}`}>
+    <div className={`${isCenter ? 'p-4 bg-sky-600 hover:bg-sky-700 text-white rounded-full shadow-lg shadow-sky-600/30 border-4 border-background transition-all duration-200 active:scale-95' : ''}`}>
       {icon && React.isValidElement(icon) ? React.cloneElement(icon, { className: isCenter ? 'w-6 h-6' : 'w-5 h-5 mb-1' }) : null}
     </div>
     {!isCenter && <span className="text-[10px] font-medium mt-1">{label || ''}</span>}
@@ -147,13 +147,13 @@ const SimpleMoreMenuItem = ({ to, icon, label, onClick, isActive }) => (
   <Link
     to={to}
     onClick={onClick}
-    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98] ${
       isActive 
-        ? 'bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-400 font-medium' 
-        : 'text-text-secondary hover:bg-surface'
+        ? 'bg-sky-50 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400 font-semibold' 
+        : 'text-text-secondary hover:bg-surface hover:text-sky-600'
     }`}
   >
-    <div className={`p-1.5 rounded-lg ${isActive ? 'bg-sky-500 text-white' : 'bg-surface text-text-secondary'}`}>
+    <div className={`p-1.5 rounded-lg transition-colors duration-200 ${isActive ? 'bg-sky-600 text-white' : 'bg-surface text-text-secondary'}`}>
       {icon && React.isValidElement(icon) ? React.cloneElement(icon, { className: 'w-4 h-4' }) : null}
     </div>
     <span className="text-sm">{label || ''}</span>

@@ -41,12 +41,13 @@ export const chatWithAI = async (req, res) => {
       else sleepScore = 5;
     }
 
-    let hydrationScore = 15;
+    const hydrationGoal = user.dailyWaterGoal || 2000;
+    let hydrationScore = 0;
     if (totalWater > 0) {
-      if (totalWater >= 2500) hydrationScore = 30;
-      else if (totalWater >= 2000) hydrationScore = 25;
-      else if (totalWater >= 1500) hydrationScore = 15;
-      else if (totalWater >= 1000) hydrationScore = 10;
+      if (totalWater >= hydrationGoal) hydrationScore = 30;
+      else if (totalWater >= hydrationGoal * 0.75) hydrationScore = 25;
+      else if (totalWater >= hydrationGoal * 0.5) hydrationScore = 15;
+      else if (totalWater >= hydrationGoal * 0.25) hydrationScore = 10;
       else hydrationScore = 5;
     }
 

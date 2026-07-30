@@ -80,6 +80,18 @@ const Hydration = () => {
     }
   };
 
+  const goal = data.goal || 2000;
+  const remainingWater = Math.max(0, goal - (data.total || 0));
+
+  let hydrationScore = 0;
+  if (data.logs && data.logs.length > 0 && data.total && data.total > 0) {
+    if (data.total >= goal) hydrationScore = 30;
+    else if (data.total >= goal * 0.75) hydrationScore = 25;
+    else if (data.total >= goal * 0.5) hydrationScore = 15;
+    else if (data.total >= goal * 0.25) hydrationScore = 10;
+    else hydrationScore = 5;
+  }
+
   const percent = Math.min((data.total / data.goal) * 100, 100);
 
   return (
@@ -115,6 +127,17 @@ const Hydration = () => {
               <div className="bg-sky-500 h-4 rounded-full transition-all duration-1000" style={{ width: `${percent}%` }}></div>
             </div>
             <p className="mt-2 text-sm font-medium text-text-secondary">{Math.round(percent)}% completed</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-border-color">
+              <div className="bg-surface/60 p-3 rounded-xl">
+                <p className="text-xs text-text-secondary font-semibold uppercase tracking-wider">Remaining Water</p>
+                <p className="text-xl font-bold text-sky-600 dark:text-sky-400 mt-1">{remainingWater} ml</p>
+              </div>
+              <div className="bg-surface/60 p-3 rounded-xl">
+                <p className="text-xs text-text-secondary font-semibold uppercase tracking-wider">Health Score Contribution</p>
+                <p className="text-xl font-bold text-sky-600 dark:text-sky-400 mt-1">{hydrationScore} / 30</p>
+              </div>
+            </div>
           </div>
         </div>
       )}

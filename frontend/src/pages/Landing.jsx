@@ -4,15 +4,15 @@ import { HeartPulse, MessageCircle, Apple, BarChart3, FileText, Check } from 'lu
 import { motion } from 'framer-motion';
 
 const BenefitBadge = ({ label }) => (
-  <span className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-sky-50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 border border-sky-100 dark:border-sky-900/30 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
-    <Check className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-    {label}
+  <span className="flex items-center gap-2.5 h-[44px] px-5 bg-white border border-[#E2E8F0] rounded-full text-[#334155] text-sm sm:text-[15px] font-semibold shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)] hover:-translate-y-0.5 transition-all duration-200 ease whitespace-nowrap cursor-default">
+    <Check className="w-[19px] h-[19px] text-[#0EA5E9] shrink-0" />
+    <span>{label}</span>
   </span>
 );
 
 const FeatureCard = ({ icon, title, description }) => (
-  <div className="glass-card p-6 flex flex-col items-start text-left hover:border-sky-500/50 dark:hover:border-sky-400/50 transition-all duration-300 group hover:-translate-y-1">
-    <div className="w-12 h-12 rounded-xl bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center mb-5 text-sky-600 dark:text-sky-400 group-hover:bg-sky-600 group-hover:text-white transition-all duration-300">
+  <div className="glass-card p-6 flex flex-col items-start text-left hover:border-sky-500/50 transition-all duration-300 group hover:-translate-y-1">
+    <div className="w-12 h-12 rounded-2xl bg-[#0EA5E9] text-white flex items-center justify-center mb-5 shadow-[0_6px_16px_rgba(14,165,233,0.20)] group-hover:shadow-[0_8px_20px_rgba(14,165,233,0.30)] group-hover:scale-105 transition-all duration-200 ease shrink-0">
       {icon}
     </div>
     <h3 className="text-lg sm:text-xl font-bold mb-2 text-text-sky">{title}</h3>
@@ -81,7 +81,7 @@ const Landing = () => {
             </a>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3 max-w-3xl mx-auto pt-6 sm:pt-8">
+          <div className="flex flex-wrap justify-center items-center gap-3 max-w-3xl mx-auto pt-6 sm:pt-8">
             <BenefitBadge label="Health Score Tracking" />
             <BenefitBadge label="Nutrition Insights" />
             <BenefitBadge label="AI Health Assistant" />
@@ -91,7 +91,7 @@ const Landing = () => {
         </motion.div>
 
         <div id="features" className="pt-24 pb-8 text-center w-full scroll-mt-6">
-          <span className="text-xs sm:text-sm font-bold tracking-wider text-sky-600 dark:text-sky-400 uppercase bg-sky-50 dark:bg-sky-950/20 px-3 py-1 rounded-full border border-sky-100 dark:border-sky-900/20">
+          <span className="inline-block text-xs sm:text-sm font-semibold tracking-wider text-white uppercase bg-[#0EA5E9] px-4 py-1.5 rounded-full border-0 shadow-[0_6px_16px_rgba(14,165,233,0.25)] hover:shadow-[0_8px_20px_rgba(14,165,233,0.35)] hover:-translate-y-0.5 transition-all duration-200 ease cursor-default">
             Core Features
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold mt-4 text-text-sky">
