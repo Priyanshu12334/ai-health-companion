@@ -199,6 +199,10 @@ The app will serve:
 
 ---
 
+## 🌐 Live Demo
+
+Experience Wellora live here: https://ai-health-companion-phi.vercel.app
+
 ## 🔮 Future Enhancements
 * **Report Trend Charting**: Track metrics (e.g. cholesterol, hemoglobin) across multiple consecutive reports to chart progress.
 * **Multi-Language Support**: Translate simplified medical report summaries into regional languages.
