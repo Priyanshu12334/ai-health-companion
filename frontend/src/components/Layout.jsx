@@ -20,7 +20,7 @@ const Layout = () => {
             <h1 className="text-xl font-bold tracking-tight">Wellora</h1>
           </div>
           
-          <nav className="flex-1 space-y-3">
+          <nav className="flex-1 space-y-1.5">
             <NavItem to="/dashboard" icon={<Home />} label="Dashboard" />
             <NavItem to="/hydration" icon={<Droplets />} label="Hydration" />
             <NavItem to="/sleep" icon={<Moon />} label="Sleep" />
@@ -114,9 +114,9 @@ const NavItem = ({ to, icon, label }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.98] ${
+      `flex items-center gap-3 px-3.5 py-2 rounded-xl transition-all duration-200 active:scale-[0.98] outline-none focus:outline-none focus:ring-0 focus-visible:outline-none ${
         isActive 
-          ? 'bg-sky-700/90 text-white font-bold shadow-md border border-white/20' 
+          ? 'bg-sky-700/90 text-white font-bold shadow-md' 
           : 'text-white/90 hover:bg-sky-700/70 hover:text-white hover:shadow-sm'
       }`
     }

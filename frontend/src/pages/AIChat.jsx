@@ -214,7 +214,7 @@ const AIChat = () => {
             value={input}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            placeholder="Send a message to Wellora... (Shift + Enter for new line)"
+            placeholder="Send a message to Wellora..."
             className="w-full pl-5 pr-14 py-3.5 rounded-2xl bg-card border border-border-color focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none shadow-sm transition-all text-text-sky text-sm md:text-base resize-none max-h-32 leading-relaxed"
             disabled={loading}
           />

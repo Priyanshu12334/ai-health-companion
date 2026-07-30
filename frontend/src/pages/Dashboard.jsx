@@ -271,10 +271,10 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="absolute top-0 right-0 p-6 opacity-20 pointer-events-none">
+          <div className="absolute top-0 right-2 md:right-4 p-4 md:p-6 opacity-20 pointer-events-none">
             <Sparkles className="w-28 h-28" />
           </div>
-          <div className="relative z-10 max-w-2xl space-y-2">
+          <div className="relative z-10 max-w-3xl space-y-2">
             <h3 className="text-lg md:text-xl font-bold tracking-tight">AI Insight</h3>
             <p className="text-white/95 text-sm md:text-base leading-relaxed">
               {data.mood?.log?.mood
@@ -287,7 +287,7 @@ const Dashboard = () => {
                       ? 'Be gentle with yourself today. Connect with a loved one or take time for a relaxing activity.'
                       : data.mood.log.mood === 'Neutral'
                       ? 'A steady day so far. Keep monitoring how you feel and remember to hydrate.'
-                      : 'It is wonderful that you are feeling happy! Keep sharing that positive energy.'
+                      : 'Keep embracing your positive energy and make the most of your day.'
                   }`
                 : data.hydration && data.hydration.total < data.hydration.goal * 0.5 
                 ? "You are behind your hydration goal today. Drinking more water now will improve your energy levels later." 
@@ -316,16 +316,13 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
-            <Sparkles className="w-32 h-32" />
-          </div>
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
             {/* Left Column: Overall Score & Insights */}
             <div className="space-y-3 text-center md:text-left">
               <div>
-                <h3 className="text-white/85 uppercase tracking-wider text-xs font-semibold">Overall Health Score</h3>
+                <h3 className="text-white/85 uppercase tracking-wider text-xs font-bold">Overall Health Score</h3>
                 <div className="flex items-baseline justify-center md:justify-start gap-2 mt-1">
-                  <span className="text-4xl font-extrabold text-white">{animatedScore}</span>
+                  <span className="text-4xl font-semibold text-white">{animatedScore}</span>
                   <span className="text-white/60 text-sm">/ 100</span>
                   <span className="text-xl leading-none ml-1">{statusEmoji}</span>
                 </div>
@@ -434,8 +431,8 @@ const Dashboard = () => {
 
       {/* Three Cards Layout */}
       <div className="space-y-2">
-        <p className="text-sm sm:text-base font-bold text-sky-600 dark:text-sky-400 flex items-center gap-2 my-3 tracking-tight">
-          <span></span> Tap any card to improve your score.
+        <p className="text-sm text-text-secondary flex items-center gap-2 my-2.5 font-normal">
+          <span></span> Tap a card below to view details and improve your health score.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
