@@ -180,7 +180,7 @@ const MedicalReports = () => {
               <h2 className="font-bold text-lg text-text-sky">History</h2>
               <button 
                 onClick={() => setSelectedReport(null)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 rounded-full text-xs font-bold hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 rounded-full text-xs font-bold cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" /> New Report
               </button>
@@ -329,26 +329,33 @@ const MedicalReports = () => {
                         Health Summary
                       </h3>
                       {selectedReport.analysis?.healthSummary ? (
-                        <div className="p-4 bg-slate-50 dark:bg-slate-900/20 border border-border-color rounded-xl space-y-3">
+                        <div className="p-4 bg-surface border border-border-color rounded-xl space-y-3">
                           {selectedReport.analysis.healthSummary.detected?.length > 0 && (
                             <div>
                               <span className="font-semibold text-text-sky text-sm">Detected:</span>
-                              <ul className="list-disc list-inside pl-2 text-text-secondary mt-1 text-sm space-y-0.5">
-                                {selectedReport.analysis.healthSummary.detected.map((d, idx) => (
-                                  <li key={idx}>{d}</li>
-                                ))}
+                              <ul className="list-disc list-inside pl-2 mt-1 text-sm space-y-0.5">
+                                {selectedReport.analysis.healthSummary.detected.map((d, idx) => {
+                                  const lower = d.toLowerCase();
+                                  const isNormal = lower.includes('normal') || lower.includes('none') || lower.includes('no abnormal') || lower.includes('within range');
+                                  const textColor = isNormal ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400';
+                                  return (
+                                    <li key={idx} className={`${textColor} font-medium`}>
+                                      {d}
+                                    </li>
+                                  );
+                                })}
                               </ul>
                             </div>
                           )}
                           {selectedReport.analysis.healthSummary.overallRisk && (
                             <div className="flex items-center gap-2 text-sm">
                               <span className="font-semibold text-text-sky">Overall Risk:</span>
-                              <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold inline-block capitalize ${
-                                selectedReport.analysis.healthSummary.overallRisk.toLowerCase() === 'high'
-                                  ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400'
+                              <span className={`font-semibold capitalize ${
+                                ['high', 'critical'].includes(selectedReport.analysis.healthSummary.overallRisk.toLowerCase())
+                                  ? 'text-rose-600 dark:text-rose-400'
                                   : selectedReport.analysis.healthSummary.overallRisk.toLowerCase() === 'moderate'
-                                  ? 'bg-orange-100 text-orange-700 dark:bg-orange-950/20 dark:text-orange-400'
-                                  : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400'
+                                  ? 'text-[#F59E0B] dark:text-amber-400'
+                                  : 'text-emerald-600 dark:text-emerald-400'
                               }`}>
                                 {selectedReport.analysis.healthSummary.overallRisk}
                               </span>

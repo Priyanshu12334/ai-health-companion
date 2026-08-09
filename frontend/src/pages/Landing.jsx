@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { HeartPulse, MessageCircle, Apple, BarChart3, FileText, Check } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { HeartPulse, MessageCircle, Apple, BarChart3, FileText, Check, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const BenefitBadge = ({ label }) => (
   <span className="flex items-center gap-2.5 h-[44px] px-5 bg-white border border-[#E2E8F0] rounded-full text-[#334155] text-sm sm:text-[15px] font-semibold shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)] hover:-translate-y-0.5 transition-all duration-200 ease whitespace-nowrap cursor-default">
@@ -20,7 +20,36 @@ const FeatureCard = ({ icon, title, description }) => (
   </div>
 );
 
+const faqs = [
+  {
+    question: "What is Wellora?",
+    answer: "Wellora is an AI-powered health companion that helps you track daily wellness, understand your health data, and get personalized health insights."
+  },
+  {
+    question: "How does the Health Score work?",
+    answer: "The Health Score is calculated using your sleep, hydration, and daily mood data. It gives you an overall score out of 100 to help you track your wellness progress."
+  },
+  {
+    question: "Can Wellora provide personalized health recommendations?",
+    answer: "Yes. Wellora's AI Health Assistant uses your health data to provide personalized wellness insights and recommendations."
+  },
+  {
+    question: "Can I get nutrition information for different foods?",
+    answer: "Yes. The Nutrition Coach lets you search food items and provides nutrition information along with meal suggestions."
+  },
+  {
+    question: "Can Wellora simplify medical reports?",
+    answer: "Yes. You can upload a medical report as a PDF or image, and Wellora can extract the text and provide a simpler, easier-to-understand explanation."
+  }
+];
+
 const Landing = () => {
+  const [openFaq, setOpenFaq] = useState(null);
+
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
   return (
     <div className="min-h-screen bg-background text-text-sky flex flex-col relative overflow-x-hidden">
       {/* Background blobs for premium feel */}
@@ -126,6 +155,55 @@ const Landing = () => {
             description="Upload PDFs/images and get simple, jargon-free explanations."
           />
         </motion.div>
+
+        {/* FAQ Section */}
+        <div id="faq" className="pt-16 pb-16 text-center w-full max-w-3xl mx-auto scroll-mt-6">
+          <span className="inline-block text-xs sm:text-sm font-semibold tracking-wider text-white uppercase bg-[#0EA5E9] px-4 py-1.5 rounded-full border-0 shadow-[0_6px_16px_rgba(14,165,233,0.25)] hover:shadow-[0_8px_20px_rgba(14,165,233,0.35)] hover:-translate-y-0.5 transition-all duration-200 ease cursor-default">
+            FAQ
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold mt-4 text-text-sky mb-8">
+            Frequently Asked Questions
+          </h2>
+
+          <div className="space-y-4 text-left">
+            {faqs.map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <div 
+                  key={index}
+                  className="glass-card border border-border-color rounded-2xl overflow-hidden transition-all duration-200"
+                >
+                  <button
+                    onClick={() => toggleFaq(index)}
+                    className="w-full flex items-center justify-between py-4 px-5 sm:px-6 text-left font-bold text-base sm:text-lg text-text-sky transition-colors cursor-pointer gap-4"
+                    aria-expanded={isOpen}
+                  >
+                    <span>{faq.question}</span>
+                    <div className="w-8 h-8 rounded-full bg-[#0EA5E9] flex items-center justify-center shrink-0 shadow-2xs">
+                      <ChevronDown className={`w-4 h-4 text-white transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    </div>
+                  </button>
+
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                      >
+                        <p className="px-5 pb-4 sm:px-6 sm:pb-4 pt-0 text-text-secondary text-sm sm:text-base leading-relaxed">
+                          {faq.answer}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </main>
 
       <footer className="w-full border-t border-border-color py-8 mt-auto z-10 bg-background/50 backdrop-blur-sm">
