@@ -173,7 +173,7 @@ const Hydration = () => {
       </div>
 
       <div className="mt-8">
-        <h3 className="font-bold text-lg mb-4">Today's Logs</h3>
+        <h3 className="font-bold text-lg mb-4">Recent History</h3>
         {loading ? (
           <SkeletonLogList />
         ) : (
