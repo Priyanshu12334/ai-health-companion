@@ -116,16 +116,16 @@ const Settings = () => {
     <h3 className="text-lg font-bold flex items-center gap-2 mb-4"><RotateCcw className="w-5 h-5 text-orange-500" /> Analytics Reset</h3>
     <p className="text-sm text-text-secondary mb-4">Permanently clear your historical data for specific modules.</p>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <button onClick={() => resetAnalytics('hydration')} className="p-3 border border-border-color rounded-xl text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-colors">
+      <button onClick={() => resetAnalytics('hydration')} className="p-3 border border-border-color rounded-xl text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer">
         Reset Hydration
       </button>
-      <button onClick={() => resetAnalytics('sleep')} className="p-3 border border-border-color rounded-xl text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-colors">
+      <button onClick={() => resetAnalytics('sleep')} className="p-3 border border-border-color rounded-xl text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer">
         Reset Sleep
       </button>
-      <button onClick={() => resetAnalytics('mood')} className="p-3 border border-border-color rounded-xl text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-colors">
+      <button onClick={() => resetAnalytics('mood')} className="p-3 border border-border-color rounded-xl text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer">
         Reset Mood
       </button>
-      <button onClick={() => resetAnalytics('all')} className="p-3 bg-red-100 text-red-600 rounded-xl text-sm font-medium hover:bg-red-200 transition-colors">
+      <button onClick={() => resetAnalytics('all')} className="p-3 bg-red-100 text-red-600 rounded-xl text-sm font-medium hover:bg-red-200 transition-colors cursor-pointer">
         Reset All Analytics
       </button>
     </div>
@@ -165,7 +165,7 @@ const Settings = () => {
  <div className="p-6 bg-red-50 dark:bg-red-900/10">
  <h3 className="text-lg font-bold text-red-600 dark:text-red-400 mb-2">Danger Zone</h3>
  <p className="text-sm text-red-500/80 mb-4">Logging out will end your current session.</p>
- <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-colors font-medium">
+ <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl transition-colors font-medium cursor-pointer">
  <LogOut className="w-4 h-4" /> Log Out
  </button>
  </div>

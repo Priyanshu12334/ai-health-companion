@@ -48,13 +48,28 @@ export const getDailySleep = async (req, res) => {
       userId: req.user._id,
       date: { $gte: startOfToday }
     }).sort({ date: -1 });
-    
+
+    const history = await SleepLog.find({
+      userId: req.user._id
+    }).sort({ date: 1 }).limit(30);
+
     const user = await User.findById(req.user._id);
 
     res.json({
       log: log || null,
+      history: history || [],
       goal: user.sleepGoal ?? user.dailySleepGoal ?? 8
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteEntry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await SleepLog.findOneAndDelete({ _id: id, userId: req.user._id });
+    res.json({ message: 'Sleep entry deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

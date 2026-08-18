@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Moon, Clock, RotateCcw } from 'lucide-react';
+import { Moon, Clock, RotateCcw, Trash2 } from 'lucide-react';
 import api from '../utils/api';
 import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
-import { SkeletonGoalBanner } from '../components/common/Skeletons';
+import { SkeletonGoalBanner, SkeletonLogList } from '../components/common/Skeletons';
 
 const Sleep = () => {
   const { cache, getSleepData, setCache } = useData();
@@ -32,7 +32,7 @@ const Sleep = () => {
     fetchSleep();
   }, [fetchSleep]);
 
-  const data = cache.sleep || { log: null, goal: 8 };
+  const data = cache.sleep || { log: null, history: [], goal: 8 };
 
   const handleAddSleep = async (e) => {
     e.preventDefault();
@@ -83,6 +83,28 @@ const Sleep = () => {
     }
   };
 
+  const deleteSleep = async (id) => {
+    if (!window.confirm("Delete this sleep entry?")) return;
+    try {
+      await api.delete(`/sleep/${id}`);
+      await getSleepData(true);
+      toast.success('Sleep entry deleted');
+    } catch (error) {
+      toast.error('Failed to delete sleep entry');
+    }
+  };
+
+  const clearSleepHistory = async () => {
+    if (!window.confirm("Clear all sleep history? This cannot be undone.")) return;
+    try {
+      await api.delete('/sleep/clear');
+      await getSleepData(true);
+      toast.success('Sleep history cleared');
+    } catch (error) {
+      toast.error('Failed to clear sleep history');
+    }
+  };
+
   const resetToday = async () => {
     if (!window.confirm("Reset today's sleep log?")) return;
     setLoading(true);
@@ -125,7 +147,7 @@ const Sleep = () => {
         <button 
           onClick={resetToday} 
           disabled={loading}
-          className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" /> Reset Today's Sleep
         </button>
@@ -177,27 +199,97 @@ const Sleep = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1 text-text-secondary">Sleep Quality</label>
-            <select 
-              className="input-field disabled:opacity-50"
-              value={formData.quality}
-              disabled={loading}
-              onChange={(e) => setFormData({...formData, quality: e.target.value})}
-            >
-              <option value="Poor">Poor</option>
-              <option value="Fair">Fair</option>
-              <option value="Good">Good</option>
-              <option value="Excellent">Excellent</option>
-            </select>
+            <label className="block text-sm font-medium mb-2 text-text-secondary">Sleep Quality</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {[
+                { name: 'Poor', desc: 'Bad sleep' },
+                { name: 'Fair', desc: 'Interrupted sleep' },
+                { name: 'Good', desc: 'Restful sleep' },
+                { name: 'Excellent', desc: 'Deep sleep' }
+              ].map((q) => {
+                const isSelected = formData.quality === q.name;
+                return (
+                  <button
+                    key={q.name}
+                    type="button"
+                    disabled={loading}
+                    onClick={() => setFormData({ ...formData, quality: q.name })}
+                    className={`p-2.5 sm:p-3 rounded-xl text-left transition-all duration-200 cursor-pointer ${
+                      isSelected
+                        ? 'bg-sky-600 text-white font-bold shadow-md border border-transparent'
+                        : 'bg-surface text-text-sky border border-border-color hover:border-slate-300 dark:hover:border-slate-700'
+                    } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-text-sky'}`}>
+                        {q.name}
+                      </span>
+                    </div>
+                    <p className={`text-xs mt-0.5 leading-normal ${isSelected ? 'text-white/90 font-normal' : 'text-text-secondary'}`}>
+                      {q.desc}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <button 
             type="submit" 
             disabled={adding || loading} 
-            className="btn-sky bg-sky-600 hover:bg-sky-500 shadow-sky-500/30 disabled:opacity-50 disabled:transform-none"
+            className="btn-sky bg-sky-600 hover:bg-sky-500 shadow-sky-500/30 disabled:opacity-50 disabled:transform-none cursor-pointer"
           >
             {adding ? 'Saving...' : 'Save Sleep Log'}
           </button>
         </form>
+      </div>
+
+      {/* Sleep Recent History */}
+      <div className="mt-8">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-bold text-lg">Recent History</h3>
+          {data.history && data.history.length > 0 && !loading && (
+            <button onClick={clearSleepHistory} className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors cursor-pointer">
+              <RotateCcw className="w-4 h-4" /> Clear History
+            </button>
+          )}
+        </div>
+        
+        {loading ? (
+          <SkeletonLogList />
+        ) : (
+          <div className="space-y-3">
+            {!data.history || data.history.length === 0 ? (
+              <p className="text-text-secondary text-center py-4 bg-background/50 rounded-xl">No sleep history found.</p>
+            ) : (
+              data.history.slice().reverse().map((log) => (
+                <div key={log._id} className="flex justify-between items-center p-4 bg-card rounded-xl shadow-sm border border-border-color transition-all duration-200 hover:shadow-md">
+                  <div className="flex items-center gap-3">
+                    <Moon className="w-6 h-6 text-sky-600 dark:text-sky-400 shrink-0" />
+                    <div>
+                      <span className="font-semibold text-text-sky">{log.duration.toFixed(1)} hrs</span>
+                      <span className="ml-2 text-xs font-medium px-2 py-0.5 rounded-md bg-surface text-text-secondary">
+                        {log.quality}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right flex items-center gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-text-secondary">
+                        {new Date(log.date || log.createdAt).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-text-secondary">
+                        {new Date(log.date || log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                    <button onClick={() => deleteSleep(log._id)} className="p-2 text-text-secondary hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 cursor-pointer">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

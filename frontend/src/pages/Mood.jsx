@@ -138,12 +138,12 @@ const Mood = () => {
                   disabled={saving || loading}
                   className={`flex flex-col items-center justify-center w-24 h-24 rounded-2xl transition-all duration-200 cursor-pointer transform hover:scale-[1.03] ${
                     isCurrent 
-                      ? 'scale-[1.03] border-2 border-sky-500 shadow-md ring-2 ring-sky-500/20 ' + mood.activeClass
-                      : `${mood.bgColor} ${mood.textColor} hover:-translate-y-1 hover:shadow-md border border-transparent`
+                      ? 'scale-[1.03] bg-sky-600 text-white font-bold shadow-md border border-transparent'
+                      : 'bg-surface text-text-sky border border-border-color hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-0.5 hover:shadow-xs'
                   } ${saving || loading ? 'opacity-50 cursor-not-allowed transform-none' : ''}`}
                 >
                   <img src={mood.iconUrl} alt={mood.name} className="w-10 h-10 object-contain drop-shadow-xs transition-transform duration-200" />
-                  <span className="mt-2 text-xs sm:text-sm font-semibold text-center">{mood.name}</span>
+                  <span className={`mt-2 text-xs sm:text-sm font-semibold text-center ${isCurrent ? 'text-white' : ''}`}>{mood.name}</span>
                 </button>
               );
             })}
@@ -156,7 +156,7 @@ const Mood = () => {
 
           <div className="mt-8 pt-6 border-t border-border-color flex justify-center items-center gap-2 text-sm text-text-secondary">
             <span className="font-medium">Health Score Contribution</span>
-            <span className="font-bold text-orange-500 bg-orange-50 dark:bg-orange-950/30 px-3 py-1 rounded-full border border-orange-200 dark:border-orange-900/30">
+            <span className="font-bold text-sky-600 dark:text-sky-400 bg-surface px-3 py-1 rounded-full border border-border-color">
               {moodScore} / 30
             </span>
           </div>
@@ -167,7 +167,7 @@ const Mood = () => {
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-bold text-lg">Recent History</h3>
           {history.length > 0 && !loading && (
-            <button onClick={clearHistory} className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors">
+            <button onClick={clearHistory} className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors cursor-pointer">
               <RotateCcw className="w-4 h-4" /> Clear History
             </button>
           )}
@@ -185,9 +185,7 @@ const Mood = () => {
                 return (
                   <div key={log._id} className="flex justify-between items-center p-4 bg-card rounded-xl shadow-sm border border-border-color transition-all duration-200 hover:shadow-md">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-xl flex items-center justify-center w-10 h-10 shrink-0 ${moodConfig.bgColor} ${moodConfig.textColor}`}>
-                        <img src={moodConfig.iconUrl} alt={log.mood} className="w-6 h-6 object-contain" />
-                      </div>
+                      <img src={moodConfig.iconUrl} alt={log.mood} className="w-7 h-7 object-contain shrink-0" />
                       <span className="font-semibold text-text-sky">{log.mood}</span>
                     </div>
                     <div className="text-right flex items-center gap-4">
@@ -199,7 +197,7 @@ const Mood = () => {
                           {new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
-                      <button onClick={() => deleteMood(log._id)} className="p-2 text-text-secondary hover:text-red-500 transition-colors rounded-lg hover:bg-red-50">
+                      <button onClick={() => deleteMood(log._id)} className="p-2 text-text-secondary hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 cursor-pointer">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>

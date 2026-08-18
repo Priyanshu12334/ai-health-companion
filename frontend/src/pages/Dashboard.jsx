@@ -464,6 +464,9 @@ const Dashboard = () => {
               <div className="w-full bg-surface rounded-full h-2 mt-4 overflow-hidden">
                 <div className="bg-sky-600 h-2 rounded-full transition-all duration-1000" style={{ width: `${hydrationPercent}%` }}></div>
               </div>
+              <p className="text-sm text-text-secondary mt-3 border-t border-border-color pt-3">
+                Daily hydration goal
+              </p>
             </motion.div>
           </Link>
         )}
@@ -496,7 +499,7 @@ const Dashboard = () => {
                 {data.sleep?.log ? data.sleep.log.duration.toFixed(1) : '0'} <span className="text-sm font-normal text-text-secondary">/ {data.sleep?.goal || 8} hrs</span>
               </p>
               <p className="text-sm text-text-secondary mt-4 border-t border-border-color pt-3">
-                Last night's sleep
+                Based on your logged sleep
               </p>
             </motion.div>
           </Link>

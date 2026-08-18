@@ -13,7 +13,7 @@ Wellora is a state-of-the-art MERN-stack health platform designed to empower use
 
 ### 📊 Wellness Tracker & Analytics
 * **Water Hydration**: Daily intake logging with responsive goal circles.
-* **Sleep Tracker**: Record bedtime, wakeup time, and quality markers (Poor, Fair, Good, Excellent).
+* **Sleep Tracker**: Log sleep duration and quality with simple Poor, Fair, Good, and Excellent sleep-quality indicators.
 * **Mood Logger**: Track emotional state and log historical moods.
 * **Health Analytics**: Clean, responsive Recharts layouts charting weekly water intake and sleep logs.
 

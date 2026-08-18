@@ -182,12 +182,10 @@ const Hydration = () => {
               <p className="text-text-secondary text-center py-4 bg-background /50 rounded-xl">No logs today yet.</p>
             ) : (
               data.logs.map((log) => (
-                <div key={log._id} className="flex justify-between items-center p-4 bg-card rounded-xl shadow-sm border border-border-color">
+                <div key={log._id} className="flex justify-between items-center p-4 bg-surface rounded-xl border border-border-color">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-sky-100 dark:bg-sky-900/30 text-sky-500 rounded-lg">
-                      <Droplets className="w-4 h-4" />
-                    </div>
-                    <span className="font-medium">{log.amount} ml</span>
+                    <Droplets className="w-5 h-5 text-sky-500 shrink-0" />
+                    <span className="font-medium text-text-sky">{log.amount} ml</span>
                   </div>
                   <span className="text-sm text-text-secondary">
                     {new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
