@@ -39,6 +39,16 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/medical-reports', medicalReportRoutes);
 app.use('/api/nutrition', nutritionRoutes);
 
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    message: 'Wellora backend is running',
+  });
+});
+
+
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
