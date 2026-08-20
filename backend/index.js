@@ -40,8 +40,8 @@ app.use('/api/medical-reports', medicalReportRoutes);
 app.use('/api/nutrition', nutritionRoutes);
 
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
+// Health Check Endpoint for monitoring UptimeRobot service
+app.all('/api/health', (req, res) => {
   res.status(200).json({
     status: 'online',
     message: 'Wellora backend is running',
