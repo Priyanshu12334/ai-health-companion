@@ -41,23 +41,23 @@ const Settings = () => {
  fetchProfile();
  }, []);
 
- const handleSave = async (e) => {
- e.preventDefault();
- setLoading(true);
- try {
- const res = await api.put('/user/settings', formData);
- // Sync AuthContext + localStorage so Dashboard/header updates instantly
- updateUser({
- name: formData.name,
- email: formData.email,
- });
- toast.success('Settings updated successfully');
- } catch (error) {
- toast.error('Failed to update settings');
- } finally {
- setLoading(false);
- }
- };
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await api.put('/user/settings', formData);
+      // Sync AuthContext + localStorage so Dashboard/header updates instantly
+      updateUser({
+        name: res.data.name || formData.name,
+        email: res.data.email || formData.email,
+      });
+      toast.success('Settings updated successfully');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update settings');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const resetAnalytics = async (type) => {
     if (!window.confirm(`Are you sure you want to reset ${type} analytics? This cannot be undone.`)) return;
