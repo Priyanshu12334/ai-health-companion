@@ -1,4 +1,4 @@
-# 🩺 Wellora – AI Health Companion
+# Wellora – AI Health Companion
 
 Wellora is a state-of-the-art MERN-stack health platform designed to empower users on their wellness journey. It integrates comprehensive tracking modules for hydration, sleep, and mood with a real-time **Health Score** calculator. The platform also features an offline-first **Nutrition Coach** with a local database of 310+ common foods, a context-aware **AI Health Assistant**, and an **AI Medical Report Simplifier** that translates complex clinical reports into patient-friendly summaries using optical character recognition (OCR) and LLM analysis.
 
