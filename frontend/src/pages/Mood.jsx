@@ -110,7 +110,7 @@ const Mood = () => {
         <button 
           onClick={resetToday} 
           disabled={loading}
-          className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" /> Reset Today
         </button>
@@ -127,7 +127,8 @@ const Mood = () => {
         </div>
       ) : (
         <div className="glass-card p-8 text-center">
-          <h3 className="text-lg font-medium text-text-secondary mb-6">How was your overall mood today?</h3>
+          <h3 className="text-lg font-medium text-text-secondary mb-2">How are you feeling today?</h3>
+          <h2 className="text-sm font-medium text-text-secondary mb-8">Choose the option that best describes how you feel right now.</h2>
           <div className="flex flex-wrap justify-center gap-4">
             {MOODS.map((mood) => {
               const isCurrent = data.log?.mood === mood.name;

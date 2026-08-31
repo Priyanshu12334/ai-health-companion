@@ -103,7 +103,7 @@ const Hydration = () => {
         <button 
           onClick={resetToday} 
           disabled={loading}
-          className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" /> Reset Today
         </button>
