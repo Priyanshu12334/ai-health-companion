@@ -142,7 +142,7 @@ const Sleep = () => {
     <div className="space-y-6 max-w-2xl mx-auto w-full">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Moon className="text-sky-600"/> Sleep Tracking
+          <Moon className="text-[#6366F1]"/> Sleep Tracking
         </h2>
         <button 
           onClick={resetToday} 
@@ -172,7 +172,7 @@ const Sleep = () => {
             </div>
           </div>
           <div className="pt-3 border-t border-sky-500/30 flex justify-between items-center">
-            <span className="text-sm text-sky-200 font-medium">Health Score Contribution</span>
+            <span className="text-sm text-sky-200 font-medium">Daily Wellness Score Contribution</span>
             <span className="text-lg font-bold text-white bg-white/20 px-3 py-0.5 rounded-lg">{sleepScore} / 40</span>
           </div>
         </div>

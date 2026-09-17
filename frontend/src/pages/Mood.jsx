@@ -156,7 +156,7 @@ const Mood = () => {
           )}
 
           <div className="mt-8 pt-6 border-t border-border-color flex justify-center items-center gap-2 text-sm text-text-secondary">
-            <span className="font-medium">Health Score Contribution</span>
+            <span className="font-medium">Daily Wellness Score Contribution</span>
             <span className="font-bold text-sky-600 dark:text-sky-400 bg-surface px-3 py-1 rounded-full border border-border-color">
               {moodScore} / 30
             </span>

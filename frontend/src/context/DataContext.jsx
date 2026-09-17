@@ -153,13 +153,15 @@ export const DataProvider = ({ children }) => {
     if (cache.analytics && !isRefresh) {
       return cache.analytics;
     }
-    const [hydroRes, sleepRes] = await Promise.all([
+    const [hydroRes, sleepRes, moodRes] = await Promise.all([
       api.get('/hydration/weekly'),
-      api.get('/sleep/weekly')
+      api.get('/sleep/weekly'),
+      api.get('/mood/history')
     ]);
     const newData = {
       hydrationWeekly: hydroRes.data,
-      sleepWeekly: sleepRes.data
+      sleepWeekly: sleepRes.data,
+      moodWeekly: moodRes.data
     };
     setCache((prev) => ({ ...prev, analytics: newData }));
     return newData;

@@ -53,7 +53,7 @@ const Dashboard = () => {
     ? Math.min((data.hydration.total / data.hydration.goal) * 100, 100) 
     : 0;
 
-  // Health Score calculations
+  // Daily Wellness Score calculations
   let sleepScore = 0;
   if (data.sleep?.log) {
     const sleepDuration = data.sleep.log.duration;
@@ -146,7 +146,7 @@ const Dashboard = () => {
 
   let healthInsight = "Great job maintaining healthy habits.";
   if (healthScore === 0) {
-    healthInsight = "Start logging sleep, hydration, and mood to see your health score.";
+    healthInsight = "Start logging sleep, hydration, and mood to see your daily wellness score.";
   } else if (healthScore < 90) {
     const sleepRel = sleepScore / 40;
     const hydrationRel = hydrationScore / 30;
@@ -302,12 +302,12 @@ const Dashboard = () => {
         </motion.div>
       )}
 
-      {/* Health Score Card (Featured Card) */}
+      {/* Daily Wellness Score Card (Featured Card) */}
       {loading && !data.hydration ? (
         <SkeletonInsight />
       ) : error && !data.hydration ? (
         <div className="glass-card p-6 bg-slate-100 dark:bg-slate-900/10 flex items-center justify-center text-text-secondary min-h-[120px]">
-          Unable to calculate Health Score.
+          Unable to calculate Daily Wellness Score.
         </div>
       ) : (
         <motion.div 
@@ -320,7 +320,7 @@ const Dashboard = () => {
             {/* Left Column: Overall Score & Insights */}
             <div className="space-y-3 text-center md:text-left">
               <div>
-                <h3 className="text-white/85 uppercase tracking-wider text-xs font-bold">Overall Health Score</h3>
+                <h3 className="text-white/85 uppercase tracking-wider text-xs font-bold">Daily Wellness Score</h3>
                 <div className="flex items-baseline justify-center md:justify-start gap-2 mt-1">
                   <span className="text-4xl font-semibold text-white">{animatedScore}</span>
                   <span className="text-white/60 text-sm">/ 100</span>
@@ -432,7 +432,7 @@ const Dashboard = () => {
       {/* Three Cards Layout */}
       <div className="space-y-2">
         <p className="text-sm text-text-secondary flex items-center gap-2 my-2.5 font-normal">
-          <span></span> Tap a card below to view details and improve your health score.
+          <span></span> Tap a card below to view details and improve your daily wellness score.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
@@ -487,7 +487,7 @@ const Dashboard = () => {
               transition={{ delay: 0.5 }}
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 text-sky-600 dark:text-sky-400 bg-sky-500/10 rounded-xl">
+                <div className="p-3 text-[#6366F1] bg-[#6366F1]/10 rounded-xl">
                   <Moon className="w-6 h-6" />
                 </div>
                 <span className="text-sm font-medium text-text-secondary">

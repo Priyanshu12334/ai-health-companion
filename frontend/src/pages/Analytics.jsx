@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { BarChart3, Activity } from 'lucide-react';
+import { BarChart3, Activity, Smile, RefreshCw } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid } from 'recharts';
 import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
 import { SkeletonChart } from '../components/common/Skeletons';
+import { MOODS } from '../utils/moodConfig';
 
 const CustomTooltip = ({ active, payload, label, unit }) => {
   if (active && payload && payload.length) {
@@ -22,10 +23,13 @@ const CustomTooltip = ({ active, payload, label, unit }) => {
 const Analytics = () => {
   const { cache, getAnalyticsData } = useData();
   const [loading, setLoading] = useState(!cache.analytics);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchAnalytics = useCallback(async (isRefresh = false) => {
-    if (!cache.analytics && !isRefresh) {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else if (!cache.analytics) {
       setLoading(true);
     }
     setError(null);
@@ -37,6 +41,7 @@ const Analytics = () => {
       toast.error('Failed to load analytics data');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [cache.analytics, getAnalyticsData]);
 
@@ -45,7 +50,7 @@ const Analytics = () => {
     fetchAnalytics();
   }, [fetchAnalytics]);
 
-  const data = cache.analytics || { hydrationWeekly: [], sleepWeekly: [] };
+  const data = cache.analytics || { hydrationWeekly: [], sleepWeekly: [], moodWeekly: [] };
 
   // Helper to format date object to local YYYY-MM-DD
   const getLocalYYYYMMDD = (dateObj) => {
@@ -94,6 +99,22 @@ const Analytics = () => {
     };
   });
 
+  // Format Mood Data for current week (count every mood entry in the last 7 calendar days)
+  const validWeeklyDateKeys = new Set(last7Days.map(d => d.dateKey));
+  const moodWeeklyLogs = (data.moodWeekly || []).filter(item => 
+    validWeeklyDateKeys.has(getLocalYYYYMMDD(item.date || item.createdAt))
+  );
+
+  const moodCounts = MOODS.map(mood => {
+    const count = moodWeeklyLogs.filter(m => m.mood === mood.name).length;
+    return {
+      ...mood,
+      count
+    };
+  });
+
+  const hasMoodData = moodWeeklyLogs.length > 0;
+
   // Dynamic Ticks
   const maxHydration = Math.max(...hydrationData.map(d => d.amount), 2500);
   const hydrationTicks = [0, 500, 1000, 1500, 2000, 2500];
@@ -111,9 +132,19 @@ const Analytics = () => {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto w-full">
-      <h2 className="text-2xl font-bold flex items-center gap-2">
-        <BarChart3 className="text-sky-600"/> Health Analytics
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          <BarChart3 className="text-sky-600"/> Health Analytics
+        </h2>
+        <button 
+          onClick={() => fetchAnalytics(true)}
+          disabled={refreshing}
+          className="flex items-center gap-1.5 px-3.5 py-2 bg-surface text-text-secondary border border-border-color rounded-xl text-xs font-bold transition-all duration-200 hover:scale-[1.02] shadow-2xs hover:shadow-md cursor-pointer active:scale-100"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+          {refreshing ? 'Refreshing...' : 'Refresh'}
+        </button>
+      </div>
       
       {error && !hydrationData.length && (
         <div className="glass-card p-6 border-red-200 dark:border-red-800 bg-rose-50/10 text-center space-y-3">
@@ -222,6 +253,37 @@ const Analytics = () => {
           </>
         )}
       </div>
+
+      {/* Weekly Mood Section */}
+      {loading ? (
+        <SkeletonChart />
+      ) : (
+        <div className="glass-card p-6 border-sky-500/20">
+          <h3 className="font-bold text-lg mb-4 text-sky-600 dark:text-sky-600 flex items-center gap-2">
+            <Smile className="w-5 h-5 text-sky-600 dark:text-sky-600"/> Weekly Mood
+          </h3>
+          {hasMoodData ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {moodCounts.map((item) => (
+                <div 
+                  key={item.name} 
+                  className="p-3.5 bg-surface border border-border-color rounded-xl flex flex-col items-center justify-center text-center space-y-1.5 transition-all"
+                >
+                  <img src={item.iconUrl} alt={item.name} className="w-8 h-8 object-contain" />
+                  <span className="font-semibold text-xs text-text-sky">{item.name}</span>
+                  <span className="text-xs font-bold text-text-secondary bg-card px-2.5 py-0.5 rounded-full border border-border-color">
+                    {item.count} {item.count === 1 ? 'entry' : 'entries'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="py-8 flex items-center justify-center text-text-secondary text-sm font-medium">
+              No mood entries recorded this week.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

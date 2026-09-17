@@ -161,8 +161,8 @@ const MedicalReports = () => {
   return (
     <div className="space-y-6">
       <header className="mb-4">
-        <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-2">
-          <FileText className="text-sky-600 w-8 h-8 md:w-10 md:h-10" />
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-bold flex items-center gap-2">
+          <FileText className="text-sky-600 w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 shrink-0" />
           Medical Report Simplifier
         </h1>
         <p className="text-text-secondary mt-1">

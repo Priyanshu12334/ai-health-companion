@@ -26,8 +26,8 @@ const faqs = [
     answer: "Wellora is an AI-powered health companion that helps you track daily wellness, understand your health data, and get personalized health insights."
   },
   {
-    question: "How does the Health Score work?",
-    answer: "The Health Score is calculated using your sleep, hydration, and daily mood data. It gives you an overall score out of 100 to help you track your wellness progress."
+    question: "How does the Daily Wellness Score work?",
+    answer: "The Daily Wellness Score is calculated using your sleep, hydration, and daily mood data. It gives you an overall score out of 100 to help you track your wellness progress."
   },
   {
     question: "Can Wellora provide personalized health recommendations?",
@@ -111,7 +111,7 @@ const Landing = () => {
           </div>
 
           <div className="flex flex-wrap justify-center items-center gap-3 max-w-3xl mx-auto pt-6 sm:pt-8">
-            <BenefitBadge label="Health Score Tracking" />
+            <BenefitBadge label="Daily Wellness Score Tracking" />
             <BenefitBadge label="Nutrition Insights" />
             <BenefitBadge label="AI Health Assistant" />
             <BenefitBadge label="Medical Report Analysis" />

@@ -1,6 +1,6 @@
 # Wellora – AI Health Companion
 
-Wellora is a state-of-the-art MERN-stack health platform designed to empower users on their wellness journey. It integrates comprehensive tracking modules for hydration, sleep, and mood with a real-time **Health Score** calculator. The platform also features an offline-first **Nutrition Coach** with a local database of 310+ common foods, a context-aware **AI Health Assistant**, and an **AI Medical Report Simplifier** that translates complex clinical reports into patient-friendly summaries using optical character recognition (OCR) and LLM analysis.
+Wellora is a state-of-the-art MERN-stack health platform designed to empower users on their wellness journey. It integrates comprehensive tracking modules for hydration, sleep, and mood with a real-time **Daily Wellness Score** calculator. The platform also features an offline-first **Nutrition Coach** with a local database of 310+ common foods, a context-aware **AI Health Assistant**, and an **AI Medical Report Simplifier** that translates complex clinical reports into patient-friendly summaries using optical character recognition (OCR) and LLM analysis.
 
 ---
 
@@ -17,7 +17,7 @@ Wellora is a state-of-the-art MERN-stack health platform designed to empower use
 * **Mood Logger**: Track emotional state and log historical moods.
 * **Health Analytics**: Clean, responsive Recharts layouts charting weekly water intake and sleep logs.
 
-### 📈 Daily Health Score
+### 📈 Daily Wellness Score
 * **Real-time Scoring**: Client-side calculation mapping daily habits (Sleep: 40%, Hydration: 30%, Mood: 30%) to a 0-100 score.
 * **Featured Display Card**: Circular animated progress ring with health status indicators (Poor, Fair, Good, Excellent) and dynamic wellness insights.
 * **Zero-Default Safety**: Cleans up missing logs cleanly without layout shifts or NaNs.
@@ -33,7 +33,7 @@ Wellora is a state-of-the-art MERN-stack health platform designed to empower use
 ### 🍎 Nutrition Coach
 * **Local Food Matcher**: Search engine checking a local database of **310+ common foods** (spanning fruits, dairy, street food, beverages, and traditional Indian snacks).
 * **Groq AI Fallback**: Automated AI matching mapping unknown food requests to structured nutritional values using LLM prompts.
-* **Diet suggestions**: Offline Vegetarian and Non-Vegetarian suggestions rotated dynamically based on user Health Score.
+* **Diet suggestions**: Offline Vegetarian and Non-Vegetarian suggestions rotated dynamically based on user Daily Wellness Score.
 
 ### 📄 Medical Report Simplifier
 * **Multi-Format Uploads**: Support for PDFs and images (PNG, JPG, JPEG, and WEBP).
@@ -132,7 +132,7 @@ wellora-ai-health-companion/
 
 ### 🍎 Nutrition Coach
 * `GET /api/nutrition/search?q=<food>` — Search nutrition information in offline DB or fallback to AI (protected).
-* `GET /api/nutrition/suggestions?preference=<pref>` — Retrieve meal suggestions based on Health Score (protected).
+* `GET /api/nutrition/suggestions?preference=<pref>` — Retrieve meal suggestions based on Daily Wellness Score (protected).
 
 ### 📄 Medical Report Simplifier
 * `POST /api/medical-reports/upload` — Parse medical report (PDF/image) using OCR and AI (protected).

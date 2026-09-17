@@ -166,7 +166,7 @@ Return ONLY valid JSON. Do not include markdown code blocks or explanations.`;
   }
 };
 
-// Get Meal Suggestions based on local Health Score
+// Get Meal Suggestions based on local Daily Wellness Score
 export const getMealSuggestions = async (req, res) => {
   try {
     let healthScore = req.query.healthScore !== undefined && req.query.healthScore !== "" ? parseInt(req.query.healthScore) : null;

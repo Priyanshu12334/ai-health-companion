@@ -135,7 +135,7 @@ const AIChat = () => {
             </div>
             <h3 className="text-base md:text-lg font-bold text-text-sky">How can I help you today?</h3>
             <p className="text-sm max-w-sm text-text-secondary leading-relaxed">
-              Ask me about your hydration, sleep quality, daily mood, or tips for improving your overall health score!
+              Ask me about your hydration, sleep quality, daily mood, or tips for improving your overall daily wellness score!
             </p>
           </motion.div>
         )}

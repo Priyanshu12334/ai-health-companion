@@ -288,7 +288,7 @@ const Nutrition = () => {
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between items-center border-b border-white/20 pb-2">
-                      <span className="text-xs text-white/70">Based on Health Score</span>
+                      <span className="text-xs text-white/70">Based on Daily Wellness Score</span>
                       <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs font-bold">{suggestions.score} %</span>
                     </div>
                   </div>

@@ -134,7 +134,7 @@ const Hydration = () => {
                 <p className="text-xl font-bold text-sky-600 dark:text-sky-400 mt-1">{remainingWater} ml</p>
               </div>
               <div className="bg-surface/60 p-3 rounded-xl">
-                <p className="text-xs text-text-secondary font-semibold uppercase tracking-wider">Health Score Contribution</p>
+                <p className="text-xs text-text-secondary font-semibold uppercase tracking-wider">Daily Wellness Score Contribution</p>
                 <p className="text-xl font-bold text-sky-600 dark:text-sky-400 mt-1">{hydrationScore} / 30</p>
               </div>
             </div>

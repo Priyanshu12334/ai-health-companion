@@ -30,7 +30,7 @@ export const chatWithAI = async (req, res) => {
     const sleepLog = await SleepLog.findOne({ userId: req.user._id, date: { $gte: startOfToday } }).sort({ date: -1 });
     const moodLog = await MoodLog.findOne({ userId: req.user._id, date: { $gte: startOfToday } }).sort({ date: -1 });
 
-    // Calculate Health Score dynamically matching frontend formulas
+    // Calculate Daily Wellness Score dynamically matching frontend formulas
     let sleepScore = 25;
     if (sleepLog) {
       const sleepDuration = sleepLog.duration;
@@ -136,9 +136,9 @@ Possible intents: Sleep, Hydration, Mood, Nutrition, Breakfast, Lunch, Dinner, G
 - If user asks about breakfast: Suggest options from [Poha, Upma, Sprouts, Oats, Eggs, Banana, Milk]. DO NOT mention hydration or water unless hydration is critically low (< 1000ml).
 - If user asks about lunch: Suggest options from [Roti, Dal, Rice, Rajma, Paneer, Vegetables, Curd]. DO NOT mention water, sleep, or mood.
 - If user asks about dinner: Suggest options from [Roti, Dal, Paneer, Khichdi, Vegetables, Soup]. DO NOT mention water, sleep, or mood.
-- If user asks "I feel tired": Use ONLY sleep, mood, or health score to respond. Do not talk about hydration or water.
+- If user asks "I feel tired": Use ONLY sleep, mood, or daily wellness score to respond. Do not talk about hydration or water.
 - If user asks "I feel dehydrated": Use ONLY hydration data to respond.
-- If user asks "Why is my health score low?": Use health score breakdown to respond.
+- If user asks "Why is my daily wellness score low?": Use daily wellness score breakdown to respond.
 
 3. Never mention all health metrics in every answer.
 4. Give direct answers first.
