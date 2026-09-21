@@ -177,8 +177,8 @@ const Analytics = () => {
                     <AreaChart data={hydrationData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorWater" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#0284c7" stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor="#0284c7" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.2} />
@@ -200,7 +200,7 @@ const Analytics = () => {
                       <Tooltip 
                         content={<CustomTooltip unit="ml" />}
                       />
-                      <Area type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorWater)" />
+                      <Area type="monotone" dataKey="amount" stroke="#0284c7" strokeWidth={3} fillOpacity={1} fill="url(#colorWater)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
@@ -212,8 +212,8 @@ const Analytics = () => {
             </div>
 
             {/* Weekly Sleep Chart */}
-            <div className="glass-card p-6 border-sky-500/20">
-              <h3 className="font-bold text-lg mb-4 text-sky-600 dark:text-sky-600 flex items-center gap-2">
+            <div className="glass-card p-6 border-indigo-500/20">
+              <h3 className="font-bold text-lg mb-4 text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
                 <Activity className="w-5 h-5"/> Weekly Sleep
               </h3>
               <div className="h-64 w-full">
@@ -259,8 +259,8 @@ const Analytics = () => {
         <SkeletonChart />
       ) : (
         <div className="glass-card p-6 border-sky-500/20">
-          <h3 className="font-bold text-lg mb-4 text-sky-600 dark:text-sky-600 flex items-center gap-2">
-            <Smile className="w-5 h-5 text-sky-600 dark:text-sky-600"/> Weekly Mood
+          <h3 className="font-bold text-lg mb-4 text-orange-600 dark:text-orange-400 flex items-center gap-2">
+            <Smile className="w-5 h-5 text-orange-600 dark:text-orange-400"/> Weekly Mood
           </h3>
           {hasMoodData ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   FileText, 
   UploadCloud, 
@@ -6,7 +6,6 @@ import {
   AlertCircle, 
   Loader2, 
   HeartPulse, 
-  Plus, 
   Calendar,
   CheckCircle2
 } from 'lucide-react';
@@ -24,6 +23,7 @@ const MedicalReports = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef(null);
 
   const fetchReports = useCallback(async (isRefresh = false) => {
     if (!cache.medicalReports && !isRefresh) {
@@ -80,6 +80,7 @@ const MedicalReports = () => {
     if (e.target.files && e.target.files[0]) {
       processFile(e.target.files[0]);
     }
+    e.target.value = '';
   };
 
   const processFile = async (file) => {
@@ -170,6 +171,15 @@ const MedicalReports = () => {
         </p>
       </header>
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        id="report-file-input"
+        accept=".pdf,image/png,image/jpeg,image/jpg,image/webp"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       {/* Main Responsive Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
@@ -178,12 +188,9 @@ const MedicalReports = () => {
           <div className="glass-card p-4 flex flex-col h-[500px]">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-lg text-text-sky">History</h2>
-              <button 
-                onClick={() => setSelectedReport(null)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 rounded-full text-xs font-bold cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" /> New Report
-              </button>
+              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 rounded-full text-xs font-bold">
+                All Reports
+              </span>
             </div>
 
             {loading ? (
@@ -296,8 +303,17 @@ const MedicalReports = () => {
                       File: {selectedReport.fileName} ({formatBytes(selectedReport.fileSize)})
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-text-secondary bg-surface px-3 py-1.5 rounded-full">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Simplified by Wellora AI
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3 py-1.5 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400 rounded-full text-xs font-bold hover:bg-sky-100 dark:hover:bg-sky-900/30 transition-colors cursor-pointer"
+                    >
+                      + Upload New Report
+                    </button>
+                    <div className="flex items-center gap-2 text-xs text-text-secondary bg-surface px-3 py-1.5 rounded-full">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Simplified by Wellora AI
+                    </div>
                   </div>
                 </div>
 
@@ -481,13 +497,6 @@ const MedicalReports = () => {
                   onDrop={handleDrop}
                   onClick={() => document.getElementById('report-file-input').click()}
                 >
-                  <input 
-                    type="file" 
-                    id="report-file-input"
-                    accept=".pdf,image/png,image/jpeg,image/jpg,image/webp"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
                   <div className="p-4 bg-sky-50 dark:bg-sky-900/20 rounded-full mb-4 text-sky-600 dark:text-sky-400">
                     <UploadCloud className="w-10 h-10 md:w-12 md:h-12" />
                   </div>

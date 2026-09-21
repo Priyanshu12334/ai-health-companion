@@ -146,7 +146,7 @@ const Hydration = () => {
         <button 
           onClick={() => addWater(250)} 
           disabled={adding || loading} 
-          className="glass-card p-4 flex flex-col items-center hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-colors border-sky-200 dark:border-sky-800 disabled:opacity-50"
+          className="glass-card p-4 flex flex-col items-center hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-colors border-sky-200 dark:border-sky-800 disabled:opacity-50 cursor-pointer"
         >
           <Plus className="w-6 h-6 text-sky-500 mb-2" />
           <span className="font-bold">250ml</span>
@@ -155,7 +155,7 @@ const Hydration = () => {
         <button 
           onClick={() => addWater(500)} 
           disabled={adding || loading} 
-          className="glass-card p-4 flex flex-col items-center hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-colors border-sky-200 dark:border-sky-800 disabled:opacity-50"
+          className="glass-card p-4 flex flex-col items-center hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-colors border-sky-200 dark:border-sky-800 disabled:opacity-50 cursor-pointer"
         >
           <Plus className="w-6 h-6 text-sky-500 mb-2" />
           <span className="font-bold">500ml</span>
@@ -164,7 +164,7 @@ const Hydration = () => {
         <button 
           onClick={() => addWater(1000)} 
           disabled={adding || loading} 
-          className="glass-card p-4 flex flex-col items-center hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-colors border-sky-200 dark:border-sky-800 disabled:opacity-50"
+          className="glass-card p-4 flex flex-col items-center hover:bg-sky-100 dark:hover:bg-sky-900/20 transition-colors border-sky-200 dark:border-sky-800 disabled:opacity-50 cursor-pointer"
         >
           <Plus className="w-6 h-6 text-sky-500 mb-2" />
           <span className="font-bold">1L</span>
