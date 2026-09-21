@@ -20,7 +20,7 @@ const Layout = () => {
             <h1 className="text-xl font-bold tracking-tight">Wellora</h1>
           </div>
           
-          <nav className="flex-1 space-y-1.5">
+          <nav className="flex-1 space-y-2.5">
             <NavItem to="/dashboard" icon={<Home />} label="Dashboard" />
             <NavItem to="/hydration" icon={<Droplets />} label="Hydration" />
             <NavItem to="/sleep" icon={<Moon />} label="Sleep" />

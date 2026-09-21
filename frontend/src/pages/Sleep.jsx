@@ -59,13 +59,13 @@ const Sleep = () => {
         quality: formData.quality
       });
       
-      if (parsedHours >= data.goal) {
+      const freshData = await getSleepData(true);
+      if (freshData.log?.duration >= freshData.goal) {
         toast.success('😴 Sleep Goal Achieved');
       } else {
         toast.success('Sleep logged successfully');
       }
-      
-      const freshData = await getSleepData(true);
+
       if (cache.dashboard) {
         setCache(prev => ({
           ...prev,

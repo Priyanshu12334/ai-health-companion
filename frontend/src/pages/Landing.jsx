@@ -4,9 +4,9 @@ import { HeartPulse, MessageCircle, Apple, BarChart3, FileText, Check, ChevronDo
 import { motion, AnimatePresence } from 'framer-motion';
 
 const BenefitBadge = ({ label }) => (
-  <span className="flex items-center gap-2.5 h-[44px] px-5 bg-white border border-[#E2E8F0] rounded-full text-[#334155] text-sm sm:text-[15px] font-semibold shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)] hover:-translate-y-0.5 transition-all duration-200 ease whitespace-nowrap cursor-default">
-    <Check className="w-[19px] h-[19px] text-[#0EA5E9] shrink-0" />
-    <span>{label}</span>
+  <span className="flex items-center gap-1.5 sm:gap-2.5 min-h-[40px] sm:h-[44px] px-2.5 sm:px-5 py-1.5 sm:py-0 bg-white border border-[#E2E8F0] rounded-2xl sm:rounded-full text-[#334155] text-[11.5px] sm:text-[15px] font-semibold shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)] hover:-translate-y-0.5 transition-all duration-200 ease whitespace-normal sm:whitespace-nowrap cursor-default min-w-0 w-full sm:w-auto text-left leading-snug">
+    <Check className="w-3.5 h-3.5 sm:w-[19px] sm:h-[19px] text-[#0EA5E9] shrink-0" />
+    <span className="min-w-0 break-words">{label}</span>
   </span>
 );
 
@@ -110,12 +110,14 @@ const Landing = () => {
             </a>
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-3 max-w-3xl mx-auto pt-6 sm:pt-8">
+          <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:justify-center sm:items-center sm:gap-3 max-w-3xl mx-auto pt-6 sm:pt-8 w-full px-2 sm:px-0">
             <BenefitBadge label="Daily Wellness Score Tracking" />
             <BenefitBadge label="Nutrition Insights" />
             <BenefitBadge label="AI Health Assistant" />
             <BenefitBadge label="Medical Report Analysis" />
-            <BenefitBadge label="Personalized Recommendations" />
+            <div className="col-span-2 flex justify-center sm:contents">
+              <BenefitBadge label="Personalized Recommendations" />
+            </div>
           </div>
         </motion.div>
 

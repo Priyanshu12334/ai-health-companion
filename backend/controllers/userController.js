@@ -3,25 +3,91 @@ import HydrationLog from '../models/HydrationLog.js';
 import SleepLog from '../models/SleepLog.js';
 import MoodLog from '../models/MoodLog.js';
 import { updateUserStreak } from '../utils/streakHelper.js';
-import { getTimezoneOffset, toLocalDateString } from '../utils/timezone.js';
+import { getTimezoneOffset, getStartOfToday, toLocalDateString } from '../utils/timezone.js';
 
 export const onboardUser = async (req, res) => {
   try {
-    const { age, gender, height, weight, wakeupTime, bedtime, goals } = req.body;
+    const {
+      age, gender, height, weight,
+      dailyWaterGoal, waterGoalUnit, waterGoalDisplay,
+      dailySleepGoal, sleepGoal,
+      currentMood, goals
+    } = req.body;
+
+    const parsedAge = Number(age);
+    if (!age || isNaN(parsedAge) || parsedAge <= 0) {
+      return res.status(400).json({ message: 'Valid positive age is required' });
+    }
+
+    let parsedHeight;
+    if (height !== '' && height !== undefined && height !== null) {
+      parsedHeight = Number(height);
+      if (isNaN(parsedHeight) || parsedHeight <= 0) {
+        return res.status(400).json({ message: 'Height must be a valid positive number' });
+      }
+    }
+
+    let parsedWeight;
+    if (weight !== '' && weight !== undefined && weight !== null) {
+      parsedWeight = Number(weight);
+      if (isNaN(parsedWeight) || parsedWeight <= 0) {
+        return res.status(400).json({ message: 'Weight must be a valid positive number' });
+      }
+    }
+
+    // Water goal: normalized value in ml required
+    const parsedWater = Number(dailyWaterGoal);
+    if (!dailyWaterGoal || isNaN(parsedWater) || parsedWater <= 0) {
+      return res.status(400).json({ message: 'Valid positive hydration goal is required' });
+    }
+
+    // Sleep goal: required
+    const sleepGoalRaw = dailySleepGoal ?? sleepGoal;
+    const parsedSleep = Number(sleepGoalRaw);
+    if (!sleepGoalRaw || isNaN(parsedSleep) || parsedSleep <= 0) {
+      return res.status(400).json({ message: 'Valid positive sleep goal is required' });
+    }
+
+    if (!currentMood) {
+      return res.status(400).json({ message: 'Current mood is required' });
+    }
+
+    if (!goals || !Object.values(goals).some(val => val === true)) {
+      return res.status(400).json({ message: 'Please select at least one goal' });
+    }
 
     const user = await User.findById(req.user._id);
 
     if (user) {
-      if (age !== '' && age !== undefined) user.age = Number(age);
+      user.age = parsedAge;
       if (gender) user.gender = gender;
-      if (height !== '' && height !== undefined) user.height = Number(height);
-      if (weight !== '' && weight !== undefined) user.weight = Number(weight);
-      if (wakeupTime) user.wakeupTime = wakeupTime;
-      if (bedtime) user.bedtime = bedtime;
-      if (goals) user.goals = goals;
+      if (parsedHeight !== undefined) user.height = parsedHeight;
+      if (parsedWeight !== undefined) user.weight = parsedWeight;
+
+      // Save water goal — both normalized ml value and display unit/value
+      user.dailyWaterGoal = parsedWater;
+      user.waterGoal = parsedWater;
+      user.waterGoalUnit = waterGoalUnit || 'ml';
+      user.waterGoalDisplay = waterGoalDisplay !== undefined ? Number(waterGoalDisplay) : parsedWater;
+
+      // Save sleep goal
+      user.dailySleepGoal = parsedSleep;
+      user.sleepGoal = parsedSleep;
+
+      user.goals = goals;
       user.onboardingCompleted = true;
 
       const updatedUser = await user.save();
+
+      // Create initial mood log for today
+      if (currentMood) {
+        const startOfToday = getStartOfToday(req);
+        await MoodLog.create({
+          userId: user._id,
+          mood: currentMood,
+          date: startOfToday
+        });
+      }
 
       res.json({
         _id: updatedUser._id,
@@ -34,13 +100,14 @@ export const onboardUser = async (req, res) => {
     }
   } catch (error) {
     console.error('Onboarding Error:', error);
-    res.status(500).json({ message: error.message, stack: error.stack, name: error.name });
+    res.status(500).json({ message: error.message });
   }
 };
 
+
 export const updateSettings = async (req, res) => {
   try {
-    const { dailyWaterGoal, dailySleepGoal, name, email } = req.body;
+    const { dailyWaterGoal, waterGoalUnit, waterGoalDisplay, dailySleepGoal, name, email } = req.body;
     
     const user = await User.findById(req.user._id);
 
@@ -53,6 +120,10 @@ export const updateSettings = async (req, res) => {
       if (!isNaN(parsedWater) && parsedWater > 0) {
         user.dailyWaterGoal = parsedWater;
         user.waterGoal = parsedWater;
+        // Persist display unit & value
+        if (waterGoalUnit) user.waterGoalUnit = waterGoalUnit;
+        const displayVal = waterGoalDisplay !== undefined ? Number(waterGoalDisplay) : parsedWater;
+        if (!isNaN(displayVal) && displayVal > 0) user.waterGoalDisplay = displayVal;
       }
     }
 
@@ -97,6 +168,8 @@ export const updateSettings = async (req, res) => {
       dailyWaterGoal: updatedUser.dailyWaterGoal,
       dailySleepGoal: updatedUser.dailySleepGoal,
       waterGoal: updatedUser.waterGoal,
+      waterGoalUnit: updatedUser.waterGoalUnit,
+      waterGoalDisplay: updatedUser.waterGoalDisplay,
       sleepGoal: updatedUser.sleepGoal,
       onboardingCompleted: updatedUser.onboardingCompleted,
     });

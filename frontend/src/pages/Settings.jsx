@@ -16,41 +16,77 @@ const Settings = () => {
  };
 
  const [formData, setFormData] = useState({
- name: user?.name || '',
- email: user?.email || '',
- dailyWaterGoal: 2000,
- dailySleepGoal: 8,
+   name: user?.name || '',
+   email: user?.email || '',
+   // Water goal — display value + unit (populated from DB on mount)
+   waterGoalDisplay: '',
+   waterGoalUnit: 'ml',
+   // Sleep goal (populated from DB on mount)
+   dailySleepGoal: '',
  });
  const [loading, setLoading] = useState(false);
+ const [profileLoaded, setProfileLoaded] = useState(false);
 
  useEffect(() => {
- // Fetch current profile to get goals
- const fetchProfile = async () => {
- try {
- const res = await api.get('/auth/me');
- setFormData({
- name: res.data.name,
- email: res.data.email,
- dailyWaterGoal: res.data.dailyWaterGoal || 2000,
- dailySleepGoal: res.data.dailySleepGoal || 8,
- });
- } catch (error) {
- console.error("Failed to load profile", error);
- }
- };
- fetchProfile();
+   // Fetch current profile to get saved goals
+   const fetchProfile = async () => {
+     try {
+       const res = await api.get('/auth/me');
+       const d = res.data;
+
+       // Determine display value + unit from saved data
+       // Prefer waterGoalUnit/waterGoalDisplay if saved, otherwise derive from waterGoal in ml
+       const savedUnit = d.waterGoalUnit || 'ml';
+       let savedDisplay;
+       if (d.waterGoalDisplay !== undefined && d.waterGoalDisplay !== null) {
+         savedDisplay = d.waterGoalDisplay;
+       } else {
+         // Legacy: only ml value stored — show as-is in ml
+         savedDisplay = d.waterGoal || d.dailyWaterGoal || 2000;
+       }
+
+       // Sleep goal: use saved value; fallback to 8 only if truly no value
+       const savedSleep = d.sleepGoal ?? d.dailySleepGoal ?? 8;
+
+       setFormData({
+         name: d.name,
+         email: d.email,
+         waterGoalDisplay: savedDisplay,
+         waterGoalUnit: savedUnit,
+         dailySleepGoal: savedSleep,
+       });
+       setProfileLoaded(true);
+     } catch (error) {
+       console.error('Failed to load profile', error);
+     }
+   };
+   fetchProfile();
  }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await api.put('/user/settings', formData);
+      // Normalize to ml for backend storage
+      const displayVal = Number(formData.waterGoalDisplay);
+      const waterGoalInMl = formData.waterGoalUnit === 'L' ? displayVal * 1000 : displayVal;
+
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        dailyWaterGoal: waterGoalInMl,       // normalized ml value
+        waterGoalUnit: formData.waterGoalUnit, // "L" or "ml"
+        waterGoalDisplay: displayVal,         // raw display value
+        dailySleepGoal: Number(formData.dailySleepGoal),
+      };
+
+      const res = await api.put('/user/settings', payload);
       // Sync AuthContext + localStorage so Dashboard/header updates instantly
       updateUser({
         name: res.data.name || formData.name,
         email: res.data.email || formData.email,
       });
+      clearCache();
       toast.success('Settings updated successfully');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update settings');
@@ -95,18 +131,47 @@ const Settings = () => {
  <h3 className="text-lg font-bold flex items-center gap-2 mb-4 border-b border-border-color pb-2"><Target className="w-5 h-5 text-emerald-500" /> Daily Goals</h3>
  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
  <div>
- <label className="block text-sm font-medium mb-1">Water Goal (ml)</label>
- <input type="number" className="input-field" value={formData.dailyWaterGoal} onChange={(e) => setFormData({...formData, dailyWaterGoal: Number(e.target.value)})} required />
+   <label className="block text-sm font-medium mb-1">Water Goal</label>
+   <div className="flex items-center gap-2">
+     <input
+       type="number"
+       className="input-field flex-1"
+        step={formData.waterGoalUnit === 'L' ? 0.1 : 1}
+        min={formData.waterGoalUnit === 'L' ? 0.1 : 1}
+       value={formData.waterGoalDisplay}
+       onChange={(e) => setFormData({...formData, waterGoalDisplay: e.target.value})}
+       required
+     />
+     <select
+       className="input-field w-24 shrink-0"
+       value={formData.waterGoalUnit}
+       onChange={(e) => {
+         const newUnit = e.target.value;
+         const currentDisplay = Number(formData.waterGoalDisplay);
+         // Convert display value when switching units
+         let newDisplay = currentDisplay;
+         if (newUnit === 'L' && formData.waterGoalUnit === 'ml') {
+           newDisplay = parseFloat((currentDisplay / 1000).toFixed(2));
+         } else if (newUnit === 'ml' && formData.waterGoalUnit === 'L') {
+           newDisplay = Math.round(currentDisplay * 1000);
+         }
+         setFormData({...formData, waterGoalUnit: newUnit, waterGoalDisplay: newDisplay});
+       }}
+     >
+       <option value="L">L</option>
+       <option value="ml">ml</option>
+     </select>
+   </div>
  </div>
  <div>
- <label className="block text-sm font-medium mb-1">Sleep Goal(hours)</label>
- <input type="number" step="0.5" className="input-field" value={formData.dailySleepGoal} onChange={(e) => setFormData({...formData, dailySleepGoal: Number(e.target.value)})} required />
+ <label className="block text-sm font-medium mb-1">Sleep Goal (hours)</label>
+ <input type="number" step="0.5" className="input-field" value={formData.dailySleepGoal} onChange={(e) => setFormData({...formData, dailySleepGoal: e.target.value})} required />
  </div>
  </div>
  </div>
 
  <div className="pt-2 flex justify-end">
- <button type="submit" disabled={loading} className="btn-sky w-auto px-8">
+ <button type="submit" disabled={loading || !profileLoaded} className="btn-sky w-auto px-8">
  {loading ? 'Saving...' : 'Save Changes'}
  </button>
  </div>

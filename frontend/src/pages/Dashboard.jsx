@@ -272,9 +272,9 @@ const Dashboard = () => {
           transition={{ delay: 0.2 }}
         >
           <div className="absolute top-0 right-2 md:right-4 p-4 md:p-6 opacity-20 pointer-events-none">
-            <Sparkles className="w-28 h-28" />
+            <Sparkles className="w-20 h-28" />
           </div>
-          <div className="relative z-10 max-w-3xl space-y-2">
+          <div className="relative z-10 max-w-4xl space-y-2">
             <h3 className="text-lg md:text-xl font-bold tracking-tight">AI Insight</h3>
             <p className="text-white/95 text-sm md:text-base leading-relaxed">
               {data.mood?.log?.mood
@@ -525,7 +525,7 @@ const Dashboard = () => {
                 return (
                   <>
                     <div className="flex items-center justify-between mb-4">
-                      <div className={`p-3 rounded-xl flex items-center justify-center w-12 h-12 ${currentMoodObj ? currentMoodObj.textColor + ' bg-surface' : 'bg-sky-500/10 text-sky-600 dark:text-sky-400'}`}>
+                      <div className={`p-3 rounded-xl flex items-center justify-center w-12 h-12 bg-orange-100 ${currentMoodObj ? currentMoodObj.textColor : 'text-[#F59E0B] dark:text-[#FBBF24]'}`}>
                         {currentMoodObj?.iconUrl ? (
                           <img src={currentMoodObj.iconUrl} alt={currentMoodObj.name} className="w-8 h-8 object-contain" />
                         ) : (
@@ -534,7 +534,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <h3 className="font-bold text-lg">Current Mood</h3>
-                    <p className={`text-2xl font-bold mt-1 capitalize ${currentMoodObj ? currentMoodObj.textColor : 'text-text-primary'}`}>
+                    <p className={`text-lg font-bold mt-1 capitalize ${currentMoodObj ? currentMoodObj.textColor : 'text-text-primary'}`}>
                       {data.mood?.log ? data.mood.log.mood : 'Not logged'}
                     </p>
                   </>

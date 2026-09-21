@@ -12,16 +12,20 @@ const userSchema = new mongoose.Schema({
   goals: {
     improveHydration: { type: Boolean, default: false },
     betterSleep: { type: Boolean, default: false },
+    improveMood: { type: Boolean, default: false },
+    improveNutrition: { type: Boolean, default: false },
     buildHealthyHabits: { type: Boolean, default: false },
     improveEnergyLevels: { type: Boolean, default: false },
-    improveConsistency: { type: Boolean, default: false }
+    trackOverallWellness: { type: Boolean, default: false }
   },
   wakeupTime: { type: String }, // e.g. "07:00"
   bedtime: { type: String }, // e.g. "23:00"
   onboardingCompleted: { type: Boolean, default: false },
-  dailyWaterGoal: { type: Number, default: 2000 }, // in ml
+  dailyWaterGoal: { type: Number, default: 2000 }, // in ml (normalized)
   dailySleepGoal: { type: Number, default: 8 }, // in hours
-  waterGoal: { type: Number, default: 2000 }, // in ml
+  waterGoal: { type: Number, default: 2000 }, // in ml (normalized)
+  waterGoalUnit: { type: String, default: 'ml' }, // "L" or "ml" — user-selected display unit
+  waterGoalDisplay: { type: Number, default: 2000 }, // user-entered display value (e.g. 4 when unit is L)
   sleepGoal: { type: Number, default: 8 }, // in hours
   streakCount: { type: Number, default: 0 },
   lastCompletedDate: { type: String, default: "" }

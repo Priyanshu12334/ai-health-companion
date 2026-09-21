@@ -14,8 +14,14 @@ export const chatWithAI = async (req, res) => {
       return res.status(400).json({ message: 'Message is required' });
     }
 
+    const groqApiKey = process.env.GROQ_API_KEY?.trim();
+    if (!groqApiKey) {
+      console.error('Groq API Error: GROQ_API_KEY is missing');
+      return res.status(500).json({ message: 'Groq API key is not configured' });
+    }
+
     const openai = new OpenAI({
-      apiKey: process.env.GROQ_API_KEY,
+      apiKey: groqApiKey,
       baseURL: 'https://api.groq.com/openai/v1'
     });
 
@@ -148,17 +154,37 @@ Possible intents: Sleep, Hydration, Mood, Nutrition, Breakfast, Lunch, Dinner, G
 8. Keep answers practical and personalized.
 `;
 
-    const completion = await openai.chat.completions.create({
-      model: "openai/gpt-oss-120b",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: message }
-      ],
-      temperature: 0.7,
-      max_tokens: 150
-    });
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: "openai/gpt-oss-120b",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      });
+    } catch (apiError) {
+      console.error('Groq API Error:', apiError);
+      return res.status(502).json({
+        message: `Groq API request failed: ${apiError.message}`,
+        error: apiError.message,
+        status: apiError.status
+      });
+    }
 
-    const aiResponse = completion.choices[0].message.content;
+    const messageContent = completion?.choices?.[0]?.message?.content;
+    const aiResponse = Array.isArray(messageContent)
+      ? messageContent.map((part) => typeof part === 'string' ? part : part?.text || '').join('').trim()
+      : typeof messageContent === 'string' ? messageContent.trim() : '';
+
+    if (!aiResponse) {
+      console.error('Groq AI Error: Groq returned an empty or invalid response', completion);
+      return res.status(502).json({
+        message: 'Groq AI returned an empty or invalid response'
+      });
+    }
 
     // Store chat
     const chatLog = await AIChat.create({

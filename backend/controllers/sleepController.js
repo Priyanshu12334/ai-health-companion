@@ -40,14 +40,22 @@ export const addSleep = async (req, res) => {
 export const getDailySleep = async (req, res) => {
   try {
     const startOfToday = getStartOfToday(req);
+    const endOfToday = new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000);
 
     // Recalculate streak on data load
     await updateUserStreak(req.user._id, req);
 
-    const log = await SleepLog.findOne({ 
+    const dailyLogs = await SleepLog.find({
       userId: req.user._id,
-      date: { $gte: startOfToday }
+      date: { $gte: startOfToday, $lt: endOfToday }
     }).sort({ date: -1 });
+
+    const log = dailyLogs.length > 0
+      ? {
+          ...dailyLogs[0].toObject(),
+          duration: dailyLogs.reduce((total, dailyLog) => total + dailyLog.duration, 0)
+        }
+      : null;
 
     const history = await SleepLog.find({
       userId: req.user._id
