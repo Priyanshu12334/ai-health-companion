@@ -139,12 +139,12 @@ const Mood = () => {
                   disabled={saving || loading}
                   className={`flex flex-col items-center justify-center w-24 h-24 rounded-2xl transition-all duration-200 cursor-pointer transform hover:scale-[1.03] ${
                     isCurrent 
-                      ? 'scale-[1.03] bg-sky-600 text-white font-bold shadow-md border border-transparent'
+                      ? 'scale-[1.03] bg-orange-100 text-text-sky font-bold shadow-md border border-transparent'
                       : 'bg-surface text-text-sky border border-border-color hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-0.5 hover:shadow-xs'
                   } ${saving || loading ? 'opacity-50 cursor-not-allowed transform-none' : ''}`}
                 >
                   <img src={mood.iconUrl} alt={mood.name} className="w-10 h-10 object-contain drop-shadow-xs transition-transform duration-200" />
-                  <span className={`mt-2 text-xs sm:text-sm font-semibold text-center ${isCurrent ? 'text-white' : ''}`}>{mood.name}</span>
+                  <span className={`mt-2 text-xs sm:text-sm font-semibold text-center ${isCurrent ? 'text-black' : ''}`}>{mood.name}</span>
                 </button>
               );
             })}

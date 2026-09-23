@@ -156,10 +156,10 @@ const Sleep = () => {
       {loading ? (
         <SkeletonGoalBanner />
       ) : (
-        <div className="glass-card p-6 bg-sky-600 text-white space-y-4">
+        <div className="glass-card p-6 bg-[#6366F1] text-white space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <p className="text-sky-200 text-sm mb-1">Total Sleep</p>
+              <p className="text-indigo-100 text-sm mb-1">Total Sleep</p>
               <h1 className="text-4xl font-bold">
                 {data.log ? `${data.log.duration} Hours` : '0 Hours'}
               </h1>
@@ -171,8 +171,8 @@ const Sleep = () => {
               </div>
             </div>
           </div>
-          <div className="pt-3 border-t border-sky-500/30 flex justify-between items-center">
-            <span className="text-sm text-sky-200 font-medium">Daily Wellness Score Contribution</span>
+          <div className="pt-3 border-t border-indigo-300/30 flex justify-between items-center">
+            <span className="text-sm text-indigo-100 font-medium">Daily Wellness Score Contribution</span>
             <span className="text-lg font-bold text-white bg-white/20 px-3 py-0.5 rounded-lg">{sleepScore} / 40</span>
           </div>
         </div>
@@ -180,7 +180,7 @@ const Sleep = () => {
 
       <div className="glass-card p-6 mt-6">
         <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-sky-600" /> Log Sleep
+          <Clock className="w-5 h-5 text-[#6366F1]" /> Log Sleep
         </h3>
         <form onSubmit={handleAddSleep} className="space-y-4">
           <div>
@@ -216,7 +216,7 @@ const Sleep = () => {
                     onClick={() => setFormData({ ...formData, quality: q.name })}
                     className={`p-2.5 sm:p-3 rounded-xl text-left transition-all duration-200 cursor-pointer ${
                       isSelected
-                        ? 'bg-sky-600 text-white font-bold shadow-md border border-transparent'
+                        ? 'bg-[#6366F1] text-white font-bold shadow-md border border-transparent'
                         : 'bg-surface text-text-sky border border-border-color hover:border-slate-300 dark:hover:border-slate-700'
                     } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
@@ -236,7 +236,7 @@ const Sleep = () => {
           <button 
             type="submit" 
             disabled={adding || loading} 
-            className="btn-sky bg-sky-600 hover:bg-sky-500 shadow-sky-500/30 disabled:opacity-50 disabled:transform-none cursor-pointer"
+            className="btn-sky bg-[#6366F1] hover:bg-[#4F46E5] shadow-[#6366F1]/30 disabled:opacity-50 disabled:transform-none cursor-pointer"
           >
             {adding ? 'Saving...' : 'Save Sleep Log'}
           </button>
@@ -264,7 +264,7 @@ const Sleep = () => {
               data.history.slice().reverse().map((log) => (
                 <div key={log._id} className="flex justify-between items-center p-4 bg-card rounded-xl shadow-sm border border-border-color transition-all duration-200 hover:shadow-md">
                   <div className="flex items-center gap-3">
-                    <Moon className="w-6 h-6 text-sky-600 dark:text-sky-400 shrink-0" />
+                    <Moon className="w-6 h-6 text-[#6366F1] shrink-0" />
                     <div>
                       <span className="font-semibold text-text-sky">{log.duration.toFixed(1)} hrs</span>
                       <span className="ml-2 text-xs font-medium px-2 py-0.5 rounded-md bg-surface text-text-secondary">
