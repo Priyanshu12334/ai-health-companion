@@ -28,9 +28,9 @@ function App() {
  <>
  <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
  <Routes>
- <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
- <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
- <Route path="/signup" element={user ? <Navigate to="/dashboard" /> : <Signup />} />
+  <Route path="/" element={user && user.onboardingCompleted ? <Navigate to="/dashboard" /> : <Landing />} />
+  <Route path="/login" element={user && user.onboardingCompleted ? <Navigate to="/dashboard" /> : <Login />} />
+  <Route path="/signup" element={user && user.onboardingCompleted ? <Navigate to="/dashboard" /> : <Signup />} />
  
  <Route path="/onboard" element={
  <ProtectedRoute>

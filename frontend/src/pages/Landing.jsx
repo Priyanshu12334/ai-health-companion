@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { HeartPulse, MessageCircle, Apple, BarChart3, FileText, Check, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,9 +10,9 @@ const BenefitBadge = ({ label }) => (
   </span>
 );
 
-const FeatureCard = ({ icon, title, description }) => (
-  <div className="glass-card p-6 flex flex-col items-start text-left hover:border-sky-500/50 transition-all duration-300 group hover:-translate-y-1">
-    <div className="w-12 h-12 rounded-2xl bg-[#0EA5E9] text-white flex items-center justify-center mb-5 shadow-[0_6px_16px_rgba(14,165,233,0.20)] group-hover:shadow-[0_8px_20px_rgba(14,165,233,0.30)] group-hover:scale-105 transition-all duration-200 ease shrink-0">
+const FeatureCard = ({ icon, title, description, iconStyle }) => (
+  <div className="glass-card p-6 flex flex-col items-start text-left hover:border-gray-900 dark:hover:border-white/60 transition-all duration-300 group hover:-translate-y-1">
+    <div className={`w-12 h-12 rounded-2xl text-white flex items-center justify-center mb-5 group-hover:scale-105 transition-all duration-200 ease shrink-0 ${iconStyle}`}>
       {icon}
     </div>
     <h3 className="text-lg sm:text-xl font-bold mb-2 text-text-sky">{title}</h3>
@@ -45,10 +45,32 @@ const faqs = [
 
 const Landing = () => {
   const [openFaq, setOpenFaq] = useState(null);
+  const faqRefs = useRef([]);
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
   };
+
+  useEffect(() => {
+    if (openFaq !== null) {
+      const cardEl = faqRefs.current[openFaq];
+      if (cardEl) {
+        const timer = setTimeout(() => {
+          const rect = cardEl.getBoundingClientRect();
+          const viewportHeight = window.innerHeight;
+          const padding = 24;
+          if (rect.bottom > viewportHeight - padding) {
+            const scrollAmount = rect.bottom - (viewportHeight - padding);
+            window.scrollBy({
+              top: scrollAmount,
+              behavior: 'smooth',
+            });
+          }
+        }, 220);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [openFaq]);
 
   return (
     <div className="min-h-screen bg-background text-text-sky flex flex-col relative overflow-x-hidden">
@@ -91,8 +113,8 @@ const Landing = () => {
             </span>
           </h1>
           
-          <p className="text-base sm:text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto px-2">
-            Monitor hydration, sleep, mood, nutrition, and medical reports with personalized AI-powered health insights.
+          <p className="text-base sm:text-lg md:text-lg font-medium text-text-secondary leading-relaxed max-w-2xl mx-auto px-2">
+            Track daily wellness with personalized nutrition insights, AI health assistance, and medical report simplification.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md sm:max-w-none justify-center items-stretch sm:items-center pt-2">
@@ -140,21 +162,25 @@ const Landing = () => {
             icon={<MessageCircle className="w-6 h-6" />}
             title="AI Health Assistant"
             description="Chat with Wellora to get personalized recommendations based on your unique data."
+            iconStyle="bg-[#0EA5E9] shadow-[0_6px_16px_rgba(14,165,233,0.20)] group-hover:shadow-[0_8px_20px_rgba(14,165,233,0.30)]"
           />
           <FeatureCard 
             icon={<Apple className="w-6 h-6" />}
             title="Nutrition Coach"
             description="Search food items and get instant nutrition info and meal suggestions."
+            iconStyle="bg-red-600 shadow-[0_6px_16px_rgba(220,38,38,0.20)] group-hover:shadow-[0_8px_20px_rgba(220,38,38,0.30)]"
           />
           <FeatureCard 
             icon={<BarChart3 className="w-6 h-6" />}
             title="Health Analytics"
             description="Visualize your sleep, hydration, and mood progress with clean, easy-to-read charts."
+            iconStyle="bg-green-600 shadow-[0_6px_16px_rgba(22,163,74,0.20)] group-hover:shadow-[0_8px_20px_rgba(22,163,74,0.30)]"
           />
           <FeatureCard 
             icon={<FileText className="w-6 h-6" />}
             title="Medical Report Simplifier"
             description="Upload PDFs/images and get simple, jargon-free explanations."
+            iconStyle="bg-[#7C3D1E] shadow-[0_6px_16px_rgba(124,61,30,0.22)] group-hover:shadow-[0_8px_20px_rgba(124,61,30,0.34)]"
           />
         </motion.div>
 
@@ -173,6 +199,7 @@ const Landing = () => {
               return (
                 <div 
                   key={index}
+                  ref={(el) => (faqRefs.current[index] = el)}
                   className="glass-card border border-border-color rounded-2xl overflow-hidden transition-all duration-200"
                 >
                   <button
@@ -186,18 +213,25 @@ const Landing = () => {
                     </div>
                   </button>
 
-                  <AnimatePresence>
+                  <AnimatePresence initial={false}>
                     {isOpen && (
                       <motion.div
+                        key="faq-answer"
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
+                        transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                         className="overflow-hidden"
                       >
-                        <p className="px-5 pb-4 sm:px-6 sm:pb-4 pt-0 text-text-secondary text-sm sm:text-base leading-relaxed">
+                        <motion.p
+                          initial={{ y: -6 }}
+                          animate={{ y: 0 }}
+                          exit={{ y: -6 }}
+                          transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+                          className="px-5 pb-5 sm:px-6 sm:pb-5 pt-0 text-text-secondary text-sm sm:text-base leading-relaxed"
+                        >
                           {faq.answer}
-                        </p>
+                        </motion.p>
                       </motion.div>
                     )}
                   </AnimatePresence>

@@ -193,7 +193,7 @@ const Sleep = () => {
               placeholder="e.g. 7.5"
               required
               disabled={loading}
-              className="input-field disabled:opacity-50" 
+              className="input-field hover:border-black focus:border-black! disabled:opacity-50" 
               value={formData.hours}
               onChange={(e) => setFormData({...formData, hours: e.target.value})}
             />

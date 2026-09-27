@@ -1,29 +1,27 @@
 # Wellora – AI Health Companion
 
-Wellora is a state-of-the-art MERN-stack health platform designed to empower users on their wellness journey. It integrates comprehensive tracking modules for hydration, sleep, and mood with a real-time **Daily Wellness Score** calculator. The platform also features an offline-first **Nutrition Coach** with a local database of 310+ common foods, a context-aware **AI Health Assistant**, and an **AI Medical Report Simplifier** that translates complex clinical reports into patient-friendly summaries using optical character recognition (OCR) and LLM analysis.
+Wellora is a full-stack health and wellness platform that helps users track hydration, sleep, and mood. It also provides wellness analytics, nutrition suggestions, an AI health assistant, and AI-powered medical report summaries.
+
+![Wellora Landing Page](./screenshots/landing.png)
 
 ---
 
 ## 🚀 Key Features
 
 ### 👤 User Authentication
-* **JWT Security**: Secure signup, login, and authorization handling.
-* **Persistent Sessions**: Automated login sessions backed by persistent frontend context tokens.
-* **Onboarding Wizard**: Custom profiling for user height, weight, bedtime, and hydration goals.
 
-### 📊 Wellness Tracker & Analytics
-* **Water Hydration**: Daily intake logging with responsive goal circles.
-* **Sleep Tracker**: Log sleep duration and quality with simple Poor, Fair, Good, and Excellent sleep-quality indicators.
-* **Mood Logger**: Track emotional state and log historical moods.
-* **Health Analytics**: Clean, responsive Recharts layouts charting weekly water intake and sleep logs.
+- **JWT Authentication** — Secure signup, login, and protected access.
+- **Persistent Sessions** — Maintains user authentication across sessions.
 
-### 📈 Daily Wellness Score
-* **Real-time Scoring**: Client-side calculation mapping daily habits (Sleep: 40%, Hydration: 30%, Mood: 30%) to a 0-100 score.
-* **Featured Display Card**: Circular animated progress ring with health status indicators (Poor, Fair, Good, Excellent) and dynamic wellness insights.
-* **Zero-Default Safety**: Cleans up missing logs cleanly without layout shifts or NaNs.
+### 📊 Wellness Tracking & Analytics
+
+- **Hydration Tracking** — Log daily water intake and track hydration goals.
+- **Sleep Tracking** — Record sleep duration and quality.
+- **Mood Tracking** — Log daily mood and view mood history.
+- **Health Analytics** — Visualize weekly hydration, sleep, and mood trends.
 
 ### 🔥 Daily Wellness Streaks
-* **Logging Streaks**: Tracks consecutive calendar days where users successfully record hydration, sleep, and mood.
+* **Logging Streaks**: Tracks consecutive calendar days where users successfully record hydration, sleep and mood.
 * **Milestone Badges**: Rewarding user consistency:
   * `3+ Days`: 🌱 Getting Started
   * `7+ Days`: 🔥 Consistent
@@ -37,29 +35,34 @@ Wellora is a state-of-the-art MERN-stack health platform designed to empower use
 
 ### 📄 Medical Report Simplifier
 * **Multi-Format Uploads**: Support for PDFs and images (PNG, JPG, JPEG, and WEBP).
-* **Dual-Path Text Extraction**: Selective extraction from selectable PDFs and automated Tesseract OCR fallback for scanned reports.
 * **Document Validation**: Verifies medical report validity to prevent invalid analyses (e.g. resumes, receipts).
-* **Jargon-free Explanations**: Groq AI summary translates complex parameters (Haemoglobin, WBC, Cholesterol, etc.) into simplified tables.
 
 ---
 
 ## 💻 Tech Stack
 
 ### Frontend
-* **React.js (v19)** — Component architecture
-* **Tailwind CSS (v4)** — Styling and responsive layout rules
-* **Recharts** — Weekly progress charting
-* **Framer Motion** — Interface transitions and animations
-* **Axios** — HTTP client requests
+
+- **React.js**
+- **Tailwind CSS**
+- **Recharts**
+- **Framer Motion**
+- **Axios**
 
 ### Backend
-* **Node.js & Express.js** — REST API backend router
-* **MongoDB & Mongoose** — Document schemas and database storage
-* **JWT & Bcrypt.js** — Secure passwords and token signatures
+
+- **Node.js**
+- **Express.js**
+- **MongoDB**
+- **Mongoose**
+- **JWT**
+- **bcrypt.js**
 
 ### AI & Integrations
-* **Groq AI Node Client** — openai/gpt-oss-120b model API calls
-* **Tesseract.js** — Client/Server-side optical character recognition
+
+- **Groq AI**
+- **Tesseract.js**
+- **OCR & LLM-based Processing**
 
 ---
 
@@ -81,26 +84,34 @@ graph TD
 ## 🛠️ Folder Structure
 
 ```
-wellora-ai-health-companion/
+ai-health-companion/
+│
 ├── backend/
-│   ├── config/            # DB connection setup
-│   ├── controllers/       # Router functions (auth, sleep, reports, etc.)
-│   ├── middleware/        # Auth verification middlewares
-│   ├── models/            # Mongoose database schemas
-│   ├── routes/            # API routing endpoints
-│   ├── utils/             # Helper databases, meal lists, OCR validators
-│   ├── index.js           # Server runner script
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   ├── index.js
 │   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── components/    # Navigation, layouts, skeleton cards
-    │   ├── context/       # Data context cache providers
-    │   ├── pages/         # Page modules (Dashboard, Coach, Analytics)
-    │   ├── utils/         # API HTTP configurations
-    │   ├── App.jsx        # Routing rules
-    │   └── main.jsx       # DOM bootstrapper
-    ├── package.json
-    └── vite.config.js
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── utils/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   ├── .env
+│   ├── package.json
+│   └── vite.config.js
+│
+├── .gitignore
+├── README.md
 ```
 
 ---
@@ -150,7 +161,7 @@ wellora-ai-health-companion/
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/your-username/wellora-ai-health-companion.git
-cd wellora-ai-health-companion
+cd ai-health-companion
 ```
 
 ### 2. Configure Environment Variables
@@ -166,17 +177,17 @@ NODE_ENV=development
 ### 3. Install Dependencies
 Run the install helper script in the root directory:
 ```bash
-npm run install-all
+npm install
 ```
 *Alternatively, run `npm install` inside both `backend/` and `frontend/` folders.*
 
 ### 4. Run the Project
 Start both development environments concurrently from the root directory:
 ```bash
-npm run dev-all
+npm run dev
 ```
 The app will serve:
-* **Frontend Client**: `http://localhost:5173` (or port listed in console)
+* **Frontend Client**: `http://localhost:5173` 
 * **Backend API Server**: `http://localhost:5000`
 
 ---
@@ -201,7 +212,7 @@ The app will serve:
 
 ## 🌐 Live Demo
 
-Experience Wellora live here: https://ai-health-companion-phi.vercel.app
+* Experience Wellora live here: https://ai-health-companion-phi.vercel.app
 
 ## 🔮 Future Enhancements
 * **Report Trend Charting**: Track metrics (e.g. cholesterol, hemoglobin) across multiple consecutive reports to chart progress.
@@ -211,10 +222,8 @@ Experience Wellora live here: https://ai-health-companion-phi.vercel.app
 ---
 
 ## ✍️ Author
-* **Priyanshu Suyal** — [GitHub](https://github.com/Priyanshu12334)
+* **Priyanshu Suyal** — [Portfolio](https://portfolio-ten-blond-87.vercel.app)
 * **Priyanshu Suyal** — [Linkedin](https://www.linkedin.com/in/priyanshu-suyal-5732b224a/)
+* **Priyanshu Suyal** — [GitHub](https://github.com/Priyanshu12334)
 
 ---
-
-## 📄 License
-This project is licensed under the MIT License.

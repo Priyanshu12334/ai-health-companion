@@ -134,7 +134,7 @@ const Analytics = () => {
     <div className="space-y-6 max-w-4xl mx-auto w-full">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold flex items-center gap-2">
-          <BarChart3 className="text-sky-600"/> Health Analytics
+          <BarChart3 className="text-teal-600"/> Health Analytics
         </h2>
         <button 
           onClick={() => fetchAnalytics(true)}
