@@ -5,7 +5,7 @@ const DataContext = createContext();
 
 export const useData = () => useContext(DataContext);
 
-const calculateHealthScore = (dashboardData) => {
+export const calculateHealthScore = (dashboardData) => {
   if (!dashboardData) return 0;
   
   // Sleep duration

@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, User, Sparkles, Loader2, Trash2, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utils/api';
+import { useData, calculateHealthScore } from '../context/DataContext';
 import { toast } from 'react-toastify';
 
 const AIChat = () => {
+  const { getDashboardData } = useData();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -89,7 +91,33 @@ const AIChat = () => {
     setLoading(true);
 
     try {
-      const res = await api.post('/ai/chat', { message: userMsg });
+      let currentScore = undefined;
+      let currentSleep = undefined;
+      let currentHydration = undefined;
+      let currentGoal = undefined;
+      let currentMood = undefined;
+
+      try {
+        const dashboardData = await getDashboardData(false);
+        if (dashboardData) {
+          currentScore = calculateHealthScore(dashboardData);
+          currentSleep = dashboardData.sleep?.log?.duration;
+          currentHydration = dashboardData.hydration?.total;
+          currentGoal = dashboardData.hydration?.goal;
+          currentMood = dashboardData.mood?.log?.mood;
+        }
+      } catch (err) {
+        console.warn('Could not load dashboard data for AI context', err);
+      }
+
+      const res = await api.post('/ai/chat', { 
+        message: userMsg,
+        healthScore: currentScore,
+        sleepHours: currentSleep,
+        hydration: currentHydration,
+        hydrationGoal: currentGoal,
+        mood: currentMood
+      });
       setMessages(prev => [...prev, { role: 'ai', content: res.data.response, id: res.data._id }]);
     } catch (error) {
       toast.error('Failed to send message. Please try again.');

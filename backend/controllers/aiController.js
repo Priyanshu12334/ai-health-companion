@@ -1,14 +1,11 @@
 import OpenAI from 'openai';
 import AIChat from '../models/AIChat.js';
 import User from '../models/User.js';
-import HydrationLog from '../models/HydrationLog.js';
-import SleepLog from '../models/SleepLog.js';
-import MoodLog from '../models/MoodLog.js';
-import { getStartOfToday } from '../utils/timezone.js';
+import { getDailyWellnessData } from '../utils/healthScoreHelper.js';
 
 export const chatWithAI = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, healthScore: clientHealthScore, sleepHours: clientSleep, hydration: clientHydration, hydrationGoal: clientHydrationGoal, mood: clientMood } = req.body;
     
     if (!message) {
       return res.status(400).json({ message: 'Message is required' });
@@ -25,50 +22,29 @@ export const chatWithAI = async (req, res) => {
       baseURL: 'https://api.groq.com/openai/v1'
     });
 
-    // Fetch user context
-    const user = await User.findById(req.user._id);
-    
-    const startOfToday = getStartOfToday(req);
+    // Fetch user wellness data using the exact same calculation/data as Dashboard
+    const wellnessData = await getDailyWellnessData(req.user._id, req);
 
-    const hydrationLogs = await HydrationLog.find({ userId: req.user._id, date: { $gte: startOfToday } });
-    const totalWater = hydrationLogs.reduce((acc, log) => acc + log.amount, 0);
+    // Prioritize client-provided healthScore from dashboard context if present; otherwise fallback to backend wellness calculation
+    const healthScore = (typeof clientHealthScore === 'number' && !isNaN(clientHealthScore))
+      ? clientHealthScore
+      : wellnessData.healthScore;
 
-    const sleepLog = await SleepLog.findOne({ userId: req.user._id, date: { $gte: startOfToday } }).sort({ date: -1 });
-    const moodLog = await MoodLog.findOne({ userId: req.user._id, date: { $gte: startOfToday } }).sort({ date: -1 });
+    const sleepDuration = (typeof clientSleep === 'number' && !isNaN(clientSleep))
+      ? clientSleep
+      : wellnessData.sleepDuration;
 
-    // Calculate Daily Wellness Score dynamically matching frontend formulas
-    let sleepScore = 25;
-    if (sleepLog) {
-      const sleepDuration = sleepLog.duration;
-      if (sleepDuration >= 8) sleepScore = 40;
-      else if (sleepDuration >= 7) sleepScore = 35;
-      else if (sleepDuration >= 6) sleepScore = 25;
-      else if (sleepDuration >= 5) sleepScore = 15;
-      else sleepScore = 5;
-    }
+    const totalWater = (typeof clientHydration === 'number' && !isNaN(clientHydration))
+      ? clientHydration
+      : wellnessData.totalWater;
 
-    const hydrationGoal = user.dailyWaterGoal || 2000;
-    let hydrationScore = 0;
-    if (totalWater > 0) {
-      if (totalWater >= hydrationGoal) hydrationScore = 30;
-      else if (totalWater >= hydrationGoal * 0.75) hydrationScore = 25;
-      else if (totalWater >= hydrationGoal * 0.5) hydrationScore = 15;
-      else if (totalWater >= hydrationGoal * 0.25) hydrationScore = 10;
-      else hydrationScore = 5;
-    }
+    const waterGoal = (typeof clientHydrationGoal === 'number' && !isNaN(clientHydrationGoal))
+      ? clientHydrationGoal
+      : wellnessData.waterGoal;
 
-    let moodScore = 20;
-    if (moodLog) {
-      const currentMood = moodLog.mood;
-      if (currentMood === 'Happy') moodScore = 30;
-      else if (currentMood === 'Calm') moodScore = 25;
-      else if (currentMood === 'Neutral') moodScore = 20;
-      else if (currentMood === 'Tired') moodScore = 15;
-      else if (currentMood === 'Sad') moodScore = 10;
-      else if (currentMood === 'Stressed') moodScore = 5;
-    }
-
-    const healthScore = sleepScore + hydrationScore + moodScore;
+    const currentMood = (typeof clientMood === 'string' && clientMood)
+      ? clientMood
+      : wellnessData.currentMood;
 
     const cleanMsg = message.toLowerCase();
     let intent = 'Other';
@@ -87,7 +63,7 @@ export const chatWithAI = async (req, res) => {
       intent = 'Dinner';
     } else if (cleanMsg.includes('eat') || cleanMsg.includes('food') || cleanMsg.includes('nutrit') || cleanMsg.includes('diet') || cleanMsg.includes('meal')) {
       intent = 'Nutrition';
-    } else if (cleanMsg.includes('health') || cleanMsg.includes('score') || cleanMsg.includes('overall')) {
+    } else if (cleanMsg.includes('health') || cleanMsg.includes('score') || cleanMsg.includes('wellness') || cleanMsg.includes('overall') || cleanMsg.includes('rating') || cleanMsg.includes('status')) {
       intent = 'General Health';
     } else if (cleanMsg.includes('report') || cleanMsg.includes('simplif') || cleanMsg.includes('doctor') || cleanMsg.includes('lab') || cleanMsg.includes('test')) {
       intent = 'Medical Report';
@@ -97,48 +73,61 @@ export const chatWithAI = async (req, res) => {
     let filteredContext = {};
     if (intent === 'Sleep' || intent === 'Mood' || intent === 'General Health') {
       filteredContext = {
-        healthScore: healthScore,
-        sleepHours: sleepLog ? sleepLog.duration : 0,
-        mood: moodLog ? moodLog.mood.toLowerCase() : "neutral"
+        dailyWellnessScore: healthScore,
+        scoreMax: 100,
+        scoreBreakdown: {
+          sleepScore: `${wellnessData.sleepScore}/40`,
+          hydrationScore: `${wellnessData.hydrationScore}/30`,
+          moodScore: `${wellnessData.moodScore}/30`
+        },
+        sleepHours: sleepDuration,
+        mood: currentMood ? currentMood.toLowerCase() : "neutral",
+        hydration: totalWater,
+        hydrationGoal: waterGoal
       };
     } else if (intent === 'Hydration') {
       filteredContext = {
         hydration: totalWater,
-        hydrationGoal: user.dailyWaterGoal || 2500
+        hydrationGoal: waterGoal
       };
     } else if (intent === 'Breakfast' || intent === 'Lunch' || intent === 'Dinner' || intent === 'Nutrition') {
       filteredContext = {};
       // DO NOT mention hydration unless hydration is critically low (< 1000ml)
       if (totalWater < 1000) {
         filteredContext.hydration = totalWater;
-        filteredContext.hydrationGoal = user.dailyWaterGoal || 2500;
+        filteredContext.hydrationGoal = waterGoal;
         filteredContext.hydrationStatus = "Critically Low";
       }
     } else {
       filteredContext = {
-        healthScore: healthScore
+        dailyWellnessScore: healthScore,
+        scoreMax: 100
       };
     }
 
-    console.log('--- NUTRITION COACH PERSONALIZATION DEBUG ---');
+    console.log('--- AI HEALTH ASSISTANT DEBUG ---');
     console.log('USER MESSAGE:', message);
     console.log('INTENT DETECTED:', intent);
+    console.log('HEALTH SCORE:', healthScore);
     console.log('FILTERED CONTEXT:', JSON.stringify(filteredContext, null, 2));
     console.log('--- END DEBUG ---');
 
-    const systemPrompt = `You are an AI Health Assistant.
+    const systemPrompt = `You are an AI Health Assistant for Wellora.
 
-Your job is to answer the user's question using ONLY the relevant health data.
+Your job is to answer the user's question accurately using ONLY their relevant health data.
 
 Current User Health Data:
 ${JSON.stringify(filteredContext, null, 2)}
 
 Rules:
 
-1. First identify the user's intent.
+1. Daily Wellness Score accuracy:
+- If the user asks about their Daily Wellness Score, health score, or overall rating: Always report the exact score as "${healthScore}/100" (or "${healthScore} out of 100") matching the dailyWellnessScore provided in Current User Health Data. Never invent, guess, or calculate a different number.
+
+2. Identify the user's intent:
 Possible intents: Sleep, Hydration, Mood, Nutrition, Breakfast, Lunch, Dinner, General Health, Medical Report, Other.
 
-2. Use ONLY relevant data for the answer. Do NOT mention unrelated metrics.
+3. Use ONLY relevant data for the answer. Do NOT mention unrelated metrics:
 - If user asks about breakfast: Suggest options from [Poha, Upma, Sprouts, Oats, Eggs, Banana, Milk]. DO NOT mention hydration or water unless hydration is critically low (< 1000ml).
 - If user asks about lunch: Suggest options from [Roti, Dal, Rice, Rajma, Paneer, Vegetables, Curd]. DO NOT mention water, sleep, or mood.
 - If user asks about dinner: Suggest options from [Roti, Dal, Paneer, Khichdi, Vegetables, Soup]. DO NOT mention water, sleep, or mood.
@@ -146,12 +135,12 @@ Possible intents: Sleep, Hydration, Mood, Nutrition, Breakfast, Lunch, Dinner, G
 - If user asks "I feel dehydrated": Use ONLY hydration data to respond.
 - If user asks "Why is my daily wellness score low?": Use daily wellness score breakdown to respond.
 
-3. Never mention all health metrics in every answer.
-4. Give direct answers first.
-5. Maximum response length: 2-3 short sentences.
-6. Return plain text only.
-7. Avoid repetitive phrases like "Drink water first", "Stay hydrated", or "Drink more water", unless hydration-related questions are asked.
-8. Keep answers practical and personalized.
+4. Never mention all health metrics in every answer.
+5. Give direct answers first.
+6. Maximum response length: 2-3 short sentences.
+7. Return plain text only.
+8. Avoid repetitive phrases like "Drink water first", "Stay hydrated", or "Drink more water", unless hydration-related questions are asked.
+9. Keep answers practical and personalized.
 `;
 
     let completion;
