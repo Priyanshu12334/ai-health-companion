@@ -1,19 +1,62 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Moon, Clock, RotateCcw, Trash2 } from 'lucide-react';
 import api from '../utils/api';
 import { useData } from '../context/DataContext';
 import { toast } from 'react-toastify';
 import { SkeletonGoalBanner, SkeletonLogList } from '../components/common/Skeletons';
 
+// ---------------------------------------------------------------------------
+// Smooth count-up hook — cubic ease-out, cancels on unmount / rapid updates
+// ---------------------------------------------------------------------------
+function useAnimatedValue(target, decimals = 1) {
+  const [displayed, setDisplayed] = useState(target);
+  const rafRef = useRef(null);
+  const prevRef = useRef(target);
+
+  useEffect(() => {
+    const start = prevRef.current;
+    const end = target;
+    if (start === end) return;
+
+    let startTs = null;
+    const DURATION = 900;
+
+    const step = (ts) => {
+      if (!startTs) startTs = ts;
+      const progress = Math.min((ts - startTs) / DURATION, 1);
+      const ease = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+      const current = start + (end - start) * ease;
+      setDisplayed(parseFloat(current.toFixed(decimals)));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(step);
+      } else {
+        prevRef.current = end;
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [target, decimals]);
+
+  return displayed;
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 const Sleep = () => {
   const { cache, getSleepData, setCache } = useData();
   const [loading, setLoading] = useState(!cache.sleep);
-  
+
   const [formData, setFormData] = useState({
     hours: '',
     quality: 'Good'
   });
   const [adding, setAdding] = useState(false);
+
+  // Moon glow fires once after a successful log
+  const [glowing, setGlowing] = useState(false);
+  const glowTimerRef = useRef(null);
 
   const fetchSleep = useCallback(async (isRefresh = false) => {
     if (!cache.sleep && !isRefresh) {
@@ -32,8 +75,29 @@ const Sleep = () => {
     fetchSleep();
   }, [fetchSleep]);
 
+  // Cleanup glow timer on unmount
+  useEffect(() => () => clearTimeout(glowTimerRef.current), []);
+
   const data = cache.sleep || { log: null, history: [], goal: 8 };
 
+  // ── Derived values (unchanged logic) ──────────────────────────────────────
+  let sleepScore = 0;
+  if (data.log && data.log.duration !== undefined && data.log.duration !== null) {
+    const sleepDuration = data.log.duration;
+    if (sleepDuration >= 8) sleepScore = 40;
+    else if (sleepDuration >= 7) sleepScore = 35;
+    else if (sleepDuration >= 6) sleepScore = 25;
+    else if (sleepDuration >= 5) sleepScore = 15;
+    else sleepScore = 5;
+  }
+
+  const rawHours = data.log?.duration ?? 0;
+
+  // ── Animated display values ───────────────────────────────────────────────
+  const animatedHours = useAnimatedValue(rawHours, 1);
+  const animatedScore = useAnimatedValue(sleepScore, 0);
+
+  // ── Handlers (logic completely unchanged) ─────────────────────────────────
   const handleAddSleep = async (e) => {
     e.preventDefault();
     const parsedHours = parseFloat(formData.hours);
@@ -48,7 +112,7 @@ const Sleep = () => {
     }
 
     setAdding(true);
-    
+
     try {
       const wakeDate = new Date();
       const bedDate = new Date(wakeDate.getTime() - parsedHours * 60 * 60 * 1000);
@@ -58,7 +122,7 @@ const Sleep = () => {
         wakeupTime: wakeDate.toISOString(),
         quality: formData.quality
       });
-      
+
       const freshData = await getSleepData(true);
       if (freshData.log?.duration >= freshData.goal) {
         toast.success('😴 Sleep Goal Achieved');
@@ -76,6 +140,14 @@ const Sleep = () => {
         }));
       }
       setFormData({ hours: '', quality: 'Good' });
+
+      // Trigger the one-shot moon glow
+      setGlowing(false);
+      clearTimeout(glowTimerRef.current);
+      requestAnimationFrame(() => {
+        setGlowing(true);
+        glowTimerRef.current = setTimeout(() => setGlowing(false), 1900);
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to log sleep');
     } finally {
@@ -128,31 +200,26 @@ const Sleep = () => {
     }
   };
 
-  let sleepScore = 0;
-  if (data.log && data.log.duration !== undefined && data.log.duration !== null) {
-    const sleepDuration = data.log.duration;
-    if (sleepDuration >= 8) sleepScore = 40;
-    else if (sleepDuration >= 7) sleepScore = 35;
-    else if (sleepDuration >= 6) sleepScore = 25;
-    else if (sleepDuration >= 5) sleepScore = 15;
-    else sleepScore = 5;
-  }
-
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6 max-w-2xl mx-auto w-full">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Moon className="text-[#6366F1]"/> Sleep Tracking
+          {/* Moon glows softly for ~1.8s after a successful log */}
+          <Moon
+            className={`text-[#6366F1] transition-all duration-300 ${glowing ? 'animate-moon-glow' : ''}`}
+          />
+          Sleep Tracking
         </h2>
-        <button 
-          onClick={resetToday} 
+        <button
+          onClick={resetToday}
           disabled={loading}
           className="flex items-center gap-2 text-sm text-text-secondary hover:text-red-500 transition-colors disabled:opacity-50 cursor-pointer"
         >
           <RotateCcw className="w-4 h-4" /> Reset Today's Sleep
         </button>
       </div>
-      
+
       {loading ? (
         <SkeletonGoalBanner />
       ) : (
@@ -160,20 +227,24 @@ const Sleep = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <p className="text-indigo-100 text-sm mb-1">Total Sleep</p>
-              <h1 className="text-4xl font-bold">
-                {data.log ? `${data.log.duration} Hours` : '0 Hours'}
+              {/* Animated hours — transitions smoothly on each log */}
+              <h1 className="text-4xl font-bold tabular-nums transition-all duration-300">
+                {data.log ? `${animatedHours} Hours` : '0 Hours'}
               </h1>
             </div>
             <div className="sm:text-right">
               <p className="text-sky-200 text-sm mb-1">Goal: {data.goal} hrs</p>
-              <div className="px-3 py-1 bg-card/20 rounded-full text-sm font-medium inline-block">
+              <div className="px-3 py-1 bg-card/20 rounded-full text-sm font-medium inline-block transition-all duration-300">
                 Quality: {data.log ? data.log.quality : '-'}
               </div>
             </div>
           </div>
           <div className="pt-3 border-t border-indigo-300/30 flex justify-between items-center">
             <span className="text-sm text-indigo-100 font-medium">Daily Wellness Score Contribution</span>
-            <span className="text-lg font-bold text-white bg-white/20 px-3 py-0.5 rounded-lg">{sleepScore} / 40</span>
+            {/* Animated score — counts up smoothly after log */}
+            <span className="text-lg font-bold text-white bg-white/20 px-3 py-0.5 rounded-lg tabular-nums transition-all duration-300">
+              {animatedScore} / 40
+            </span>
           </div>
         </div>
       )}
@@ -185,15 +256,15 @@ const Sleep = () => {
         <form onSubmit={handleAddSleep} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1 text-text-secondary">Sleep Hours</label>
-            <input 
-              type="number" 
+            <input
+              type="number"
               step="0.1"
               min="0.1"
               max="24"
               placeholder="e.g. 7.5"
               required
               disabled={loading}
-              className="input-field hover:border-black focus:border-black! disabled:opacity-50" 
+              className="input-field hover:border-black focus:border-black! disabled:opacity-50"
               value={formData.hours}
               onChange={(e) => setFormData({...formData, hours: e.target.value})}
             />
@@ -216,8 +287,8 @@ const Sleep = () => {
                     onClick={() => setFormData({ ...formData, quality: q.name })}
                     className={`p-2.5 sm:p-3 rounded-xl text-left transition-all duration-200 cursor-pointer ${
                       isSelected
-                        ? 'bg-[#6366F1] text-white font-bold shadow-md border border-transparent'
-                        : 'bg-surface text-text-sky border border-border-color hover:border-slate-300 dark:hover:border-slate-700'
+                        ? 'bg-[#6366F1] text-white font-bold shadow-lg shadow-indigo-500/25 border border-transparent scale-[1.02]'
+                        : 'bg-surface text-text-sky border border-border-color hover:border-slate-300 dark:hover:border-slate-700 hover:scale-[1.01]'
                     } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <div className="flex items-center justify-between">
@@ -233,9 +304,9 @@ const Sleep = () => {
               })}
             </div>
           </div>
-          <button 
-            type="submit" 
-            disabled={adding || loading} 
+          <button
+            type="submit"
+            disabled={adding || loading}
             className="btn-sky bg-[#6366F1] hover:bg-[#4F46E5] shadow-[#6366F1]/30 disabled:opacity-50 disabled:transform-none cursor-pointer"
           >
             {adding ? 'Saving...' : 'Save Sleep Log'}
@@ -253,7 +324,7 @@ const Sleep = () => {
             </button>
           )}
         </div>
-        
+
         {loading ? (
           <SkeletonLogList />
         ) : (
@@ -261,8 +332,12 @@ const Sleep = () => {
             {!data.history || data.history.length === 0 ? (
               <p className="text-text-secondary text-center py-4 bg-background/50 rounded-xl">No sleep history found.</p>
             ) : (
-              data.history.slice().reverse().map((log) => (
-                <div key={log._id} className="flex justify-between items-center p-4 bg-card rounded-xl shadow-sm border border-border-color transition-all duration-200 hover:shadow-md">
+              data.history.slice().reverse().map((log, index) => (
+                <div
+                  key={log._id}
+                  className="flex justify-between items-center p-4 bg-card rounded-xl shadow-sm border border-border-color transition-all duration-200 hover:shadow-md animate-sleep-slide-in"
+                  style={{ animationDelay: `${index * 40}ms` }}
+                >
                   <div className="flex items-center gap-3">
                     <Moon className="w-6 h-6 text-[#6366F1] shrink-0" />
                     <div>

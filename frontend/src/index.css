@@ -57,6 +57,138 @@
   .nav-item.active {
     @apply text-sky-600 dark:text-sky-400;
   }
+
+  @keyframes water-wave-front {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+  }
+
+  @keyframes water-wave-back {
+    0% { transform: translate3d(-50%, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+  }
+
+  .animate-wave-front {
+    animation: water-wave-front 6s linear infinite;
+  }
+
+  .animate-wave-back {
+    animation: water-wave-back 9s linear infinite;
+  }
+
+  /* Sleep page — soft moon glow pulse */
+  @keyframes moon-glow {
+    0%   { filter: drop-shadow(0 0 0px #818cf8); opacity: 1; }
+    50%  { filter: drop-shadow(0 0 8px #818cf8cc); opacity: 0.85; }
+    100% { filter: drop-shadow(0 0 0px #818cf8); opacity: 1; }
+  }
+
+  .animate-moon-glow {
+    animation: moon-glow 1.8s ease-in-out;
+  }
+
+  /* Sleep history — subtle entry animation */
+  @keyframes sleep-slide-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-sleep-slide-in {
+    animation: sleep-slide-in 0.35s ease-out forwards;
+  }
+
+  /* ── Mood page feedback animations ──────────────────────────────────────── */
+
+  /* Happy — two quick bounces then settle */
+  @keyframes mood-happy-bounce {
+    0%   { transform: translateY(0)    scale(1); }
+    20%  { transform: translateY(-10px) scale(1.12); }
+    40%  { transform: translateY(0)    scale(0.96); }
+    60%  { transform: translateY(-5px) scale(1.06); }
+    80%  { transform: translateY(0)    scale(0.99); }
+    100% { transform: translateY(0)    scale(1); }
+  }
+  .mood-anim-happy { animation: mood-happy-bounce 0.75s cubic-bezier(0.36,0.07,0.19,0.97) forwards; }
+
+  /* Neutral — single slow, even pulse */
+  @keyframes mood-neutral-pulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  .mood-anim-neutral { animation: mood-neutral-pulse 1s ease-in-out forwards; }
+
+  /* Sad — droops down then returns gently */
+  @keyframes mood-sad-drop {
+    0%   { transform: translateY(0)   rotate(0deg); }
+    35%  { transform: translateY(6px) rotate(-3deg); }
+    65%  { transform: translateY(4px) rotate(-1deg); }
+    100% { transform: translateY(0)   rotate(0deg); }
+  }
+  .mood-anim-sad { animation: mood-sad-drop 1.1s ease-in-out forwards; }
+
+  /* Tired — lazy float up-down */
+  @keyframes mood-tired-float {
+    0%   { transform: translateY(0); }
+    30%  { transform: translateY(-6px); }
+    60%  { transform: translateY(-2px); }
+    100% { transform: translateY(0); }
+  }
+  .mood-anim-tired { animation: mood-tired-float 1.3s ease-in-out forwards; }
+
+  /* Stressed — quick damp shake then settle */
+  @keyframes mood-stressed-shake {
+    0%   { transform: translateX(0); }
+    10%  { transform: translateX(-5px) rotate(-2deg); }
+    25%  { transform: translateX(4px)  rotate(1.5deg); }
+    40%  { transform: translateX(-3px) rotate(-1deg); }
+    55%  { transform: translateX(2px)  rotate(0.5deg); }
+    70%  { transform: translateX(-1px); }
+    100% { transform: translateX(0) rotate(0deg); }
+  }
+  .mood-anim-stressed { animation: mood-stressed-shake 0.8s ease-out forwards; }
+
+  /* Sparkle particle (Happy) — pops out and fades */
+  @keyframes mood-sparkle {
+    0%   { opacity: 1; transform: translate(0, 0)      scale(1); }
+    100% { opacity: 0; transform: var(--spark-xy)      scale(0); }
+  }
+  .mood-sparkle {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #fbbf24;
+    pointer-events: none;
+    animation: mood-sparkle 0.9s ease-out forwards;
+  }
+
+  /* Zzz particle (Tired) — floats up and fades */
+  @keyframes mood-zzz {
+    0%   { opacity: 0.9; transform: translate(0, 0)   scale(1); }
+    100% { opacity: 0;   transform: translate(var(--zzz-x), -28px) scale(0.6); }
+  }
+  .mood-zzz {
+    position: absolute;
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    pointer-events: none;
+    animation: mood-zzz 1.2s ease-out forwards;
+  }
+
+  /* Sad drop particle — tiny teardrop fades down */
+  @keyframes mood-drop {
+    0%   { opacity: 0.8; transform: translateY(0)    scale(1); }
+    100% { opacity: 0;   transform: translateY(14px) scale(0.5); }
+  }
+  .mood-drop {
+    position: absolute;
+    width: 5px; height: 7px;
+    border-radius: 50% 50% 60% 60%;
+    background: #93c5fd;
+    pointer-events: none;
+    animation: mood-drop 1s ease-in forwards;
+  }
 }
 
 /* Custom Scrollbar */

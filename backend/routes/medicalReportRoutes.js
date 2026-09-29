@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { uploadReport, getReports, getReportById, deleteReport } from '../controllers/medicalReportController.js';
 import { protect } from '../middleware/auth.js';
+import { aiLimiter } from './aiRoutes.js';
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ const upload = multer({
 });
 
 // Route definitions
-router.post('/upload', protect, (req, res, next) => {
+router.post('/upload', protect, aiLimiter, (req, res, next) => {
   console.log('--- Incoming Medical Report Upload ---');
   console.log('Headers:', req.headers);
   upload.single('file')(req, res, (err) => {
