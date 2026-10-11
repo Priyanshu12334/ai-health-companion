@@ -1,4 +1,4 @@
-# Wellora – AI Health Companion
+# Wellora – AI-Powered Health & Wellness Platform
 
 Wellora is a full-stack health and wellness platform that helps users track hydration, sleep, and mood. It also provides wellness analytics, nutrition suggestions, an AI health assistant, and AI-powered medical report summaries.
 
