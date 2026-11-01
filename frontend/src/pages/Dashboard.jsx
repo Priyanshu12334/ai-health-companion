@@ -275,7 +275,7 @@ const Dashboard = () => {
             <Sparkles className="w-20 h-28" />
           </div>
           <div className="relative z-10 max-w-4xl space-y-2">
-            <h3 className="text-lg md:text-xl font-bold tracking-tight">AI Insight</h3>
+            <h3 className="text-lg md:text-xl font-bold tracking-tight text-white">AI Insight</h3>
             <p className="text-white/95 text-sm md:text-base leading-relaxed">
               {data.mood?.log?.mood
                 ? `You logged your mood as "${data.mood.log.mood}" today. ${
@@ -421,7 +421,7 @@ const Dashboard = () => {
                 </span>
               )}
               
-              <div className="text-2xl sm:text-3xl font-extrabold text-sky-600 dark:text-sky-400 whitespace-nowrap tracking-tight">
+              <div className="text-2xl sm:text-3xl font-bold text-sky-600 dark:text-sky-400 whitespace-nowrap tracking-tight">
                 {streakData.streak || 0} <span className="text-base sm:text-lg font-bold text-text-secondary">Days</span>
               </div>
             </div>

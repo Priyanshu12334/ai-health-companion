@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Roboto', Arial, sans-serif;
   
   --color-background: var(--bg-background);
   --color-card: var(--bg-card);
@@ -24,26 +24,71 @@
 
 @layer base {
   :root {
-    --bg-background: #F8FAFC;
+    --bg-background: #F0F7FF;
     --bg-card: #FFFFFF;
-    --bg-surface: #F3F4F6;
-    --border-base: #E5E7EB;
-    --text-sky: #111827;
+    --bg-surface: #EAF3FF;
+    --border-base: #D7E7F7;
+    --text-sky: #0F172A;
     --text-secondary: #6B7280;
   }
 
   body {
     @apply bg-background text-text-sky transition-colors duration-300;
+    font-family: Roboto, Arial, sans-serif;
+    font-weight: 500;
+    font-synthesis: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    font-family: Roboto, Arial, sans-serif !important;
+  }
+
+  h1,
+  h1 * {
+    font-weight: 700 !important;
+  }
+
+  h2,
+  h2 * {
+    font-weight: 700 !important;
+  }
+
+  h3,
+  h4,
+  h5,
+  h6,
+  h3 *,
+  h4 *,
+  h5 *,
+  h6 * {
+    font-weight: 700 !important;
+  }
+
+  p,
+  label,
+  input,
+  select,
+  textarea {
+    font-weight: 500 !important;
+  }
+
+  button,
+  a,
+  nav,
+  nav a {
+    font-weight: 600 !important;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-card/70 backdrop-blur-md border border-border-color shadow-xl rounded-2xl;
+    @apply bg-card border border-border-color shadow-sm rounded-2xl;
   }
   
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl bg-surface border border-transparent focus:border-sky-500 focus:bg-card outline-none transition-all duration-200 text-text-sky;
+    @apply w-full px-4 py-3 rounded-xl bg-card border border-border-color focus:border-sky-500 outline-none transition-all duration-200 text-text-sky;
   }
   
   .btn-sky {
@@ -191,6 +236,51 @@
   }
 }
 
+.wellora-landing {
+  background: linear-gradient(180deg, #E5F1FF 0%, #F0F7FF 48%, #EAF3FF 100%);
+}
+
+.auth-page-background {
+  background:
+    radial-gradient(ellipse at 50% 38%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 48%),
+    linear-gradient(180deg, #1677C9 0%, #3B91D5 38%, #72B8E8 68%, #FFFFFF 100%);
+}
+
+.landing-hero-background {
+  position: relative;
+  isolation: isolate;
+}
+
+.landing-hero-background > h1 {
+  margin-bottom: 8px !important;
+}
+
+.landing-hero-background > h1 + p {
+  margin-top: 0 !important;
+  margin-block-start: 0 !important;
+}
+
+.landing-hero-background::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -8rem;
+  left: calc(50% - 50vw - 1px);
+  right: calc(50% - 50vw - 1px);
+  height: calc(100% + 14rem);
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 38%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 48%),
+    linear-gradient(180deg, #1677C9 0%, #3B91D5 38%, #72B8E8 68%, #FFFFFF 100%);
+}
+
+@media (min-width: 768px) {
+  .landing-hero-background::before {
+    top: -10rem;
+    height: calc(100% + 16rem);
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -201,4 +291,31 @@
 ::-webkit-scrollbar-thumb {
   background: var(--border-base);
   border-radius: 10px;
+}
+
+@layer base {
+  @media (min-width: 769px) {
+    :root {
+      --text-secondary: #334155;
+    }
+
+    p {
+      color: #334155;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: #0F172A;
+    }
+  }
+}
+
+@media (min-width: 769px) {
+  p {
+    line-height: 1.6;
+  }
 }

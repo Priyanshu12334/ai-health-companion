@@ -228,7 +228,7 @@ const Sleep = () => {
             <div>
               <p className="text-indigo-100 text-sm mb-1">Total Sleep</p>
               {/* Animated hours — transitions smoothly on each log */}
-              <h1 className="text-4xl font-bold tabular-nums transition-all duration-300">
+              <h1 className="text-4xl font-bold tabular-nums transition-all duration-300 text-white">
                 {data.log ? `${animatedHours} Hours` : '0 Hours'}
               </h1>
             </div>

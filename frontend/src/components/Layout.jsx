@@ -17,7 +17,7 @@ const Layout = () => {
         <aside className="hidden md:flex flex-col w-68 bg-sky-600 shadow-lg m-4 rounded-2xl p-6 h-[calc(100vh-2rem)] shrink-0 z-10 border-0">
           <div className="flex items-center gap-2.5 mb-8 text-white px-2">
             <HeartPulse className="w-6 h-6 shrink-0" />
-            <h1 className="text-xl font-bold tracking-tight">Wellora</h1>
+            <h1 className="text-xl font-bold tracking-tight text-white">Wellora</h1>
           </div>
           
           <nav className="flex-1 space-y-2.5">

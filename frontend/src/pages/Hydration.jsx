@@ -174,7 +174,7 @@ const Hydration = () => {
 
           <div className="relative z-10">
             <p className="text-sm text-text-secondary mb-2">Daily Goal: {data.goal}ml</p>
-            <h1 className="text-6xl font-extrabold text-sky-600 dark:text-sky-600 mb-4 transition-all duration-300">
+            <h1 className="text-6xl font-bold text-sky-600 dark:text-sky-600 mb-4 transition-all duration-300">
               {animatedTotal}<span className="text-2xl text-text-secondary font-medium ml-1">ml</span>
             </h1>
             

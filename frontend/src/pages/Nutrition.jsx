@@ -158,7 +158,7 @@ const Nutrition = () => {
                   
                   {/* Health Rating Pill */}
                   <div className={`border px-3.5 py-1.5 rounded-2xl flex flex-col items-center shrink-0 ${getRatingColor(foodResult.healthRating)}`}>
-                    <span className="text-lg font-black leading-none">{foodResult.healthRating} <span className="text-xs font-normal">/ 10</span></span>
+                    <span className="text-lg font-bold leading-none">{foodResult.healthRating} <span className="text-xs font-normal">/ 10</span></span>
                     <span className="text-[9px] uppercase tracking-wider font-bold mt-1">Health Rating</span>
                   </div>
                 </div>
@@ -221,7 +221,7 @@ const Nutrition = () => {
                       >
                         <div className="flex justify-between items-start gap-2">
                           <span className="font-bold text-sm text-text-sky capitalize truncate">{item.name}</span>
-                          <span className="text-xs bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded-md font-extrabold leading-none shrink-0">{item.healthRating}/10</span>
+                          <span className="text-xs bg-emerald-500/10 text-emerald-500 px-1.5 py-0.5 rounded-md font-bold leading-none shrink-0">{item.healthRating}/10</span>
                         </div>
                         <div className="flex items-center justify-between text-[11px] text-text-secondary mt-3">
                           <span>{item.calories} kcal</span>

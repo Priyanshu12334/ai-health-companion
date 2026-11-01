@@ -73,26 +73,26 @@ const Landing = () => {
   }, [openFaq]);
 
   return (
-    <div className="min-h-screen bg-background text-text-sky flex flex-col relative overflow-x-hidden">
+    <div className="wellora-landing min-h-screen bg-background text-text-sky flex flex-col relative overflow-x-hidden">
       {/* Background blobs for premium feel */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-200/40 dark:bg-sky-900/10 rounded-full blur-3xl -z-10 pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-indigo-200/30 dark:bg-indigo-950/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
-      <header className="w-full max-w-6xl mx-auto px-6 py-6 flex justify-between items-center z-10">
-        <div className="flex items-center gap-2.5 text-sky-600 dark:text-sky-400">
-          <HeartPulse className="w-8 h-8 shrink-0 animate-pulse" />
+      <header className="relative z-20 w-full max-w-6xl mx-auto px-3 py-6 flex justify-between items-center">
+        <div className="flex items-center gap-2.5 text-white">
+          <HeartPulse className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 animate-pulse" />
           <span className="text-2xl font-bold tracking-tight">Wellora</span>
         </div>
         <div className="flex items-center gap-3 sm:gap-4">
           <Link 
             to="/login" 
-            className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base rounded-xl text-text-secondary hover:text-text-sky hover:bg-surface transition-all font-medium"
+            className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base rounded-xl text-white/90 hover:text-white hover:bg-white/10 transition-all font-medium"
           >
             Log In
           </Link>
           <Link 
             to="/signup" 
-            className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base rounded-xl bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-500/20 transition-all font-medium transform hover:-translate-y-0.5"
+            className="px-4 py-2 sm:px-6 sm:py-2.5 text-sm sm:text-base rounded-xl bg-white/20 hover:bg-white/10 text-white shadow-lg shadow-sky-500/20 transition-all font-medium"
           >
             Sign Up
           </Link>
@@ -104,16 +104,16 @@ const Landing = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center flex flex-col items-center max-w-3xl mx-auto space-y-6 md:space-y-8"
+          className="landing-hero-background text-center flex flex-col items-center max-w-3xl mx-auto space-y-6 md:space-y-8"
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-text-sky leading-[1.15] text-balance">
-            Your Personal <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-sky-400 dark:from-sky-400 dark:to-sky-500">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.15] text-balance">
+            <span className="text-[#DCEEFF]">Your Personal</span> <br className="hidden sm:inline" />
+            <span className="inline sm:block sm:-mt-[10px] text-white">
               AI Health Companion
             </span>
           </h1>
           
-          <p className="text-base sm:text-lg md:text-lg font-medium text-text-secondary leading-relaxed max-w-2xl mx-auto px-2">
+          <p className="text-base sm:text-lg md:text-lg font-bold text-white leading-relaxed max-w-2xl mx-auto px-2">
             Track daily wellness with personalized nutrition insights, AI health assistance, and medical report simplification.
           </p>
 
@@ -126,7 +126,7 @@ const Landing = () => {
             </Link>
             <a 
               href="#features" 
-              className="px-8 py-3.5 sm:py-4 border border-border-color bg-card/60 backdrop-blur-sm hover:bg-card text-text-sky rounded-xl font-semibold text-center transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base"
+              className="px-8 py-3.5 sm:py-4 border border-[#DCEAF7] bg-white hover:bg-white text-[#172554] shadow-sm hover:shadow-md rounded-xl font-semibold text-center transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base"
             >
               Learn More
             </a>
@@ -147,7 +147,7 @@ const Landing = () => {
           <span className="inline-block text-xs sm:text-sm font-semibold tracking-wider text-white uppercase bg-[#0EA5E9] px-4 py-1.5 rounded-full border-0 shadow-[0_6px_16px_rgba(14,165,233,0.25)] hover:shadow-[0_8px_20px_rgba(14,165,233,0.35)] hover:-translate-y-0.5 transition-all duration-200 ease cursor-default">
             Core Features
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold mt-4 text-text-sky">
+          <h2 className="text-2xl sm:text-3xl font-bold mt-4 text-text-sky">
             Everything you need to thrive
           </h2>
         </div>
@@ -189,7 +189,7 @@ const Landing = () => {
           <span className="inline-block text-xs sm:text-sm font-semibold tracking-wider text-white uppercase bg-[#0EA5E9] px-4 py-1.5 rounded-full border-0 shadow-[0_6px_16px_rgba(14,165,233,0.25)] hover:shadow-[0_8px_20px_rgba(14,165,233,0.35)] hover:-translate-y-0.5 transition-all duration-200 ease cursor-default">
             FAQ
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold mt-4 text-text-sky mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mt-4 text-text-sky mb-8">
             Frequently Asked Questions
           </h2>
 
