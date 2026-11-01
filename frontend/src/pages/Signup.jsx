@@ -48,8 +48,8 @@ const Signup = () => {
  <div className="flex items-center justify-center gap-2 text-sky-600 dark:text-sky-400 mb-4">
  <HeartPulse className="w-8 h-8" />
  </div>
- <h2 className="text-3xl font-bold mb-2">Create Account</h2>
- <p className="text-text-secondary">Join Wellora and start your journey</p>
+ <h2 className="text-2xl sm:text-3xl font-bold mb-2">Create Account</h2>
+ <p className="text-sm sm:text-base text-text-secondary">Join Wellora and start your journey</p>
  </div>
 
  <form onSubmit={handleSubmit} className="space-y-5">
@@ -97,7 +97,7 @@ const Signup = () => {
  </button>
  </form>
 
- <p className="mt-6 text-center text-text-secondary">
+ <p className="mt-6 text-center text-sm sm:text-base text-text-secondary">
  Already have an account?{' '}
  <Link to="/login" className="text-sky-600 dark:text-sky-400 hover:underline font-medium">
  Log in

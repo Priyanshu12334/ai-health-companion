@@ -137,7 +137,7 @@ const Landing = () => {
             <BenefitBadge label="Nutrition Insights" />
             <BenefitBadge label="AI Health Assistant" />
             <BenefitBadge label="Medical Report Analysis" />
-            <div className="col-span-2 flex justify-center sm:contents">
+            <div className="landing-recommendation-badge col-span-2 flex justify-center sm:contents">
               <BenefitBadge label="Personalized Recommendations" />
             </div>
           </div>

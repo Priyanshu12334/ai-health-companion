@@ -246,6 +246,18 @@
     linear-gradient(180deg, #1677C9 0%, #3B91D5 38%, #72B8E8 68%, #FFFFFF 100%);
 }
 
+@media (max-width: 639px) {
+  .wellora-landing {
+    overflow-x: clip;
+  }
+
+  .landing-recommendation-badge > span {
+    width: auto;
+    min-height: 34px;
+    padding: 4px 8px;
+  }
+}
+
 .landing-hero-background {
   position: relative;
   isolation: isolate;
